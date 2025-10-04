@@ -3,9 +3,13 @@ OTP Service for Parent Authentication
 Generates and validates OTPs for phone number login
 """
 import random
+import logging
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from app.models.parent import OTP
+
+# Setup logger
+logger = logging.getLogger(__name__)
 
 
 class OTPService:
@@ -37,9 +41,14 @@ class OTPService:
         db.commit()
 
         # TODO: In production, send SMS via Twilio/other service
-        # For now, just log to console
-        print(f"🔐 OTP for {phone_number}: {otp_code}")
-        print(f"⏰ Valid for 10 minutes")
+        # For now, log to console and logger
+        otp_message = f"🔐 OTP for {phone_number}: {otp_code}"
+        validity_message = f"⏰ Valid for 10 minutes"
+
+        print(otp_message)
+        print(validity_message)
+        logger.info(otp_message)
+        logger.info(validity_message)
 
         return otp_code
 
@@ -56,8 +65,12 @@ class OTPService:
         if otp_record:
             otp_record.is_verified = True
             db.commit()
-            print(f"✅ OTP verified for {phone_number}")
+            verify_msg = f"✅ OTP verified for {phone_number}"
+            print(verify_msg)
+            logger.info(verify_msg)
             return True
 
-        print(f"❌ Invalid or expired OTP for {phone_number}")
+        fail_msg = f"❌ Invalid or expired OTP for {phone_number}"
+        print(fail_msg)
+        logger.warning(fail_msg)
         return False

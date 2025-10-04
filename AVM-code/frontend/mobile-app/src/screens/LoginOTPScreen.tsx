@@ -99,7 +99,7 @@ export default function LoginOTPScreen({ navigation, route }: any) {
 
       if (response.data.success) {
         // Save token and user data
-        await AsyncStorage.setItem('token', response.data.access_token);
+        await AsyncStorage.setItem('access_token', response.data.access_token);
         await AsyncStorage.setItem('user_type', response.data.user_type);
         await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
         await savePhoneNumber(phone.startsWith('+') ? phone : `+91${phone}`);

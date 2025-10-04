@@ -1,9 +1,18 @@
 # WhatsApp Business API Setup Guide
 
+## 📱 Your Configuration
+- **Business Phone Number:** +91 9380668711 (This will send messages to parents)
+- **Test Mode:** DISABLED (Sending to real parent numbers)
+
+## Parent Phone Numbers (Registered in System)
+1. +91 9986660025 - Rahul Sharma (Class 7)
+2. +91 8105198350 - Priya Patel (Class 8)
+3. +91 8123001495 - Arjun Kumar (Class 9)
+
 ## Prerequisites
 - Meta Business Account
 - Facebook Developer Account
-- A phone number for WhatsApp Business
+- Phone number +91 9380668711 (must have access to receive verification code)
 
 ## Step-by-Step Setup
 
@@ -56,30 +65,63 @@ WHATSAPP_API_VERSION=v17.0
 WHATSAPP_VERIFY_TOKEN=avm_whatsapp_verify_2024_secure
 ```
 
-### 6. Test Phone Number Format
-WhatsApp requires phone numbers in E.164 format:
-- Include country code without + symbol
-- Example: `919876543210` (for India +91-9876543210)
+### 6. Register Your Business Phone Number
+1. In "WhatsApp" > "API Setup", click "Add phone number"
+2. **Enter:** +91 9380668711
+3. You'll receive a verification code via SMS
+4. Enter the code to verify
+5. Complete the business profile setup
+
+**Important:** This number (+91 9380668711) will be the sender for all WhatsApp messages to parents.
+
+### 6.1. Phone Number Format
+All phone numbers are already formatted correctly in the database:
+- Business: +919380668711
+- Parent 1: +919986660025
+- Parent 2: +918105198350
+- Parent 3: +918123001495
 
 ### 7. Testing the Setup
 
-#### Test with Meta's Test Number (Development)
-1. Go to "WhatsApp" > "API Setup" in your app
-2. Add test recipient phone numbers (up to 5)
-3. The test recipients will receive a WhatsApp message to opt-in
-4. Once opted-in, you can send test messages
+#### Important: Add Test Recipients First
+Before you can send messages, you need to add the parent phone numbers as test recipients:
 
-#### Import Teachers and Test
-1. Create a test Excel file with teacher data
-2. Ensure phone numbers are in E.164 format (e.g., 919876543210)
-3. Upload via the Import page
-4. Check the backend logs for WhatsApp API responses
+1. Go to "WhatsApp" > "API Setup" in your Meta app
+2. Scroll to "Send and receive messages" section
+3. Click "Add phone number" under test recipients
+4. Add these numbers one by one:
+   - +91 9986660025
+   - +91 8105198350
+   - +91 8123001495
+5. Each parent will receive an opt-in message on WhatsApp
+6. **Parents must accept/reply** to the opt-in message before receiving attendance notifications
+
+#### Test Attendance Notification
+1. Log into the admin panel (http://localhost:3000)
+2. Navigate to Attendance page
+3. Mark attendance for a student (e.g., Rahul Sharma - Class 7)
+4. Select status (Present/Absent) and add remarks
+5. Click Submit
+6. Parent at +91 9986660025 should receive WhatsApp message
 
 ### 8. Verify It's Working
 
-After importing teachers, check:
-1. Backend logs: `✅ Credentials sent to [Teacher Name] at [phone]`
-2. Teachers should receive WhatsApp messages with login credentials
+Check these to confirm successful setup:
+1. **Backend logs**: Look for `✅ Credentials sent to...` or WhatsApp API success messages
+2. **Parent's WhatsApp**: They should receive formatted attendance message
+3. **No errors**: Backend should not show "Invalid access token" or API errors
+
+**Sample Message Parent Receives:**
+```
+📚 AVM Tutorial - Daily Update
+
+🎓 Student: Rahul Sharma (AVM-STU-001)
+📅 Date: 02 Oct 2025
+✅ Attendance: Present
+📝 Remarks: Good behavior
+
+💬 Reply to this chat for any queries.
+```
 
 ### 9. Webhook Setup (Optional, for two-way messaging)
 

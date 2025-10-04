@@ -1,7 +1,10 @@
-import httpx
-import json
-from typing import List, Optional, Dict
+"""
+WhatsApp Service using Twilio
+Simplified messaging for schools - just need to configure school WhatsApp number
+"""
+from typing import List, Dict
 from sqlalchemy.orm import Session
+from twilio.rest import Client
 from app.core.config import settings
 from app.models.whatsapp_chat import WhatsAppChat, ChatType
 from app.models.student import Student
@@ -9,20 +12,41 @@ from app.models.communication import Communication
 from app.models.attendance import Attendance
 from datetime import datetime
 
+
 class WhatsAppService:
     def __init__(self):
-        self.base_url = f"https://graph.facebook.com/{settings.WHATSAPP_API_VERSION}"
-        self.phone_number_id = settings.WHATSAPP_PHONE_NUMBER_ID
-        self.access_token = settings.WHATSAPP_ACCESS_TOKEN
+        """Initialize Twilio WhatsApp client"""
+        if not settings.TWILIO_ACCOUNT_SID or not settings.TWILIO_AUTH_TOKEN:
+            print("⚠️  WARNING: Twilio credentials not configured. WhatsApp messaging disabled.")
+            self.client = None
+            return
 
-    def _get_headers(self) -> Dict[str, str]:
-        """Get headers for WhatsApp API requests"""
-        return {
-            "Authorization": f"Bearer {self.access_token}",
-            "Content-Type": "application/json"
-        }
+        self.client = Client(
+            settings.TWILIO_ACCOUNT_SID,
+            settings.TWILIO_AUTH_TOKEN
+        )
+        self.from_number = settings.TWILIO_WHATSAPP_NUMBER or "whatsapp:+14155238886"
+        self.school_name = settings.SCHOOL_NAME or "AVM Tutorials"
+        self.school_contact = settings.SCHOOL_WHATSAPP_NUMBER or "+919380668711"
 
-    def _get_or_create_individual_chat(self, phone_number: str, student_name: str, student_unique_id: str, db: Session) -> WhatsAppChat:
+    def _format_phone_number(self, phone: str) -> str:
+        """Format phone number for WhatsApp (add whatsapp: prefix if needed)"""
+        if not phone:
+            return ""
+
+        # Remove any existing whatsapp: prefix
+        phone = phone.replace("whatsapp:", "").strip()
+
+        # Add + if not present
+        if not phone.startswith("+"):
+            phone = "+" + phone
+
+        # Add whatsapp: prefix
+        return f"whatsapp:{phone}"
+
+    def _get_or_create_individual_chat(
+        self, phone_number: str, student_name: str, student_unique_id: str, db: Session
+    ) -> WhatsAppChat:
         """Get or create individual chat session for daily attendance updates"""
         chat = db.query(WhatsAppChat).filter(
             WhatsAppChat.phone_number == phone_number,
@@ -45,7 +69,9 @@ class WhatsAppService:
 
         return chat
 
-    def _get_or_create_announcement_chat(self, phone_number: str, parent_name: str, db: Session) -> WhatsAppChat:
+    def _get_or_create_announcement_chat(
+        self, phone_number: str, parent_name: str, db: Session
+    ) -> WhatsAppChat:
         """Get or create announcement chat session for mass communications"""
         chat = db.query(WhatsAppChat).filter(
             WhatsAppChat.phone_number == phone_number,
@@ -72,7 +98,11 @@ class WhatsAppService:
         student: Student,
         db: Session
     ) -> bool:
-        """Send individual attendance update to parent via WhatsApp"""
+        """Send individual attendance update to parent via WhatsApp using Twilio"""
+        if not self.client:
+            print("❌ Twilio client not configured. Cannot send WhatsApp message.")
+            return False
+
         try:
             # Get or create individual chat session
             chat = self._get_or_create_individual_chat(
@@ -82,9 +112,10 @@ class WhatsAppService:
                 db=db
             )
 
-            # Format attendance message
+            # Format attendance message with school branding
             status_emoji = "✅" if attendance_record.status.value == "present" else "❌"
-            message_text = f"""📚 AVM Tutorial - Daily Update
+            message_text = f"""📚 {self.school_name} - Daily Update
+🏫 Contact: {self.school_contact}
 
 🎓 Student: {student.full_name} ({student.unique_id})
 📅 Date: {attendance_record.date.strftime('%d %b %Y')}
@@ -93,27 +124,20 @@ class WhatsAppService:
             if attendance_record.remarks:
                 message_text += f"\n📝 Remarks: {attendance_record.remarks}"
 
-            message_text += "\n\n💬 Reply to this chat for any queries."
+            message_text += f"\n\n💬 For queries, contact school at {self.school_contact}"
 
-            # Send message via WhatsApp API
-            url = f"{self.base_url}/{self.phone_number_id}/messages"
-            payload = {
-                "messaging_product": "whatsapp",
-                "to": student.parent_phone,
-                "type": "text",
-                "text": {
-                    "body": message_text
-                }
-            }
+            # Send message via Twilio WhatsApp
+            to_number = self._format_phone_number(student.parent_phone)
 
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    url,
-                    headers=self._get_headers(),
-                    json=payload
-                )
+            print(f"📤 Sending WhatsApp to {student.parent_phone} ({student.full_name})...")
 
-            if response.status_code == 200:
+            message = self.client.messages.create(
+                body=message_text,
+                from_=self.from_number,
+                to=to_number
+            )
+
+            if message.sid:
                 # Update chat and communication records
                 chat.last_message_sent = datetime.utcnow()
                 chat.messages_sent_count += 1
@@ -135,13 +159,14 @@ class WhatsAppService:
                 db.add(communication)
                 db.commit()
 
+                print(f"✅ WhatsApp sent successfully! SID: {message.sid}")
                 return True
             else:
-                print(f"WhatsApp API error: {response.status_code} - {response.text}")
+                print(f"❌ Failed to send WhatsApp message")
                 return False
 
         except Exception as e:
-            print(f"Error sending WhatsApp message: {str(e)}")
+            print(f"❌ Error sending WhatsApp message: {str(e)}")
             return False
 
     async def send_mass_communication(
@@ -152,7 +177,11 @@ class WhatsAppService:
         parent_names: List[str],
         db: Session
     ) -> Dict[str, int]:
-        """Send mass communication via WhatsApp (announcements)"""
+        """Send mass communication via WhatsApp using Twilio"""
+        if not self.client:
+            print("❌ Twilio client not configured. Cannot send WhatsApp messages.")
+            return {"sent": 0, "failed": len(phone_numbers)}
+
         results = {"sent": 0, "failed": 0}
 
         for i, phone_number in enumerate(phone_numbers):
@@ -166,34 +195,28 @@ class WhatsAppService:
                     db=db
                 )
 
-                # Format announcement message
-                message_text = f"""📢 AVM Tutorial - Announcements
+                # Format announcement message with school branding
+                message_text = f"""📢 {self.school_name} - Announcement
+🏫 Contact: {self.school_contact}
 
-🏫 {title}
+📋 {title}
 
 {message}
 
-For any queries, please contact the school."""
+💬 For queries, contact us at {self.school_contact}"""
 
-                # Send message via WhatsApp API
-                url = f"{self.base_url}/{self.phone_number_id}/messages"
-                payload = {
-                    "messaging_product": "whatsapp",
-                    "to": phone_number,
-                    "type": "text",
-                    "text": {
-                        "body": message_text
-                    }
-                }
+                # Send message via Twilio WhatsApp
+                to_number = self._format_phone_number(phone_number)
 
-                async with httpx.AsyncClient() as client:
-                    response = await client.post(
-                        url,
-                        headers=self._get_headers(),
-                        json=payload
-                    )
+                print(f"📤 Sending announcement to {phone_number}...")
 
-                if response.status_code == 200:
+                twilio_message = self.client.messages.create(
+                    body=message_text,
+                    from_=self.from_number,
+                    to=to_number
+                )
+
+                if twilio_message.sid:
                     # Update chat record
                     chat.last_message_sent = datetime.utcnow()
                     chat.messages_sent_count += 1
@@ -215,31 +238,17 @@ For any queries, please contact the school."""
 
                     db.add(communication)
                     results["sent"] += 1
+                    print(f"✅ Sent to {phone_number}")
                 else:
                     results["failed"] += 1
+                    print(f"❌ Failed to send to {phone_number}")
 
             except Exception as e:
-                print(f"Error sending WhatsApp message to {phone_number}: {str(e)}")
+                print(f"❌ Error sending WhatsApp message to {phone_number}: {str(e)}")
                 results["failed"] += 1
 
         db.commit()
         return results
-
-    async def verify_webhook(self, mode: str, token: str, challenge: str) -> Optional[str]:
-        """Verify WhatsApp webhook"""
-        if mode == "subscribe" and token == settings.WHATSAPP_VERIFY_TOKEN:
-            return challenge
-        return None
-
-    async def handle_webhook(self, data: dict, db: Session) -> bool:
-        """Handle incoming WhatsApp webhook data"""
-        try:
-            # Process incoming messages, delivery receipts, etc.
-            # This will be implemented based on webhook payload structure
-            return True
-        except Exception as e:
-            print(f"Error handling WhatsApp webhook: {str(e)}")
-            return False
 
     async def send_teacher_credentials(
         self,
@@ -249,10 +258,15 @@ For any queries, please contact the school."""
         password: str,
         phone_number: str
     ) -> bool:
-        """Send teacher login credentials via WhatsApp"""
+        """Send teacher login credentials via WhatsApp using Twilio"""
+        if not self.client:
+            print("❌ Twilio client not configured. Cannot send WhatsApp message.")
+            return False
+
         try:
-            # Format teacher credentials message
-            message_text = f"""🎓 AVM Tutorial - Teacher Account Created
+            # Format teacher credentials message with school branding
+            message_text = f"""🎓 {self.school_name} - Teacher Account
+🏫 Contact: {self.school_contact}
 
 👤 Name: {teacher_name}
 📧 Email: {teacher_email}
@@ -263,31 +277,24 @@ For any queries, please contact the school."""
 
 ⚠️ Please change your password after first login.
 
-For any assistance, please contact the admin."""
+💬 For assistance, contact admin at {self.school_contact}"""
 
-            # Send message via WhatsApp API
-            url = f"{self.base_url}/{self.phone_number_id}/messages"
-            payload = {
-                "messaging_product": "whatsapp",
-                "to": phone_number,
-                "type": "text",
-                "text": {
-                    "body": message_text
-                }
-            }
+            # Send message via Twilio WhatsApp
+            to_number = self._format_phone_number(phone_number)
 
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    url,
-                    headers=self._get_headers(),
-                    json=payload
-                )
+            print(f"📤 Sending credentials to {teacher_name} at {phone_number}...")
 
-            if response.status_code == 200:
+            message = self.client.messages.create(
+                body=message_text,
+                from_=self.from_number,
+                to=to_number
+            )
+
+            if message.sid:
                 print(f"✅ Credentials sent to {teacher_name} at {phone_number}")
                 return True
             else:
-                print(f"❌ WhatsApp API error: {response.status_code} - {response.text}")
+                print(f"❌ Failed to send credentials")
                 return False
 
         except Exception as e:

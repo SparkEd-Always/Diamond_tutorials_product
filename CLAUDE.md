@@ -14,13 +14,16 @@ Building an integrated Educational Technology platform combining Enterprise Reso
 - **Journey 1 Specifications**: Complete PRD, user stories, technical specs, and database schema for Admission to Enrollment
 - **Journey 2 Specifications**: Technical specs for Fee Collection & Financial Management
 - **Documentation Pipeline**: Early-stage framework optimized for startup speed
+- **Development Readiness Checklist**: Lean startup-focused checklist for MVP development
+- **Figma Wireframe Guide**: Detailed wireframe creation guide for Journey 1 (2-hour design sprint)
 
 ### Active Development Planning
 **Current Focus**: Journey 1 - Admission to Enrollment
 - User journey: Application → Document Upload → Review → Test/Interview → Decision → Fee Payment → Enrollment
-- Documentation status: 70% complete (missing wireframes, user flows, API specs)
-- Database schema: Complete PostgreSQL design ready
-- Technical stack: Decided on modern web technologies
+- Documentation status: 85% complete (wireframes guide ready, missing only API specs)
+- Database schema: Complete PostgreSQL design with user management, academic structure, and admission workflow
+- Development readiness: Ready for MVP development start
+- Wireframe guide: Completed with time-boxed design approach
 
 ## Documentation Framework
 
@@ -56,11 +59,18 @@ Optimized for startup speed while preventing major development mistakes:
 ```
 docs/
 ├── requirements/modules/        # 37 detailed business requirements
-├── development/journeys/        # Journey-specific technical specs
+├── development/
+│   ├── journeys/               # Journey-specific technical specs
+│   │   ├── journey-1-technical-spec.md
+│   │   ├── journey-1-database-schema.sql
+│   │   └── journey-2-technical-spec.md
+│   ├── development-strategy-roadmap.md
+│   └── development-readiness-checklist.md
 ├── product/                     # PRDs and user stories
 ├── process/                     # Documentation pipeline framework
-├── templates/                   # Standardized document templates
-├── design/                      # Wireframes and user flows (planned)
+├── templates/                   # Standardized document templates (empty - lean approach)
+├── design/                      # Wireframes and user flows
+│   └── figma-wireframe-guide-journey-1.md
 ├── api/                         # API specifications (planned)
 └── architecture/                # System architecture docs (planned)
 ```
@@ -72,10 +82,11 @@ docs/
 - **Indian Context**: ₹ currency, GST compliance, local education board requirements
 
 ## Next Immediate Steps
-1. Complete Journey 1 wireframes and user flows
-2. Define API specifications for admission system
-3. Set up development environment
-4. Start Sprint 1 development with clear user stories
+1. ~~Complete Journey 1 wireframes and user flows~~ ✅ Wireframe guide completed
+2. Define API specifications for admission system (1-2 hours)
+3. Set up development environment and tech stack
+4. Start Sprint 1 development with user registration & basic admission form
+5. Create basic wireframes using the completed Figma guide
 
 ## Team Roles
 - **Product Manager**: Business requirements, user stories, vision
@@ -97,5 +108,5 @@ docs/
 
 ---
 
-*Last Updated: September 27, 2025*
-*Current Phase: Journey 1 Documentation Completion*
+*Last Updated: October 4, 2025*
+*Current Phase: Journey 1 Development Ready - MVP Start*

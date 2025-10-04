@@ -44,7 +44,7 @@ export const login = createAsyncThunk<LoginResponse, LoginCredentials>(
       formData.append('username', credentials.username);
       formData.append('password', credentials.password);
 
-      const response = await axios.post('http://localhost:8000/api/v1/auth/login', formData, {
+      const response = await axios.post('http://192.168.29.163:8000/api/v1/auth/login', formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },

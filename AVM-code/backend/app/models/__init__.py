@@ -7,6 +7,7 @@ from .notice import Notice
 from .communication import Communication
 from .whatsapp_chat import WhatsAppChat
 from .activity_log import ActivityLog
+from .parent import Parent, OTP
 
 __all__ = [
     "User",
@@ -17,5 +18,7 @@ __all__ = [
     "Notice",
     "Communication",
     "WhatsAppChat",
-    "ActivityLog"
+    "ActivityLog",
+    "Parent",
+    "OTP"
 ]

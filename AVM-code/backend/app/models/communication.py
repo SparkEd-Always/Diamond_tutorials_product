@@ -10,10 +10,14 @@ class Communication(Base):
     sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     student_id = Column(Integer, ForeignKey("students.id"))  # For individual student messages
 
+    # In-app messaging
+    recipient_id = Column(Integer)  # Parent or Teacher ID for in-app messages
+    recipient_type = Column(String(20))  # "parent", "teacher"
+
     # Message content
     subject = Column(String(200))
     message = Column(Text, nullable=False)
-    message_type = Column(String(20))  # WHATSAPP, SMS, EMAIL, PUSH_NOTIFICATION
+    message_type = Column(String(20))  # WHATSAPP, SMS, EMAIL, PUSH_NOTIFICATION, IN_APP
 
     # Recipients
     recipient_phone_numbers = Column(JSON)  # Array of phone numbers

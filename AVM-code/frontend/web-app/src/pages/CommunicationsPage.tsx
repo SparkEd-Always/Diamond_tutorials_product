@@ -32,13 +32,15 @@ import {
   Send as SendIcon,
   WhatsApp as WhatsAppIcon,
   Close as CloseIcon,
+  Notifications as NotificationsIcon,
+  Message as MessageIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL = 'http://192.168.29.163:8000/api/v1';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -62,16 +64,36 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+interface ClassOption {
+  value: string;
+  label: string;
+}
+
 const CommunicationsPage: React.FC = () => {
   const { token } = useSelector((state: RootState) => state.auth);
   const [tabValue, setTabValue] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
   const [communicationHistory, setCommunicationHistory] = useState<any[]>([]);
+  const [classes, setClasses] = useState<ClassOption[]>([]);
   const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  // Fetch communication history from API
+  // Form state
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [recipients, setRecipients] = useState('all_parents');
+
+  // Fetch communication history and classes from API
   useEffect(() => {
     fetchCommunicationHistory();
+    fetchClasses();
+
+    // Auto-refresh every 30 seconds for real-time updates
+    const interval = setInterval(() => {
+      fetchCommunicationHistory();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchCommunicationHistory = async () => {
@@ -89,13 +111,62 @@ const CommunicationsPage: React.FC = () => {
     }
   };
 
+  const fetchClasses = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/students/classes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setClasses(response.data);
+    } catch (error) {
+      console.error('Error fetching classes:', error);
+      setClasses([]);
+    }
+  };
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
-  const handleSendMessage = () => {
-    // Implementation for sending message
-    setOpenDialog(false);
+  const handleSendMessage = async () => {
+    // Validation
+    if (!subject.trim() || !message.trim()) {
+      alert('Please fill in both subject and message');
+      return;
+    }
+
+    try {
+      setSending(true);
+      const response = await axios.post(
+        `${API_BASE_URL}/messages/send-to-parents`,
+        {
+          subject,
+          message,
+          recipients
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      // Show success message
+      alert(response.data.message || 'Messages sent successfully!');
+
+      // Reset form
+      setSubject('');
+      setMessage('');
+      setRecipients('all_parents');
+      setOpenDialog(false);
+
+      // Refresh communication history
+      fetchCommunicationHistory();
+    } catch (error: any) {
+      console.error('Error sending messages:', error);
+      alert(
+        error.response?.data?.detail || 'Failed to send messages. Please try again.'
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -115,8 +186,10 @@ const CommunicationsPage: React.FC = () => {
     switch (type) {
       case 'WHATSAPP':
         return <WhatsAppIcon />;
+      case 'IN_APP':
+        return <MessageIcon />;
       default:
-        return <WhatsAppIcon />;
+        return <NotificationsIcon />;
     }
   };
 
@@ -147,7 +220,7 @@ const CommunicationsPage: React.FC = () => {
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={tabValue} onChange={handleTabChange}>
             <Tab label="Message History" />
-            <Tab label="WhatsApp Analytics" />
+            <Tab label="Message Analytics" />
             <Tab label="Templates" />
           </Tabs>
         </Box>
@@ -245,13 +318,13 @@ const CommunicationsPage: React.FC = () => {
                 Message Type
               </Typography>
               <Box display="flex" alignItems="center" sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                <WhatsAppIcon sx={{ mr: 1, color: '#25D366' }} />
+                <MessageIcon sx={{ mr: 1, color: '#4F46E5' }} />
                 <Typography variant="body1" fontWeight="500">
-                  WhatsApp
+                  In-App Message + Push Notification
                 </Typography>
               </Box>
               <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                All messages will be sent via WhatsApp
+                Messages will be delivered to parent mobile app with push notification
               </Typography>
             </Box>
 
@@ -259,13 +332,15 @@ const CommunicationsPage: React.FC = () => {
               <InputLabel>Recipients</InputLabel>
               <Select
                 label="Recipients"
-                defaultValue="all_parents"
+                value={recipients}
+                onChange={(e) => setRecipients(e.target.value)}
               >
                 <MenuItem value="all_parents">All Parents</MenuItem>
-                <MenuItem value="class_7">Class 7 Parents</MenuItem>
-                <MenuItem value="class_8">Class 8 Parents</MenuItem>
-                <MenuItem value="class_9">Class 9 Parents</MenuItem>
-                <MenuItem value="class_10">Class 10 Parents</MenuItem>
+                {classes.map((classOption) => (
+                  <MenuItem key={classOption.value} value={classOption.value}>
+                    {classOption.label}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
 
@@ -274,6 +349,8 @@ const CommunicationsPage: React.FC = () => {
               label="Subject"
               variant="outlined"
               placeholder="Enter message subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
             />
 
             <TextField
@@ -283,19 +360,22 @@ const CommunicationsPage: React.FC = () => {
               rows={4}
               variant="outlined"
               placeholder="Enter your message here..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             />
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>
+          <Button onClick={() => setOpenDialog(false)} disabled={sending}>
             Cancel
           </Button>
           <Button
             variant="contained"
             onClick={handleSendMessage}
             startIcon={<SendIcon />}
+            disabled={sending}
           >
-            Send Message
+            {sending ? 'Sending...' : 'Send Message'}
           </Button>
         </DialogActions>
       </Dialog>

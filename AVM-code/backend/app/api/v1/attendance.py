@@ -435,6 +435,8 @@ async def get_attendance_summary(
 async def get_attendance_history(
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
+    class_name: Optional[str] = None,
+    status: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_admin_user)
 ):
@@ -445,34 +447,41 @@ async def get_attendance_history(
     if not end_date:
         end_date = date.today()
 
-    # Query approved attendance records with joins
-    attendance_records = db.query(Attendance).join(
+    # Query attendance records with joins (approved or not, since mobile app needs unapproved too)
+    query = db.query(Attendance).join(
         Student, Attendance.student_id == Student.id
-    ).join(
-        User, Attendance.marked_by == User.id
     ).filter(
         Attendance.date >= start_date,
-        Attendance.date <= end_date,
-        Attendance.admin_approved == True
-    ).all()
+        Attendance.date <= end_date
+    )
+
+    # Add optional filters
+    if class_name:
+        query = query.filter(Student.class_name == class_name)
+    if status:
+        query = query.filter(Attendance.status == status)
+
+    attendance_records = query.all()
 
     result = []
     for record in attendance_records:
         # Get student and teacher info
         student = db.query(Student).filter(Student.id == record.student_id).first()
-        teacher = db.query(User).filter(User.id == record.marked_by).first()
+        teacher = db.query(Teacher).filter(Teacher.id == record.teacher_id).first()
         admin = db.query(User).filter(User.id == record.approved_by).first() if record.approved_by else None
 
         result.append({
             "id": record.id,
             "student_name": student.full_name if student else "Unknown",
-            "student_id": student.unique_id if student else "N/A",
+            "student_unique_id": student.unique_id if student else "N/A",
             "class_name": student.class_name if student else "N/A",
+            "section": student.section if student else "",
             "date": record.date.isoformat(),
-            "status": record.status,
+            "status": record.status.value if hasattr(record.status, 'value') else record.status,
             "marked_by": teacher.full_name if teacher else "Unknown",
-            "approved_by": admin.full_name if admin else "Pending",
-            "remarks": record.remarks or ""
+            "approved_by": admin.full_name if (admin and record.admin_approved) else None,
+            "remarks": record.remarks or "",
+            "is_approved": record.admin_approved or False
         })
 
     return result

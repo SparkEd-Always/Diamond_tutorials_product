@@ -9,11 +9,16 @@ import {
   TextInput,
   Modal,
   ScrollView,
-  Platform,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Platform } from 'react-native';
+
+const API_BASE_URL = 'http://192.168.29.163:8000/api/v1';
 
 interface AttendanceRecord {
   id: number;
@@ -26,10 +31,11 @@ interface AttendanceRecord {
   marked_at: string;
 }
 
-const AttendanceHistoryScreen = () => {
-  const navigation = useNavigation();
+export default function AttendanceHistoryScreen({ navigation }: any) {
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState<string>('');
+  const [userChildren, setUserChildren] = useState<any[]>([]);
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,101 +48,111 @@ const AttendanceHistoryScreen = () => {
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [showClassPicker, setShowClassPicker] = useState(false);
 
+  const [classes, setClasses] = useState<string[]>(['all']); // DYNAMIC - will be loaded from API
   const statuses = ['all', 'present', 'absent', 'late', 'leave'];
-  const classes = ['all', 'Class 7 A', 'Class 7 B', 'Class 8 A', 'Class 8 B', 'Class 9 A', 'Class 10 A'];
-
-  // Sample data for demonstration since the backend endpoints aren't fully implemented
-  const sampleData: AttendanceRecord[] = [
-    {
-      id: 1,
-      student_name: "Rahul Sharma",
-      student_unique_id: "AVM-STU-001",
-      class_name: "Class 7 A",
-      date: "2024-09-28",
-      status: "present",
-      marked_at: "2024-09-28T09:15:00Z"
-    },
-    {
-      id: 2,
-      student_name: "Priya Singh",
-      student_unique_id: "AVM-STU-002",
-      class_name: "Class 7 A",
-      date: "2024-09-28",
-      status: "absent",
-      remarks: "Sick leave",
-      marked_at: "2024-09-28T09:15:00Z"
-    },
-    {
-      id: 3,
-      student_name: "Arjun Patel",
-      student_unique_id: "AVM-STU-003",
-      class_name: "Class 7 A",
-      date: "2024-09-27",
-      status: "late",
-      remarks: "Traffic delay",
-      marked_at: "2024-09-27T09:30:00Z"
-    },
-    {
-      id: 4,
-      student_name: "Kavya Gupta",
-      student_unique_id: "AVM-STU-004",
-      class_name: "Class 7 A",
-      date: "2024-09-27",
-      status: "present",
-      marked_at: "2024-09-27T09:15:00Z"
-    },
-    {
-      id: 5,
-      student_name: "Rohan Kumar",
-      student_unique_id: "AVM-STU-005",
-      class_name: "Class 7 A",
-      date: "2024-09-26",
-      status: "leave",
-      remarks: "Family event",
-      marked_at: "2024-09-26T09:15:00Z"
-    }
-  ];
 
   useEffect(() => {
+    loadUserData();
     loadAttendanceHistory();
+    loadClasses();
   }, []);
+
+  const loadUserData = async () => {
+    try {
+      const type = await AsyncStorage.getItem('user_type');
+      const userData = await AsyncStorage.getItem('user');
+      setUserType(type || '');
+      if (userData) {
+        const user = JSON.parse(userData);
+        setUserChildren(user.children || []);
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    }
+  };
+
+  const loadClasses = async () => {
+    try {
+      const token = await AsyncStorage.getItem('access_token');
+      const response = await axios.get(`${API_BASE_URL}/students/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Extract DYNAMIC unique classes from students
+      const uniqueClasses = Array.from(
+        new Set(response.data.map((s: any) => s.class_name).filter(Boolean))
+      );
+      setClasses(['all', ...uniqueClasses.sort()]);
+    } catch (error) {
+      console.error('Error loading classes:', error);
+    }
+  };
 
   const loadAttendanceHistory = async () => {
     setIsLoading(true);
     try {
-      // TODO: Replace with actual API call when backend is fully implemented
-      // const response = await attendanceService.getAttendanceHistory();
-      // setAttendanceRecords(response.data);
+      const token = await AsyncStorage.getItem('access_token');
+      if (!token) {
+        navigation.replace('Login');
+        return;
+      }
 
-      // For now, use sample data
-      setTimeout(() => {
-        setAttendanceRecords(sampleData);
-        setIsLoading(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Error loading attendance history:', error);
-      setAttendanceRecords(sampleData); // Fallback to sample data
+      // Build query params
+      const params: any = {
+        start_date: startDate.toISOString().split('T')[0],
+        end_date: endDate.toISOString().split('T')[0],
+      };
+
+      if (statusFilter !== 'all') {
+        params.status = statusFilter;
+      }
+
+      if (classFilter !== 'all') {
+        params.class_name = classFilter;
+      }
+
+      const response = await axios.get(`${API_BASE_URL}/attendance/history`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params,
+      });
+
+      setAttendanceRecords(response.data);
+    } catch (error: any) {
+      console.error('Error loading attendance history:', error.response?.data || error.message);
+      Alert.alert('Error', 'Failed to load attendance history');
+      setAttendanceRecords([]);
+    } finally {
       setIsLoading(false);
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'present': return '#10B981';
-      case 'absent': return '#EF4444';
-      case 'late': return '#F59E0B';
-      case 'leave': return '#8B5CF6';
-      default: return '#6B7280';
+      case 'present':
+        return '#10B981';
+      case 'absent':
+        return '#EF4444';
+      case 'late':
+        return '#F59E0B';
+      case 'leave':
+        return '#8B5CF6';
+      default:
+        return '#6B7280';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'present': return 'check-circle';
-      case 'absent': return 'cancel';
-      case 'late': return 'schedule';
-      case 'leave': return 'event-busy';
-      default: return 'help';
+      case 'present':
+        return 'check-circle';
+      case 'absent':
+        return 'cancel';
+      case 'late':
+        return 'schedule';
+      case 'leave':
+        return 'event-busy';
+      default:
+        return 'help';
     }
   };
 
@@ -145,7 +161,7 @@ const AttendanceHistoryScreen = () => {
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
@@ -163,19 +179,26 @@ const AttendanceHistoryScreen = () => {
     }
   };
 
-  // Filter records based on all filters
-  const filteredRecords = attendanceRecords.filter(record => {
-    const matchesSearch = searchQuery === '' ||
+  // Apply filters
+  useEffect(() => {
+    loadAttendanceHistory();
+  }, [startDate, endDate, statusFilter, classFilter]);
+
+  // Filter records based on search and user type
+  const filteredRecords = attendanceRecords.filter((record) => {
+    const matchesSearch =
+      searchQuery === '' ||
       record.student_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       record.student_unique_id.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesStatus = statusFilter === 'all' || record.status === statusFilter;
-    const matchesClass = classFilter === 'all' || record.class_name === classFilter;
+    // For parents, only show their children's attendance
+    if (userType === 'parent') {
+      const childIds = userChildren.map(c => c.unique_id);
+      const isMyChild = childIds.includes(record.student_unique_id);
+      return matchesSearch && isMyChild;
+    }
 
-    const recordDate = new Date(record.date);
-    const matchesDateRange = recordDate >= startDate && recordDate <= endDate;
-
-    return matchesSearch && matchesStatus && matchesClass && matchesDateRange;
+    return matchesSearch;
   });
 
   const renderAttendanceItem = ({ item }: { item: AttendanceRecord }) => (
@@ -193,17 +216,11 @@ const AttendanceHistoryScreen = () => {
 
       <View style={styles.statusSection}>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-          <MaterialIcons
-            name={getStatusIcon(item.status) as any}
-            size={16}
-            color="#FFFFFF"
-          />
+          <MaterialIcons name={getStatusIcon(item.status) as any} size={16} color="#FFFFFF" />
           <Text style={styles.statusText}>{item.status.toUpperCase()}</Text>
         </View>
 
-        {item.remarks && (
-          <Text style={styles.remarks}>"{item.remarks}"</Text>
-        )}
+        {item.remarks && <Text style={styles.remarks}>"{item.remarks}"</Text>}
       </View>
     </View>
   );
@@ -212,10 +229,7 @@ const AttendanceHistoryScreen = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <MaterialIcons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Attendance History</Text>
@@ -226,10 +240,7 @@ const AttendanceHistoryScreen = () => {
       <View style={styles.filtersContainer}>
         {/* Date Range */}
         <View style={styles.dateRangeContainer}>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => setShowStartDatePicker(true)}
-          >
+          <TouchableOpacity style={styles.dateButton} onPress={() => setShowStartDatePicker(true)}>
             <MaterialIcons name="calendar-today" size={18} color="#4F46E5" />
             <Text style={styles.dateButtonText}>
               {startDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
@@ -238,10 +249,7 @@ const AttendanceHistoryScreen = () => {
 
           <Text style={styles.dateRangeSeparator}>to</Text>
 
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => setShowEndDatePicker(true)}
-          >
+          <TouchableOpacity style={styles.dateButton} onPress={() => setShowEndDatePicker(true)}>
             <MaterialIcons name="calendar-today" size={18} color="#4F46E5" />
             <Text style={styles.dateButtonText}>
               {endDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
@@ -267,10 +275,7 @@ const AttendanceHistoryScreen = () => {
 
         {/* Filter Buttons Row */}
         <View style={styles.filterButtonsRow}>
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => setShowStatusPicker(true)}
-          >
+          <TouchableOpacity style={styles.filterButton} onPress={() => setShowStatusPicker(true)}>
             <MaterialIcons name="filter-list" size={18} color="#4F46E5" />
             <Text style={styles.filterButtonText}>
               {statusFilter === 'all' ? 'Status' : statusFilter}
@@ -278,10 +283,7 @@ const AttendanceHistoryScreen = () => {
             <MaterialIcons name="arrow-drop-down" size={18} color="#4F46E5" />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => setShowClassPicker(true)}
-          >
+          <TouchableOpacity style={styles.filterButton} onPress={() => setShowClassPicker(true)}>
             <MaterialIcons name="class" size={18} color="#4F46E5" />
             <Text style={styles.filterButtonText}>
               {classFilter === 'all' ? 'Class' : classFilter}
@@ -291,9 +293,7 @@ const AttendanceHistoryScreen = () => {
         </View>
 
         {/* Results Count */}
-        <Text style={styles.resultsCount}>
-          {filteredRecords.length} records found
-        </Text>
+        <Text style={styles.resultsCount}>{filteredRecords.length} records found</Text>
       </View>
 
       {/* Date Pickers */}
@@ -316,11 +316,7 @@ const AttendanceHistoryScreen = () => {
       )}
 
       {/* Status Picker Modal */}
-      <Modal
-        visible={showStatusPicker}
-        transparent
-        animationType="slide"
-      >
+      <Modal visible={showStatusPicker} transparent animationType="slide">
         <TouchableOpacity
           style={styles.modalOverlay}
           activeOpacity={1}
@@ -354,9 +350,7 @@ const AttendanceHistoryScreen = () => {
                   >
                     {status === 'all' ? 'All Status' : status.charAt(0).toUpperCase() + status.slice(1)}
                   </Text>
-                  {statusFilter === status && (
-                    <MaterialIcons name="check" size={24} color="#4F46E5" />
-                  )}
+                  {statusFilter === status && <MaterialIcons name="check" size={24} color="#4F46E5" />}
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -365,11 +359,7 @@ const AttendanceHistoryScreen = () => {
       </Modal>
 
       {/* Class Picker Modal */}
-      <Modal
-        visible={showClassPicker}
-        transparent
-        animationType="slide"
-      >
+      <Modal visible={showClassPicker} transparent animationType="slide">
         <TouchableOpacity
           style={styles.modalOverlay}
           activeOpacity={1}
@@ -386,10 +376,7 @@ const AttendanceHistoryScreen = () => {
               {classes.map((cls) => (
                 <TouchableOpacity
                   key={cls}
-                  style={[
-                    styles.pickerItem,
-                    classFilter === cls && styles.pickerItemSelected,
-                  ]}
+                  style={[styles.pickerItem, classFilter === cls && styles.pickerItemSelected]}
                   onPress={() => {
                     setClassFilter(cls);
                     setShowClassPicker(false);
@@ -403,9 +390,7 @@ const AttendanceHistoryScreen = () => {
                   >
                     {cls === 'all' ? 'All Classes' : cls}
                   </Text>
-                  {classFilter === cls && (
-                    <MaterialIcons name="check" size={24} color="#4F46E5" />
-                  )}
+                  {classFilter === cls && <MaterialIcons name="check" size={24} color="#4F46E5" />}
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -414,27 +399,32 @@ const AttendanceHistoryScreen = () => {
       </Modal>
 
       {/* Attendance List */}
-      <FlatList
-        data={filteredRecords}
-        renderItem={renderAttendanceItem}
-        keyExtractor={item => item.id.toString()}
-        style={styles.list}
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={loadAttendanceHistory} />
-        }
-        ListEmptyComponent={() => (
-          <View style={styles.emptyContainer}>
-            <MaterialIcons name="history" size={64} color="#D1D5DB" />
-            <Text style={styles.emptyTitle}>No attendance records found</Text>
-            <Text style={styles.emptyDescription}>
-              Attendance records will appear here once you start marking attendance
-            </Text>
-          </View>
-        )}
-      />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4F46E5" />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredRecords}
+          renderItem={renderAttendanceItem}
+          keyExtractor={(item) => item.id.toString()}
+          style={styles.list}
+          refreshControl={<RefreshControl refreshing={isLoading} onRefresh={loadAttendanceHistory} colors={['#4F46E5']} />}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <MaterialIcons name="history" size={64} color="#D1D5DB" />
+              <Text style={styles.emptyTitle}>No attendance records found</Text>
+              <Text style={styles.emptyDescription}>
+                Try adjusting your date range or filters
+              </Text>
+            </View>
+          )}
+        />
+      )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -536,6 +526,16 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontWeight: '500',
     textAlign: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#6B7280',
   },
   modalOverlay: {
     flex: 1,
@@ -674,5 +674,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
 });
-
-export default AttendanceHistoryScreen;

@@ -51,10 +51,22 @@ try:
 except ImportError:
     teacher_attendance_router = APIRouter()
 
+try:
+    from .auth_mobile import router as auth_mobile_router
+except ImportError:
+    auth_mobile_router = APIRouter()
+
+try:
+    from .messages import router as messages_router
+except ImportError:
+    messages_router = APIRouter()
+
 api_router = APIRouter()
 
 # Include routers
 api_router.include_router(auth_router, prefix="/auth", tags=["authentication"])
+api_router.include_router(auth_mobile_router, prefix="/mobile/auth", tags=["mobile-auth"])
+api_router.include_router(messages_router, prefix="/messages", tags=["messages"])
 api_router.include_router(students_router, prefix="/students", tags=["students"])
 api_router.include_router(teachers_router, prefix="/teachers", tags=["teachers"])
 api_router.include_router(attendance_router, prefix="/attendance", tags=["attendance"])

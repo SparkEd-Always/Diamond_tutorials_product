@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,46 +6,43 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
-  Platform,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { AppDispatch, RootState } from '../store';
-import { logout } from '../store/slices/authSlice';
+export default function ProfileScreen({ navigation }: any) {
+  const [user, setUser] = useState<any>(null);
 
-const ProfileScreen = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth);
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  const loadUser = async () => {
+    const userData = await AsyncStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  };
 
   const handleLogout = () => {
-    if (Platform.OS === 'web') {
-      // Use window.confirm for web
-      if (window.confirm('Are you sure you want to logout?')) {
-        dispatch(logout());
-      }
-    } else {
-      // Use Alert.alert for native
-      Alert.alert(
-        'Logout',
-        'Are you sure you want to logout?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Logout',
-            style: 'destructive',
-            onPress: () => dispatch(logout()),
-          },
-        ]
-      );
-    }
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          await AsyncStorage.multiRemove(['access_token', 'user_type', 'user']);
+          navigation.replace('PINLogin');
+        },
+      },
+    ]);
   };
 
   const ProfileItem = ({
     icon,
     title,
     value,
-    onPress
+    onPress,
   }: {
     icon: keyof typeof MaterialIcons.glyphMap;
     title: string;
@@ -64,141 +61,145 @@ const ProfileScreen = () => {
           {value && <Text style={styles.profileItemValue}>{value}</Text>}
         </View>
       </View>
-      {onPress && (
-        <MaterialIcons name="chevron-right" size={24} color="#9CA3AF" />
-      )}
+      {onPress && <MaterialIcons name="chevron-right" size={24} color="#9CA3AF" />}
     </TouchableOpacity>
   );
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Profile Header */}
+    <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <View style={styles.profilePicture}>
-          <MaterialIcons name="person" size={40} color="#4F46E5" />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <MaterialIcons name="arrow-back" size={24} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>My Profile</Text>
+        <View style={styles.placeholder} />
+      </View>
+
+      <ScrollView style={styles.scrollView}>
+        {/* Profile Header */}
+        <View style={styles.profileHeader}>
+          <View style={styles.profilePicture}>
+            <MaterialIcons name="person" size={40} color="#4F46E5" />
+          </View>
+          <Text style={styles.userName}>{user?.full_name || 'Teacher'}</Text>
+          <Text style={styles.userRole}>TEACHER</Text>
+          {user?.unique_id && <Text style={styles.userId}>{user.unique_id}</Text>}
         </View>
-        <Text style={styles.userName}>{user?.full_name}</Text>
-        <Text style={styles.userRole}>{user?.role?.toUpperCase()}</Text>
-        <Text style={styles.userId}>{user?.unique_id}</Text>
-      </View>
 
-      {/* Profile Information */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Profile Information</Text>
+        {/* Profile Information */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Profile Information</Text>
 
-        <ProfileItem
-          icon="person"
-          title="Full Name"
-          value={user?.full_name}
-        />
+          <ProfileItem icon="person" title="Full Name" value={user?.full_name} />
 
-        <ProfileItem
-          icon="email"
-          title="Email"
-          value={user?.email}
-        />
+          {user?.email && <ProfileItem icon="email" title="Email" value={user.email} />}
 
-        <ProfileItem
-          icon="badge"
-          title="Employee ID"
-          value={user?.unique_id}
-        />
+          {user?.phone && <ProfileItem icon="phone" title="Phone" value={user.phone} />}
 
-        <ProfileItem
-          icon="work"
-          title="Role"
-          value={user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}
-        />
-      </View>
+          {user?.unique_id && <ProfileItem icon="badge" title="Employee ID" value={user.unique_id} />}
 
-      {/* App Information */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Application</Text>
+          <ProfileItem icon="work" title="Role" value="Teacher" />
+        </View>
 
-        <ProfileItem
-          icon="info"
-          title="About AVM Tutorial"
-          onPress={() => {
-            if (Platform.OS === 'web') {
-              alert('AVM Tutorial Teacher App\n\nVersion 1.0.0\n\nThis app helps teachers mark attendance efficiently and communicate with the administration.');
-            } else {
+        {/* Teaching Information */}
+        {(user?.classes || user?.subjects) && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Teaching Information</Text>
+
+            {user?.classes && user.classes.length > 0 && (
+              <ProfileItem
+                icon="class"
+                title="Classes"
+                value={user.classes.join(', ')}
+              />
+            )}
+
+            {user?.subjects && user.subjects.length > 0 && (
+              <ProfileItem
+                icon="book"
+                title="Subjects"
+                value={user.subjects.join(', ')}
+              />
+            )}
+          </View>
+        )}
+
+        {/* App Information */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Application</Text>
+
+          <ProfileItem
+            icon="info"
+            title="About AVM Tutorial"
+            onPress={() => {
               Alert.alert(
                 'AVM Tutorial Teacher App',
                 'Version 1.0.0\n\nThis app helps teachers mark attendance efficiently and communicate with the administration.',
                 [{ text: 'OK' }]
               );
-            }
-          }}
-        />
+            }}
+          />
 
-        <ProfileItem
-          icon="help"
-          title="Help & Support"
-          onPress={() => {
-            if (Platform.OS === 'web') {
-              alert('Help & Support\n\nFor technical support, please contact the school administration.');
-            } else {
+          <ProfileItem
+            icon="help"
+            title="Help & Support"
+            onPress={() => {
               Alert.alert(
                 'Help & Support',
                 'For technical support, please contact the school administration.',
                 [{ text: 'OK' }]
               );
-            }
-          }}
-        />
+            }}
+          />
 
-        <ProfileItem
-          icon="security"
-          title="Privacy Policy"
-          onPress={() => {
-            if (Platform.OS === 'web') {
-              alert('Privacy Policy\n\nYour data is secure and only used for educational purposes within AVM Tutorial.');
-            } else {
+          <ProfileItem
+            icon="security"
+            title="Privacy Policy"
+            onPress={() => {
               Alert.alert(
                 'Privacy Policy',
                 'Your data is secure and only used for educational purposes within AVM Tutorial.',
                 [{ text: 'OK' }]
               );
-            }
-          }}
-        />
-      </View>
+            }}
+          />
+        </View>
 
-      {/* System Status */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>System Status</Text>
+        {/* System Status */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>System Status</Text>
 
-        <View style={styles.statusCard}>
-          <View style={styles.statusItem}>
-            <View style={[styles.statusDot, { backgroundColor: '#10B981' }]} />
-            <Text style={styles.statusText}>API Connected</Text>
-          </View>
+          <View style={styles.statusCard}>
+            <View style={styles.statusItem}>
+              <View style={[styles.statusDot, { backgroundColor: '#10B981' }]} />
+              <Text style={styles.statusText}>API Connected</Text>
+            </View>
 
-          <View style={styles.statusItem}>
-            <View style={[styles.statusDot, { backgroundColor: '#10B981' }]} />
-            <Text style={styles.statusText}>Data Synced</Text>
+            <View style={styles.statusItem}>
+              <View style={[styles.statusDot, { backgroundColor: '#10B981' }]} />
+              <Text style={styles.statusText}>Data Synced</Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Logout Section */}
-      <View style={styles.section}>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <MaterialIcons name="logout" size={24} color="#EF4444" />
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Logout Section */}
+        <View style={styles.section}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <MaterialIcons name="logout" size={24} color="#EF4444" />
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          AVM Tutorial Management System
-        </Text>
-        <Text style={styles.footerVersion}>Version 1.0.0</Text>
-      </View>
-    </ScrollView>
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>AVM Tutorial Management System</Text>
+          <Text style={styles.footerVersion}>Version 1.0.0</Text>
+        </View>
+      </ScrollView>
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -207,16 +208,39 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#4F46E5',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingTop: 60,
-    paddingBottom: 30,
+    paddingBottom: 20,
     paddingHorizontal: 20,
+  },
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  placeholder: {
+    width: 40,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  profileHeader: {
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    marginBottom: 16,
   },
   profilePicture: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EEF2FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
@@ -224,20 +248,22 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#1F2937',
     marginBottom: 4,
   },
   userRole: {
     fontSize: 14,
-    color: '#C7D2FE',
+    color: '#4F46E5',
+    fontWeight: '600',
     marginBottom: 4,
   },
   userId: {
     fontSize: 12,
-    color: '#E0E7FF',
+    color: '#6B7280',
   },
   section: {
     margin: 16,
+    marginTop: 0,
   },
   sectionTitle: {
     fontSize: 18,
@@ -340,5 +366,3 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
-
-export default ProfileScreen;

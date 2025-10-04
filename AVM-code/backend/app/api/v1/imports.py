@@ -263,20 +263,22 @@ async def import_teachers(
                 subjects = [s.strip() for s in str(row.get('subjects', '')).split(',') if s.strip()] if not pd.isna(row.get('subjects')) else []
                 classes_assigned = [c.strip() for c in str(row.get('classes_assigned', '')).split(',') if c.strip()] if not pd.isna(row.get('classes_assigned')) else []
 
+                phone_num = str(row['phone_number']).strip()
                 teacher = Teacher(
                     unique_id=unique_id,
                     first_name=str(row['first_name']).strip(),
                     last_name=str(row['last_name']).strip(),
                     full_name=f"{str(row['first_name']).strip()} {str(row['last_name']).strip()}",
                     email=str(row['email']).strip(),
-                    phone_number=str(row['phone_number']).strip(),
+                    phone_number=phone_num,
+                    phone=phone_num,  # Set phone field for mobile login compatibility
                     subjects=subjects,
                     classes_assigned=classes_assigned,
                     qualification=str(row.get('qualification', '')).strip() if not pd.isna(row.get('qualification')) else '',
                     experience_years=int(row.get('experience_years', 0)) if not pd.isna(row.get('experience_years')) else 0,
                     address=str(row.get('address', '')).strip() if not pd.isna(row.get('address')) else '',
                     emergency_contact=str(row.get('emergency_contact', '')).strip() if not pd.isna(row.get('emergency_contact')) else '',
-                    joining_date=pd.to_datetime(row['joining_date']) if not pd.isna(row.get('joining_date')) else datetime.now(),
+                    joining_date=pd.to_datetime(row.get('joining_date')) if (row.get('joining_date') is not None and not pd.isna(row.get('joining_date'))) else datetime.now(),
                 )
 
                 db.add(teacher)

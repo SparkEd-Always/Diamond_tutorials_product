@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+/node_modules
+**/node_modules/
+
+# Build outputs
+build/
+dist/
+.expo/
+.expo-shared/
+
+# Python virtual environment
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files
+.env
+.env.local
+.env.production.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache
+.cache/
+*.cache
+.parcel-cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+.nyc_output/
+
+# Mobile app
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Temporary files
+*.tmp
+temp/
+tmp/

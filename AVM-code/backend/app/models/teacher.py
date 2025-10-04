@@ -13,6 +13,7 @@ class Teacher(Base):
     full_name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True)
     phone_number = Column(String(15), unique=True)
+    phone = Column(String(15))  # Alias for mobile login compatibility
     subjects = Column(JSON)  # ["Mathematics", "Science"]
     classes_assigned = Column(JSON)  # ["Class 7A", "Class 8B"]
     qualification = Column(String(200))
@@ -20,6 +21,12 @@ class Teacher(Base):
     address = Column(Text)
     emergency_contact = Column(String(15))
     joining_date = Column(DateTime(timezone=True))
+
+    # Mobile app fields
+    push_token = Column(String(255))  # Expo push token
+    device_type = Column(String(20))  # ios, android, web
+    last_login = Column(DateTime(timezone=True))
+
     is_active = Column(String(10), default="Active")  # Active, Inactive, On Leave
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

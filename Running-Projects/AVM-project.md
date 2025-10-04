@@ -536,4 +536,641 @@ WHATSAPP_API_VERSION=v17.0
 
 ---
 
-**This document contains the complete context for continuing development in Claude Code. All technical decisions, requirements, implementation details, and especially the critical WhatsApp integration requirements are captured here for seamless development continuation.**
+## Latest Development Progress (October 3, 2025)
+
+### ✅ Major Pivot: WhatsApp → In-App Messaging
+
+**Decision Made**: Replaced WhatsApp integration with native in-app messaging system due to Twilio WhatsApp setup complexity.
+
+### 🎯 Today's Completed Work
+
+#### 1. Unified Mobile App with OTP Authentication
+**Backend Implementation** (`/api/v1/mobile/auth/`):
+- ✅ Created `Parent` and `OTP` models with push notification support
+- ✅ Built OTP-based authentication system (6-digit codes, 10-min expiry)
+- ✅ Implemented `/send-otp` - Auto-detects teacher vs parent by phone number
+- ✅ Implemented `/verify-otp` - Returns JWT + user type + user data
+- ✅ Added push token fields to Teacher and Parent models for notifications
+
+**Mobile App** (React Native + Expo):
+- ✅ Created `LoginOTPScreen.tsx` with Material Design
+- ✅ Designed UI matching admin web portal (Primary: #4F46E5, Background: #F8FAFC)
+- ✅ Added "A Papaya Production" branding footer
+- ✅ Implemented smart routing: Teacher phone → TeacherHome, Parent phone → ParentHome
+- ✅ Built `TeacherHomeScreen.tsx` with quick actions menu
+- ✅ Built `ParentHomeScreen.tsx` with children cards and messages
+- ✅ Configured `UnifiedAppNavigator.tsx` for automatic user type detection
+
+**Key Features**:
+- Single app for both teachers and parents
+- Phone number + OTP login (no passwords needed)
+- Auto-routing based on user type
+- AsyncStorage for persistent login
+- Clean, professional UI matching web admin portal
+
+#### 2. Authentication Flow
+```
+1. User enters phone number
+2. Backend checks if teacher or parent → Sends OTP (printed to console)
+3. User enters OTP
+4. Backend verifies → Returns JWT token + user_type + user_data
+5. App routes to TeacherHome or ParentHome automatically
+```
+
+**Test Phone Numbers**:
+- Parents: `9986660025`, `8105198350`, `8123001495`
+- Teachers: Need to add phone numbers to teacher records in DB
+
+### 📋 Next Steps for Tomorrow
+
+#### 1. **Push Notifications Setup** (Priority 1)
+- Install Expo Push Notifications SDK
+- Configure push tokens on login
+- Create push notification service in backend
+- Test notifications to parents/teachers
+
+#### 2. **In-App Messaging System** (Priority 2)
+**Backend**:
+- Create `/api/v1/messages/` endpoints
+- Add message status tracking (sent, delivered, read)
+- Update Communication model for in-app delivery
+- Create parent message feed API
+
+**Frontend**:
+- Build MessagesScreen for parents (inbox view)
+- Build MessagesScreen for teachers (send messages)
+- Add message notifications with badges
+- Implement read/unread status
+
+#### 3. **Update Admin Communication Module** (Priority 3)
+- Replace WhatsApp sending with in-app message delivery
+- Send push notifications when messages sent
+- Track delivery status in admin panel
+- Show message history per parent
+
+#### 4. **APK Build & Deployment** (Priority 4)
+- Install EAS CLI: `npm install -g eas-cli`
+- Configure `eas.json` for Android build
+- Run: `eas build -p android --profile preview`
+- Test APK on physical device
+- Prepare for Play Store submission
+
+### 🔧 Technical Architecture Updates
+
+**New Models Created**:
+```python
+# Parent model
+class Parent(Base):
+    phone_number: str (primary key)
+    name: str
+    email: str
+    push_token: str  # Expo push token
+    device_type: str
+    last_login: datetime
+
+# OTP model
+class OTP(Base):
+    phone_number: str
+    otp_code: str (6 digits)
+    expires_at: datetime (10 min)
+    is_verified: bool
+```
+
+**New API Endpoints**:
+- `POST /api/v1/mobile/auth/send-otp` - Send OTP to phone
+- `POST /api/v1/mobile/auth/verify-otp` - Verify OTP and login
+
+**Mobile App Structure**:
+```
+src/
+├── navigation/
+│   └── UnifiedAppNavigator.tsx  # Smart routing
+├── screens/
+│   ├── LoginOTPScreen.tsx       # OTP login
+│   ├── TeacherHomeScreen.tsx    # Teacher dashboard
+│   └── ParentHomeScreen.tsx     # Parent dashboard
+└── services/
+    └── (to be added: notifications, messages)
+```
+
+### 🎨 Design System
+
+**Color Palette** (Consistent across web + mobile):
+- Primary: `#4F46E5` (Indigo)
+- Success: `#10B981` (Green)
+- Warning: `#F59E0B` (Orange)
+- Error: `#EF4444` (Red)
+- Background: `#F8FAFC` (Light Gray)
+- Text: `#1F2937` (Dark Gray)
+
+**UI Components**:
+- Card-based layouts with shadows
+- Rounded corners (8px-12px)
+- Material Design principles
+- Large touch targets for mobile
+- Professional branding throughout
+
+### 📱 Expo Push Notifications Overview
+
+**How It Works**:
+- Expo provides managed push notification service
+- No need for Firebase/APNS setup
+- Works on both Android & iOS
+- Backend sends to Expo API → Expo delivers to devices
+
+**Implementation Plan**:
+1. Get push token on app launch: `Notifications.getExpoPushTokenAsync()`
+2. Save token to backend on login
+3. Backend uses Expo API to send notifications
+4. Format: `{ to: token, title: "...", body: "...", data: {...} }`
+
+### ⚠️ Important Notes
+
+1. **Database Migration Needed**:
+   - Add `phone` column to teachers table (for login)
+   - Add `push_token` and `device_type` columns to teachers
+   - Create parents and otps tables
+
+2. **Testing Requirements**:
+   - Test OTP flow with real phones
+   - Verify teacher vs parent routing
+   - Test push notifications on physical device
+   - Validate message delivery and read status
+
+3. **Security Considerations**:
+   - OTPs expire after 10 minutes
+   - JWT tokens for session management
+   - AsyncStorage for secure local storage
+   - HTTPS required for production
+
+### 📊 Progress Summary
+
+**Completed**:
+- ✅ Unified mobile app architecture
+- ✅ OTP authentication system
+- ✅ Smart user type detection
+- ✅ Teacher & Parent UI screens
+- ✅ Design system matching web portal
+
+**In Progress**:
+- 🔄 Push notifications setup
+- 🔄 In-app messaging system
+
+**Pending**:
+- ⏳ APK build configuration
+- ⏳ Play Store preparation
+- ⏳ Production deployment
+
+---
+
+## 📅 Latest Development Progress (October 3, 2025 - Evening)
+
+### ✅ Mobile App Feature Completion
+
+#### 1. Authentication Enhancements
+**PIN/Biometric Login System**:
+- ✅ Implemented quick login setup after OTP verification
+- ✅ Added `SetupQuickLoginScreen.tsx` with Skip/Enable options
+- ✅ Created `CreatePINScreen.tsx` with 6-digit PIN + confirmation
+- ✅ Built `PINLoginScreen.tsx` with biometric fallback
+- ✅ Integrated secure storage utilities (`utils/secureStorage.ts`)
+- ✅ Fixed logout flow to preserve PIN/biometric settings
+- ✅ Token expiry checking (30-day automatic logout)
+
+**Auth Flow**:
+```
+1. OTP Login → Verify OTP
+2. Setup Quick Login Screen (Skip or Enable)
+3a. Skip → Direct to Home
+3b. Enable → Create 6-digit PIN
+4. Future logins → PIN/Biometric Screen
+5. Logout → Returns to PIN screen (preserves settings)
+6. Token expires after 30 days → Forces fresh OTP login
+```
+
+#### 2. Teacher Mobile App - Feature Complete
+**AttendanceScreen.tsx** (Complete Rewrite):
+- ✅ Dynamic class filtering from student database
+- ✅ Four status buttons: Present, Absent, Late, Leave
+- ✅ Optional remarks per student
+- ✅ Search functionality
+- ✅ Submit to backend: `POST /api/v1/attendance/mark`
+
+**StudentsScreen.tsx** (Complete Rewrite):
+- ✅ Dynamic class filter loaded from database
+- ✅ Search across name, ID, class, section
+- ✅ Pull-to-refresh functionality
+- ✅ Student details cards with contact info
+
+**ProfileScreen.tsx** (New):
+- ✅ Teacher information display
+- ✅ Teaching assignments (classes, subjects)
+- ✅ Logout functionality
+
+**AttendanceHistoryScreen.tsx** (Enhanced):
+- ✅ Dynamic class filtering from database
+- ✅ Date range picker
+- ✅ Status filter (All, Present, Absent, Late, Leave)
+- ✅ Server-side API integration: `GET /api/v1/attendance/history`
+- ✅ Search by student name/ID
+
+**TeacherHomeScreen.tsx** (Enhanced):
+- ✅ Made Classes/Subjects stat cards tappable (show modals)
+- ✅ Updated all navigation to functional screens
+- ✅ Added Attendance History menu option
+
+#### 3. Parent Mobile App - Feature Complete
+**ParentHomeScreen.tsx** (Enhanced):
+- ✅ Fixed React Native text rendering error (badge component)
+- ✅ Children cards with profile details
+- ✅ Quick actions menu with message badges
+- ✅ Fixed logout to preserve PIN settings
+
+**AttendanceHistoryScreen.tsx** (Parent Filtering):
+- ✅ Shows only parent's children attendance (filtered by unique_id)
+- ✅ Date range and status filters
+- ✅ Search functionality
+
+**MessagesScreen.tsx** (Fixed):
+- ✅ Fixed 401 authentication error (token key mismatch)
+- ✅ Inbox view with read/unread status
+- ✅ Message cards with sender info and timestamps
+- ✅ Mark as read functionality
+
+#### 4. Backend Fixes
+**Teacher Import** (`imports.py`):
+- ✅ Fixed phone field assignment for mobile login compatibility
+- ✅ Added `phone=phone_num` mapping
+
+**Database Setup**:
+- ✅ Created test students with parent phones using `create_students_with_phones.py`
+- ✅ Added missing columns to teacher table (phone, push_token, device_type, last_login)
+
+**Logging Setup**:
+- ✅ Backend logs to `/Users/koustubskulkarni/AVM/product/backend-logs.txt`
+- ✅ Created `watch-otps.sh` script for real-time OTP monitoring
+
+#### 5. Technical Fixes
+**Token Storage Standardization**:
+- ✅ All screens now use `'access_token'` key (not `'token'`)
+- ✅ Fixed in MessagesScreen, TeacherHomeScreen, ParentHomeScreen
+
+**Network Configuration**:
+- ✅ Updated API base URL: `http://192.168.29.163:8000/api/v1`
+- ✅ Mac local IP configured for iPhone access via Expo Go
+
+**Navigation**:
+- ✅ Added routes for Attendance, Students, Profile screens
+- ✅ Smart initial route detection in UnifiedAppNavigator
+
+### 🎯 Current System Status
+
+**Backend**: Running on `http://192.168.29.163:8000`
+- FastAPI + SQLAlchemy + SQLite
+- OTP authentication working
+- All CRUD endpoints functional
+- Logging enabled
+
+**Admin Web App**: Running on `http://localhost:3000`
+- Student/Teacher management
+- Import/Export functionality
+- Communications module
+- Attendance module
+
+**Mobile App**: Running via Expo Go
+- Teacher features: ✅ Complete
+- Parent features: ✅ Complete
+- Authentication: ✅ OTP + PIN/Biometric
+- Offline capability: ⏳ Pending
+
+### 📊 Testing Status
+
+**Completed Tests**:
+- ✅ OTP login flow (teachers & parents)
+- ✅ PIN/Biometric setup and login
+- ✅ Teacher attendance marking
+- ✅ Student list viewing with filters
+- ✅ Attendance history viewing
+- ✅ Messages inbox
+- ✅ Parent children filtering
+
+**Pending Tests**:
+- ⏳ End-to-end testing (full user journeys)
+- ⏳ Admin approval workflow for attendance
+- ⏳ Push notifications
+- ⏳ Offline mode
+- ⏳ APK build testing
+
+### 🔧 Key Technical Patterns Established
+
+1. **Dynamic Filtering**: All filters read from database, never hardcoded
+2. **Token Management**: AsyncStorage with 'access_token' key
+3. **API Integration**: Axios with bearer token authentication
+4. **Error Handling**: Try-catch with Alert for user feedback
+5. **Loading States**: ActivityIndicator during async operations
+6. **Color Scheme**: #4F46E5 primary, consistent across web + mobile
+7. **Logout Pattern**: Clear token/user, preserve PIN settings
+
+### 📋 Next Priority Tasks
+
+#### 1. **End-to-End Testing** (CRITICAL)
+- Create comprehensive testing guide
+- Test all user journeys
+- Document test cases and results
+
+#### 2. **Push Notifications** (High Priority)
+- Install Expo Notifications SDK
+- Configure push tokens on login
+- Test notification delivery
+
+#### 3. **Admin Attendance Approval** (High Priority)
+- Build approval interface in web admin
+- Test approval → notification flow
+
+#### 4. **APK Build** (Medium Priority)
+- Configure EAS build
+- Generate preview APK
+- Test on physical devices
+
+#### 5. **Production Deployment** (Future)
+- Database migration to PostgreSQL
+- Deploy backend to cloud
+- Play Store submission
+
+---
+
+**Continue with**: End-to-end testing → Push notifications → Admin approval workflow → APK build
+
+**This document contains the complete context for continuing development in Claude Code. All technical decisions, requirements, implementation details, and current development status are captured here for seamless development continuation.**
+
+---
+
+## 📅 Latest Development Progress (October 4, 2025)
+
+### ✅ Testing & Bug Fixes Session
+
+#### 1. Automated Testing Implementation
+**Test Coverage** (`run_automated_tests.sh`):
+- ✅ **27/27 tests passing (100% pass rate)**
+- ✅ Authentication tests (admin login, OTP, invalid tokens)
+- ✅ Student API tests (create, read, update, delete, bulk operations)
+- ✅ Teacher API tests (CRUD operations)
+- ✅ Attendance API tests (marking, approval, history, filters)
+- ✅ Communication API tests (bulk send, history)
+- ✅ Security tests (invalid credentials, unauthorized access)
+
+**Test Results**:
+```
+Authentication Tests: PASS 5/5
+Student Management Tests: PASS 6/6
+Teacher Management Tests: PASS 5/5
+Attendance Tests: PASS 7/7
+Communication Tests: PASS 2/2
+Security Tests: PASS 2/2
+```
+
+#### 2. Manual Testing Guide Created
+**File**: `MANUAL_TESTING_CHECKLIST.md`
+- ✅ 88 comprehensive test cases
+- ✅ Admin Web App tests (26 cases)
+- ✅ Teacher Mobile App tests (38 cases)
+- ✅ Parent Mobile App tests (14 cases)
+- ✅ Integration test journeys (4 end-to-end flows)
+- ✅ Performance tests (6 scenarios)
+- ✅ Bug report template included
+
+#### 3. Critical Bugs Fixed
+
+**Bug #1: Admin Web App Login Failure**
+- **Issue**: `admin/admin123` credentials not working
+- **Root Cause**: Frontend proxy configuration pointing to `localhost:8000` instead of `192.168.29.163:8000`
+- **Fix**: Updated `package.json` line 56
+  ```json
+  "proxy": "http://192.168.29.163:8000"
+  ```
+- **Status**: ✅ RESOLVED - Login now working
+
+**Bug #2: Delete Student Not Working**
+- **Issue**: `Failed to delete student` - Foreign key constraint violations
+- **Root Cause**: Attempting to delete students with existing attendance/communication records
+- **Fix**: Updated `/api/v1/students.py:163-197`
+  - Added cascading delete logic
+  - Deletes related attendance records first
+  - Deletes related communication records
+  - Then deletes student
+  - Returns count of deleted related records
+- **Also Fixed**: `delete_multiple_students` endpoint (lines 146-185)
+- **Status**: ✅ RESOLVED
+
+**Bug #3: Delete Teacher Failing**
+- **Issue**: `sqlite3.OperationalError: no such column: communications.recipient_id`
+- **Root Cause**: Database schema mismatch - missing columns in communications table
+- **Fix #1 - Database Schema**:
+  ```sql
+  ALTER TABLE communications ADD COLUMN recipient_id INTEGER;
+  ALTER TABLE communications ADD COLUMN recipient_type VARCHAR(20);
+  ```
+- **Fix #2 - Code Updates**:
+  - Updated `/api/v1/teachers.py:201-242` (delete_teacher endpoint)
+  - Updated `/api/v1/teachers.py:153-199` (delete_multiple_teachers endpoint)
+  - Added communication deletion logic before deleting teacher
+  - Returns count of deleted attendance and communication records
+- **Status**: ✅ RESOLVED
+
+#### 4. Database Schema Updates
+**Communications Table Enhancements**:
+- ✅ Added `recipient_id` column (INTEGER)
+- ✅ Added `recipient_type` column (VARCHAR(20))
+- ✅ Verified schema with `PRAGMA table_info(communications)`
+
+**Data Quality Improvements**:
+- ✅ Fixed parent phone number prefixes (removed `+91`)
+- ✅ Cleaned 7 orphaned attendance records
+- ✅ Normalized enum values to UPPERCASE (PRESENT, ABSENT, LATE, LEAVE)
+- ✅ Created 12 test attendance records spanning 3 days
+
+#### 5. Attendance API Enhancements
+**Fixed Attendance History Endpoint** (`/api/v1/attendance/history`):
+- **Bug**: Used non-existent `marked_by` field
+- **Fix**: Changed to correct `teacher_id` field
+- **Added**: Optional `class_name` and `status` filters
+- **Removed**: Restrictive `admin_approved` filter
+- **Location**: `attendance.py:434-477`
+
+#### 6. Frontend Configuration Updates
+**Files Updated** (API URL fixes - `localhost:8000` → `192.168.29.163:8000`):
+- `frontend/web-app/src/store/slices/authSlice.ts` (line 47)
+- `frontend/web-app/src/components/Layout/Layout.tsx` (line 92)
+- `frontend/web-app/src/pages/DashboardPage.tsx` (line 33)
+- `frontend/web-app/src/pages/StudentsPage.tsx` (line 41)
+- `frontend/web-app/src/pages/TeachersPage.tsx` (line 47)
+- `frontend/web-app/src/pages/AttendanceHistoryPage.tsx` (line 42)
+- `frontend/web-app/src/pages/CommunicationsPage.tsx` (line 43)
+- `frontend/web-app/src/pages/TeacherAttendancePage.tsx` (lines 90, 172, 203)
+- `frontend/web-app/src/pages/ImportPage.tsx` (line 33)
+- `frontend/web-app/package.json` (line 56 - proxy config)
+
+#### 7. System Status
+**Backend**: ✅ Running successfully on `http://192.168.29.163:8000`
+- All endpoints operational
+- Database schema corrected
+- Logging enabled
+- Auto-reload working
+
+**Frontend Web App**: ✅ Running on `http://localhost:3000`
+- Admin login working
+- Proxy configured correctly
+- Connected to backend API
+- All pages loading
+
+**Testing Infrastructure**:
+- ✅ Automated test suite: 27/27 passing
+- ✅ Manual test checklist: 88 cases documented
+- ✅ Test data created and verified
+- ✅ Bug tracking process established
+
+### 🔧 Technical Improvements
+
+**Delete Operations - Cascading Logic Pattern**:
+```python
+# Pattern established for safe deletes
+try:
+    # 1. Delete related attendance records
+    att_count = db.query(Attendance).filter(...).count()
+    db.query(Attendance).filter(...).delete(synchronize_session=False)
+
+    # 2. Delete related communications
+    comm_count = db.query(Communication).filter(...).count()
+    db.query(Communication).filter(...).delete(synchronize_session=False)
+
+    # 3. Delete user account (if applicable)
+    if user:
+        db.delete(user)
+
+    # 4. Delete main entity
+    db.delete(entity)
+    db.commit()
+
+    # 5. Return detailed results
+    return {
+        "message": "...",
+        "attendance_records_deleted": att_count,
+        "communications_deleted": comm_count
+    }
+except Exception as e:
+    db.rollback()
+    raise HTTPException(...)
+```
+
+**Test Script Pattern**:
+```bash
+# Improved test script structure
+# 1. JSON vs Form data handlers
+api_call_json() vs api_call_form()
+
+# 2. Flexible pattern matching
+if echo "$RESPONSE" | grep -qi "success\|created\|updated"; then
+
+# 3. Test output formatting
+log_test "Test Name" "PASS|FAIL" "Details"
+
+# 4. Progress tracking
+Total Tests: 27, Passed: 27, Failed: 0
+```
+
+### 📊 Quality Metrics
+
+**Code Quality**:
+- ✅ 100% automated test pass rate (27/27)
+- ✅ Zero known critical bugs
+- ✅ Database schema validated
+- ✅ API endpoints verified
+- ✅ Frontend-backend connectivity confirmed
+
+**Testing Coverage**:
+- ✅ Authentication flows tested
+- ✅ CRUD operations validated
+- ✅ Business logic verified (attendance approval)
+- ✅ Security controls tested (RBAC)
+- ✅ Error handling validated
+- ✅ Integration points confirmed
+
+**System Health**:
+- ✅ Backend: Stable, no errors
+- ✅ Frontend: Operational, connected
+- ✅ Database: Schema correct, data clean
+- ✅ APIs: All endpoints responding
+- ✅ Authentication: Working for all user types
+
+### 📋 Next Priority Tasks
+
+#### 1. **Complete Manual Testing** (CURRENT - In Progress)
+- ✅ A1. Admin Web App Authentication (Login working)
+- 🔄 A2. Dashboard (3 tests) - Currently testing
+- ⏳ A3-A6. Students, Teachers, Attendance, Communications
+- ⏳ B. Teacher Mobile App (38 tests)
+- ⏳ C. Parent Mobile App (14 tests)
+- ⏳ D. Integration Tests (4 journeys)
+- ⏳ E. Performance Tests (6 scenarios)
+
+#### 2. **Additional Bug Fixes** (As Discovered)
+- Continue fixing issues found during manual testing
+- Update test documentation
+- Maintain bug log in `prompt.txt`
+
+#### 3. **Push Notifications** (High Priority)
+- Install Expo Notifications SDK
+- Configure push tokens on login
+- Test notification delivery
+
+#### 4. **Admin Attendance Approval Workflow** (High Priority)
+- Build approval interface in web admin
+- Test approval → notification flow
+- Verify teacher submission → admin review → parent notification
+
+#### 5. **APK Build** (Medium Priority)
+- Configure EAS build
+- Generate preview APK
+- Test on physical devices
+
+### 🐛 Known Issues Log
+
+**Fixed Issues**:
+1. ✅ Admin login not working - proxy configuration
+2. ✅ Delete student failing - foreign key constraints
+3. ✅ Delete teacher failing - missing database columns
+4. ✅ Attendance history endpoint errors - wrong field name
+5. ✅ Enum case mismatch - database values lowercase
+
+**Active Issues**:
+- None currently identified
+
+**Monitoring**:
+- Continuing manual testing to discover edge cases
+- `prompt.txt` file tracks new bugs as discovered
+
+### 🎯 Testing Progress Summary
+
+**Automated Tests**: ✅ **100% Pass Rate**
+- Total: 27 tests
+- Passed: 27
+- Failed: 0
+- Coverage: Authentication, CRUD, Business Logic, Security
+
+**Manual Tests**: 🔄 **In Progress**
+- Total: 88 test cases
+- Completed: ~5 (Admin login + Dashboard verification)
+- Remaining: ~83
+- Progress: ~6%
+
+**Bug Fixes**: ✅ **All Critical Bugs Resolved**
+- Login issues: Fixed
+- Delete operations: Fixed
+- Database schema: Corrected
+- API endpoints: Verified
+
+---
+
+**Current Focus**: Manual testing of admin web app → Continue through remaining 83 test cases → Fix bugs as discovered → Document in prompt.txt → Iterate
+
+**This update captures all testing and bug fixing work completed on October 4, 2025. System is stable with 100% automated test pass rate and all critical bugs resolved.**

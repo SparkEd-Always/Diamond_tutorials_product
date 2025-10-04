@@ -14,7 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.avmtutorial.teacher"
+      "bundleIdentifier": "com.avmtutorial.teacher",
+      "infoPlist": {
+        "NSUserNotificationsUsageDescription": "This app uses notifications to send you important updates from your school."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +26,15 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.avmtutorial.teacher"
+      "package": "com.avmtutorial.teacher",
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS"
+      ]
+    },
+    "notification": {
+      "color": "#4F46E5",
+      "androidMode": "default",
+      "androidCollapsedTitle": "AVM Tutorial"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -157,22 +157,46 @@ async def delete_multiple_teachers(
     current_user: User = Depends(get_current_admin_user)
 ):
     """Delete multiple teachers and their user accounts (admin only)"""
+    from app.models.attendance import Attendance
+    from app.models.communication import Communication
     from app.models.user import User, UserRole
 
-    deleted_count = 0
-    for teacher_id in teacher_ids:
-        teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
-        if teacher:
-            # Also delete associated user account
-            user = db.query(User).filter(User.email == teacher.email, User.role == UserRole.TEACHER).first()
-            if user:
-                db.delete(user)
+    try:
+        deleted_count = 0
+        total_attendance = 0
+        total_communications = 0
 
-            db.delete(teacher)
-            deleted_count += 1
+        for teacher_id in teacher_ids:
+            teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
+            if teacher:
+                # Delete attendance records
+                att_count = db.query(Attendance).filter(Attendance.teacher_id == teacher_id).count()
+                db.query(Attendance).filter(Attendance.teacher_id == teacher_id).delete(synchronize_session=False)
+                total_attendance += att_count
 
-    db.commit()
-    return {"message": f"Deleted {deleted_count} teachers successfully", "deleted_count": deleted_count}
+                # Delete communications sent by this teacher
+                comm_count = db.query(Communication).filter(Communication.sender_id == teacher_id).count()
+                db.query(Communication).filter(Communication.sender_id == teacher_id).delete(synchronize_session=False)
+                total_communications += comm_count
+
+                # Also delete associated user account
+                user = db.query(User).filter(User.email == teacher.email, User.role == UserRole.TEACHER).first()
+                if user:
+                    db.delete(user)
+
+                db.delete(teacher)
+                deleted_count += 1
+
+        db.commit()
+        return {
+            "message": f"Deleted {deleted_count} teachers successfully",
+            "deleted_count": deleted_count,
+            "attendance_records_deleted": total_attendance,
+            "communications_deleted": total_communications
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete teachers: {str(e)}")
 
 @router.delete("/{teacher_id}")
 async def delete_teacher(
@@ -182,6 +206,7 @@ async def delete_teacher(
 ):
     """Delete teacher and associated user account (admin only)"""
     from app.models.attendance import Attendance
+    from app.models.communication import Communication
     from app.models.user import User, UserRole
 
     teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
@@ -190,13 +215,17 @@ async def delete_teacher(
 
     try:
         # Delete all attendance records marked by this teacher
-        # Note: This will permanently delete attendance history for this teacher
         attendance_count = db.query(Attendance).filter(Attendance.teacher_id == teacher_id).count()
         db.query(Attendance).filter(Attendance.teacher_id == teacher_id).delete(synchronize_session=False)
 
-        # Delete associated user account
+        # Delete all communications sent by this teacher
+        # First need to find the user ID for the teacher
         user = db.query(User).filter(User.email == teacher.email, User.role == UserRole.TEACHER).first()
+        comm_count = 0
         if user:
+            comm_count = db.query(Communication).filter(Communication.sender_id == user.id).count()
+            db.query(Communication).filter(Communication.sender_id == user.id).delete(synchronize_session=False)
+            # Delete user account
             db.delete(user)
 
         # Delete teacher
@@ -205,7 +234,8 @@ async def delete_teacher(
 
         return {
             "message": f"Teacher {teacher.full_name} deleted successfully",
-            "attendance_records_deleted": attendance_count
+            "attendance_records_deleted": attendance_count,
+            "communications_deleted": comm_count
         }
     except Exception as e:
         db.rollback()

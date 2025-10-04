@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import Constants from 'expo-constants';
 
-const API_BASE_URL = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:8000';
+const API_BASE_URL = Constants.expoConfig?.extra?.apiUrl || 'http://192.168.29.163:8000';
 
 class ApiService {
   private api: AxiosInstance;

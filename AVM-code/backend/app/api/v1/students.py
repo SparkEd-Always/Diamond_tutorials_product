@@ -8,6 +8,28 @@ from app.models.user import User
 
 router = APIRouter()
 
+@router.get("/classes", response_model=List[dict])
+async def get_classes(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_teacher_user)
+):
+    """Get distinct classes from students (teachers and admins only)"""
+    # Query distinct class names from active students
+    classes = db.query(Student.class_name).filter(
+        Student.is_active == "Active",
+        Student.class_name.isnot(None)
+    ).distinct().all()
+
+    # Format the results
+    return [
+        {
+            "value": class_name[0].lower().replace(" ", "_"),  # "Class 7" -> "class_7"
+            "label": f"{class_name[0]} Parents"  # "Class 7" -> "Class 7 Parents"
+        }
+        for class_name in classes
+        if class_name[0]  # Filter out any None values
+    ]
+
 @router.get("/", response_model=List[dict])
 async def get_students(
     db: Session = Depends(get_db),
@@ -128,15 +150,39 @@ async def delete_multiple_students(
     current_user: User = Depends(get_current_admin_user)
 ):
     """Delete multiple students (admin only)"""
-    deleted_count = 0
-    for student_id in student_ids:
-        student = db.query(Student).filter(Student.id == student_id).first()
-        if student:
-            db.delete(student)
-            deleted_count += 1
+    from app.models.attendance import Attendance
+    from app.models.communication import Communication
 
-    db.commit()
-    return {"message": f"Deleted {deleted_count} students successfully", "deleted_count": deleted_count}
+    try:
+        deleted_count = 0
+        total_attendance = 0
+        total_communications = 0
+
+        for student_id in student_ids:
+            student = db.query(Student).filter(Student.id == student_id).first()
+            if student:
+                # Delete related records
+                att_count = db.query(Attendance).filter(Attendance.student_id == student_id).count()
+                db.query(Attendance).filter(Attendance.student_id == student_id).delete(synchronize_session=False)
+                total_attendance += att_count
+
+                comm_count = db.query(Communication).filter(Communication.student_id == student_id).count()
+                db.query(Communication).filter(Communication.student_id == student_id).delete(synchronize_session=False)
+                total_communications += comm_count
+
+                db.delete(student)
+                deleted_count += 1
+
+        db.commit()
+        return {
+            "message": f"Deleted {deleted_count} students successfully",
+            "deleted_count": deleted_count,
+            "attendance_records_deleted": total_attendance,
+            "communications_deleted": total_communications
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete students: {str(e)}")
 
 @router.delete("/{student_id}")
 async def delete_student(
@@ -145,10 +191,31 @@ async def delete_student(
     current_user: User = Depends(get_current_admin_user)
 ):
     """Delete student (admin only)"""
+    from app.models.attendance import Attendance
+    from app.models.communication import Communication
+
     student = db.query(Student).filter(Student.id == student_id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
 
-    db.delete(student)
-    db.commit()
-    return {"message": f"Student {student.full_name} deleted successfully"}
+    try:
+        # Delete all attendance records for this student
+        attendance_count = db.query(Attendance).filter(Attendance.student_id == student_id).count()
+        db.query(Attendance).filter(Attendance.student_id == student_id).delete(synchronize_session=False)
+
+        # Delete all communications for this student
+        comm_count = db.query(Communication).filter(Communication.student_id == student_id).count()
+        db.query(Communication).filter(Communication.student_id == student_id).delete(synchronize_session=False)
+
+        # Delete student
+        db.delete(student)
+        db.commit()
+
+        return {
+            "message": f"Student {student.full_name} deleted successfully",
+            "attendance_records_deleted": attendance_count,
+            "communications_deleted": comm_count
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete student: {str(e)}")

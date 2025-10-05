@@ -28,7 +28,7 @@ export const fetchTeachers = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const state = getState() as { auth: { token: string } };
-      const response = await axios.get('/api/v1/teachers/', {
+      const response = await axios.get('http://192.168.1.4:8000/api/v1/teachers/', {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },

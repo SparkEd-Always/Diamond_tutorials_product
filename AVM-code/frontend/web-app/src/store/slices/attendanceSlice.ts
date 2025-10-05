@@ -36,7 +36,7 @@ export const fetchPendingAttendance = createAsyncThunk(
     try {
       const state = getState() as { auth: { token: string } };
       const params = date ? `?attendance_date=${date}` : '';
-      const response = await axios.get(`/api/v1/attendance/pending-approval${params}`, {
+      const response = await axios.get(`http://192.168.1.4:8000/api/v1/attendance/pending-approval${params}`, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },
@@ -56,12 +56,16 @@ export const approveAttendance = createAsyncThunk(
     const { getState, rejectWithValue } = thunkAPI;
     try {
       const state = getState() as { auth: { token: string } };
-      const response = await axios.post('/api/v1/attendance/approve', attendanceIds, {
-        headers: {
-          Authorization: `Bearer ${state.auth.token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.post(
+        'http://192.168.1.4:8000/api/v1/attendance/approve',
+        { attendance_ids: attendanceIds },  // Fixed: wrap in object with correct key
+        {
+          headers: {
+            Authorization: `Bearer ${state.auth.token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       return response.data;
     } catch (error: any) {
       return rejectWithValue(

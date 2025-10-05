@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import date, datetime, timedelta
 from sqlalchemy import text
+from pydantic import BaseModel
 from app.core.database import get_db
 from app.core.dependencies import get_current_admin_user, get_current_teacher_user
 from app.models.attendance import Attendance, AttendanceStatus
@@ -12,6 +13,10 @@ from app.models.teacher import Teacher
 from app.services.activity_service import ActivityService
 
 router = APIRouter()
+
+
+class ApproveAttendanceRequest(BaseModel):
+    attendance_ids: List[int]
 
 @router.post("/mark")
 async def mark_attendance(
@@ -195,12 +200,13 @@ async def get_pending_attendance(
 
 @router.post("/approve")
 async def approve_attendance(
-    attendance_ids: List[int],
+    request: ApproveAttendanceRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_admin_user)
 ):
-    """Approve attendance records and trigger WhatsApp messages"""
+    """Approve attendance records and send push notifications to parents"""
     try:
+        attendance_ids = request.attendance_ids
         if not attendance_ids:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -266,21 +272,60 @@ async def approve_attendance(
             print(f"Error logging activity: {str(e)}")
             # Don't fail approval if activity logging fails
 
-        # Send WhatsApp notifications
-        from .whatsapp import send_bulk_notifications
+        # Send Push Notifications to Parents
+        from app.services.push_notification_service import PushNotificationService
+        from app.models.parent import Parent
+
+        notification_results = []
+        notifications_sent = 0
+
         try:
-            whatsapp_result = await send_bulk_notifications(whatsapp_queue, db, current_user)
-            print(f"WhatsApp notifications sent: {whatsapp_result}")
+            for item in whatsapp_queue:
+                parent_phone = item.get("parent_phone")
+                if not parent_phone:
+                    continue
+
+                # Get parent's push token from database
+                parent = db.query(Parent).filter(Parent.phone_number == parent_phone).first()
+
+                if parent and parent.push_token:
+                    # Send push notification
+                    result = await PushNotificationService.send_attendance_notification(
+                        push_token=parent.push_token,
+                        student_name=item["student_name"],
+                        status=item["attendance_status"],
+                        date=item["date"]
+                    )
+
+                    if result.get("status") == "success":
+                        notifications_sent += 1
+
+                    notification_results.append({
+                        "parent_phone": parent_phone,
+                        "student": item["student_name"],
+                        "result": result.get("status")
+                    })
+                else:
+                    print(f"⚠️ No push token for parent: {parent_phone}")
+                    notification_results.append({
+                        "parent_phone": parent_phone,
+                        "student": item["student_name"],
+                        "result": "no_push_token"
+                    })
+
+            print(f"✅ Sent {notifications_sent} push notifications out of {len(whatsapp_queue)} records")
+
         except Exception as e:
-            print(f"Error sending WhatsApp notifications: {str(e)}")
-            # Don't fail the attendance approval if WhatsApp fails
+            print(f"❌ Error sending push notifications: {str(e)}")
+            # Don't fail the attendance approval if notifications fail
 
         return {
             "message": f"Successfully approved {approved_count} attendance records",
             "approved_count": approved_count,
-            "whatsapp_notifications_queued": len(whatsapp_queue),
-            "notifications": whatsapp_queue[:5],  # Show first 5 for preview
-            "status": "approved_and_queued_for_whatsapp"
+            "push_notifications_sent": notifications_sent,
+            "push_notifications_total": len(whatsapp_queue),
+            "notification_results": notification_results[:5],  # Show first 5 for preview
+            "status": "approved_and_notifications_sent"
         }
 
     except Exception as e:
@@ -485,3 +530,14 @@ async def get_attendance_history(
         })
 
     return result
+
+@router.delete("/clear-all")
+async def clear_all_attendance(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin_user)
+):
+    """Clear all attendance data (admin only) - USE WITH CAUTION"""
+    count = db.query(Attendance).count()
+    db.query(Attendance).delete()
+    db.commit()
+    return {"message": f"Cleared all {count} attendance records from database", "deleted_count": count}

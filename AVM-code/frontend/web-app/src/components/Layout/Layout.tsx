@@ -89,7 +89,7 @@ const Layout: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://192.168.29.163:8000/api/v1';
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://192.168.1.4:8000/api/v1';
 
       if (!token || !user) return;
 

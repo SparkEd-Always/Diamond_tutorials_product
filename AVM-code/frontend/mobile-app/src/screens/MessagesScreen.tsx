@@ -11,7 +11,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://192.168.29.163:8000/api/v1';
+const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
 
 interface Message {
   id: number;

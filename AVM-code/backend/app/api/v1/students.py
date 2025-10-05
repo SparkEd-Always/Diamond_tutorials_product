@@ -35,18 +35,11 @@ async def get_classes(
 @router.get("/", response_model=List[dict])
 async def get_students(
     db: Session = Depends(get_db),
-    current_user: Union[User, Teacher, Parent] = Depends(get_current_mobile_user)
+    current_user: User = Depends(get_current_teacher_user)
 ):
     """Get all students (teachers and admins only)"""
-    # Check if user is a parent - if so, only return their children
-    if isinstance(current_user, Parent):
-        students = db.query(Student).filter(
-            Student.parent_phone == current_user.phone_number,
-            Student.is_active == "Active"
-        ).all()
-    else:
-        # Teacher or Admin - return all students
-        students = db.query(Student).filter(Student.is_active == "Active").all()
+    # Return all students for admins and teachers
+    students = db.query(Student).filter(Student.is_active == "Active").all()
     return [
         {
             "id": student.id,

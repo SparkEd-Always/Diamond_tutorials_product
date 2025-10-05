@@ -15,7 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const API_BASE_URL = 'http://192.168.29.163:8000/api/v1';
+const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
 
 interface StudentAttendance {
   id: number;

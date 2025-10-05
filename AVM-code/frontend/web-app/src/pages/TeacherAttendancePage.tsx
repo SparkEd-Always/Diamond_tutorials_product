@@ -87,7 +87,7 @@ const TeacherAttendancePage: React.FC = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.29.163:8000/api/v1/teacher-attendance/date/${selectedDate}`,
+        `http://192.168.1.4:8000/api/v1/teacher-attendance/date/${selectedDate}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -169,7 +169,7 @@ const TeacherAttendancePage: React.FC = () => {
       }
 
       await axios.post(
-        'http://192.168.29.163:8000/api/v1/teacher-attendance/mark',
+        'http://192.168.1.4:8000/api/v1/teacher-attendance/mark',
         {
           teacher_records: teacherRecords,
           date: selectedDate,
@@ -200,7 +200,7 @@ const TeacherAttendancePage: React.FC = () => {
 
       try {
         await axios.post(
-          `http://192.168.29.163:8000/api/v1/teacher-attendance/lock/${selectedDate}`,
+          `http://192.168.1.4:8000/api/v1/teacher-attendance/lock/${selectedDate}`,
           {},
           {
             headers: {

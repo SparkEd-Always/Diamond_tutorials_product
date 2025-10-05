@@ -38,7 +38,7 @@ import { RootState } from '../store/store';
 import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
 
-const API_BASE_URL = 'http://192.168.29.163:8000/api/v1';
+const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
 
 interface Student {
   id: number;

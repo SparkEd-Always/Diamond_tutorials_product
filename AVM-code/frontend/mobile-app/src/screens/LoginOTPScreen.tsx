@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { registerForPushNotificationsAsync, setupNotificationListeners } from '../services/notificationService';
 import { savePhoneNumber, updateLastLogin, hasCompletedSetup } from '../utils/secureStorage';
 
-const API_BASE_URL = 'http://192.168.29.163:8000/api/v1';
+const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
 
 export default function LoginOTPScreen({ navigation, route }: any) {
   const { resetPIN, phone: prefilledPhone } = route?.params || {};
@@ -57,7 +57,7 @@ export default function LoginOTPScreen({ navigation, route }: any) {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/mobile/auth/send-otp`, {
+      const response = await axios.post(`${API_BASE_URL}/mobile-auth/send-otp`, {
         phone_number: phone.startsWith('+') ? phone : `+91${phone}`,
       });
 
@@ -90,7 +90,7 @@ export default function LoginOTPScreen({ navigation, route }: any) {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/mobile/auth/verify-otp`, {
+      const response = await axios.post(`${API_BASE_URL}/mobile-auth/verify-otp`, {
         phone_number: phone.startsWith('+') ? phone : `+91${phone}`,
         otp_code: otp,
         push_token: pushToken,

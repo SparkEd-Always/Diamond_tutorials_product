@@ -40,7 +40,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
-const API_BASE_URL = 'http://192.168.29.163:8000/api/v1';
+const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
 
 interface TabPanelProps {
   children?: React.ReactNode;

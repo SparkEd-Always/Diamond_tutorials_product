@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Union
 from app.core.database import get_db
-from app.core.dependencies import get_current_admin_user, get_current_teacher_user
+from app.core.dependencies import get_current_admin_user, get_current_teacher_user, get_current_mobile_user
 from app.models.student import Student
 from app.models.user import User
+from app.models.teacher import Teacher
+from app.models.parent import Parent
 
 router = APIRouter()
 
@@ -33,10 +35,18 @@ async def get_classes(
 @router.get("/", response_model=List[dict])
 async def get_students(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_teacher_user)
+    current_user: Union[User, Teacher, Parent] = Depends(get_current_mobile_user)
 ):
     """Get all students (teachers and admins only)"""
-    students = db.query(Student).filter(Student.is_active == "Active").all()
+    # Check if user is a parent - if so, only return their children
+    if isinstance(current_user, Parent):
+        students = db.query(Student).filter(
+            Student.parent_phone == current_user.phone_number,
+            Student.is_active == "Active"
+        ).all()
+    else:
+        # Teacher or Admin - return all students
+        students = db.query(Student).filter(Student.is_active == "Active").all()
     return [
         {
             "id": student.id,

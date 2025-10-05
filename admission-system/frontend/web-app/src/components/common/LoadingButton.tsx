@@ -1,4 +1,5 @@
-import { Button, ButtonProps, CircularProgress } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
+import type { ButtonProps } from '@mui/material/Button';
 
 interface LoadingButtonProps extends ButtonProps {
   loading?: boolean;

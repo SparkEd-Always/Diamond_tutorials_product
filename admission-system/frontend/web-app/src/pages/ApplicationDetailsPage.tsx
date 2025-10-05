@@ -12,12 +12,6 @@ import {
   Chip,
   Divider,
   Button,
-  Timeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
   Card,
   CardContent,
 } from '@mui/material';
@@ -34,7 +28,7 @@ const ApplicationDetailsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useAuth();
-  const { showError } = useNotification();
+  const { showError, showNotification } = useNotification();
   const [application, setApplication] = useState<ApplicationDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -52,6 +46,36 @@ const ApplicationDetailsPage = () => {
       showError(error.response?.data?.detail || 'Failed to load application');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!application || !id) return;
+    try {
+      await admissionApi.updateApplicationStatus(
+        parseInt(id),
+        'accepted',
+        'Application approved by admin'
+      );
+      showNotification('Application approved successfully', 'success');
+      loadApplication(parseInt(id));
+    } catch (error: any) {
+      showError(error.response?.data?.detail || 'Failed to approve application');
+    }
+  };
+
+  const handleReject = async () => {
+    if (!application || !id) return;
+    try {
+      await admissionApi.updateApplicationStatus(
+        parseInt(id),
+        'rejected',
+        'Application rejected by admin'
+      );
+      showNotification('Application rejected', 'info');
+      loadApplication(parseInt(id));
+    } catch (error: any) {
+      showError(error.response?.data?.detail || 'Failed to reject application');
     }
   };
 
@@ -87,7 +111,7 @@ const ApplicationDetailsPage = () => {
             <Typography variant="h6">Application Details</Typography>
           </Toolbar>
         </AppBar>
-        <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
           <DetailsSkeleton />
         </Container>
       </Box>
@@ -113,7 +137,7 @@ const ApplicationDetailsPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
         {/* Application Header */}
         <Paper sx={{ p: 3, mb: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -126,7 +150,7 @@ const ApplicationDetailsPage = () => {
               </Typography>
             </Box>
             <Chip
-              label={application.application.application_status.replace('_', ' ').toUpperCase()}
+              label={application.application.application_status?.replace('_', ' ').toUpperCase() || 'DRAFT'}
               color={getStatusColor(application.application.application_status)}
               size="large"
             />
@@ -304,16 +328,32 @@ const ApplicationDetailsPage = () => {
                     Status History
                   </Typography>
                   <Divider sx={{ my: 2 }} />
-                  <Timeline position="right">
+                  <Box>
                     {application.status_history.map((history, index) => (
-                      <TimelineItem key={index}>
-                        <TimelineSeparator>
-                          <TimelineDot color="primary" />
-                          {index < application.status_history.length - 1 && <TimelineConnector />}
-                        </TimelineSeparator>
-                        <TimelineContent>
+                      <Box
+                        key={index}
+                        sx={{
+                          display: 'flex',
+                          gap: 2,
+                          mb: 2,
+                          pb: 2,
+                          borderBottom: index < application.status_history.length - 1 ? '1px solid' : 'none',
+                          borderColor: 'divider'
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: '50%',
+                            bgcolor: 'primary.main',
+                            mt: 0.5,
+                            flexShrink: 0
+                          }}
+                        />
+                        <Box sx={{ flex: 1 }}>
                           <Typography variant="body2" fontWeight={600}>
-                            {history.new_status.replace('_', ' ').toUpperCase()}
+                            {history.new_status?.replace('_', ' ').toUpperCase() || 'UNKNOWN'}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {formatDate(history.change_date)}
@@ -323,10 +363,10 @@ const ApplicationDetailsPage = () => {
                               {history.change_reason}
                             </Typography>
                           )}
-                        </TimelineContent>
-                      </TimelineItem>
+                        </Box>
+                      </Box>
                     ))}
-                  </Timeline>
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
@@ -336,10 +376,20 @@ const ApplicationDetailsPage = () => {
         {/* Actions */}
         {isAdmin && (
           <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-            <Button variant="contained" color="success">
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleApprove}
+              disabled={application.application.application_status === 'accepted' || application.application.application_status === 'rejected'}
+            >
               Approve
             </Button>
-            <Button variant="outlined" color="error">
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleReject}
+              disabled={application.application.application_status === 'accepted' || application.application.application_status === 'rejected'}
+            >
               Reject
             </Button>
           </Box>

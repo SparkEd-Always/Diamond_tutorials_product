@@ -114,7 +114,7 @@ const DashboardPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
         {/* Welcome Section */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" gutterBottom fontWeight={600}>

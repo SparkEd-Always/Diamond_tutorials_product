@@ -8,13 +8,22 @@ build/
 dist/
 .expo/
 .expo-shared/
+*.egg-info/
+.eggs/
+target/
+admission-system/frontend/web-app/dist/
+admission-system/frontend/web-app/build/
 
 # Python virtual environment
 venv/
 env/
+ENV/
+.venv
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
 
 # Database
 *.db
@@ -51,6 +60,9 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Mobile app
 *.jks
@@ -63,3 +75,7 @@ coverage/
 *.tmp
 temp/
 tmp/
+
+# Uploaded documents
+admission-system/backend/documents/
+documents/uploads/

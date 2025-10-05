@@ -5,7 +5,15 @@
       "mcp__ide__executeCode",
       "WebFetch(domain:fedena.com)",
       "WebSearch",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(tree:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(pip install:*)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:*)",
+      "Bash(cmd /c:*)"
     ],
     "deny": [],
     "ask": []

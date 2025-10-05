@@ -39,6 +39,55 @@ class AddressSchema(BaseModel):
     postal_code: str
     country: str = "India"
 
+# Draft schemas with all optional fields
+class StudentDetailsDraftSchema(BaseModel):
+    first_name: Optional[str] = ""
+    middle_name: Optional[str] = ""
+    last_name: Optional[str] = ""
+    date_of_birth: Optional[date] = None
+    gender: Optional[str] = ""
+    blood_group: Optional[str] = ""
+    medical_conditions: Optional[str] = ""
+    previous_school_name: Optional[str] = ""
+    previous_school_address: Optional[str] = ""
+    transport_required: bool = False
+
+    @validator('date_of_birth', pre=True)
+    def empty_string_to_none(cls, v):
+        if v == '' or v is None:
+            return None
+        return v
+
+    class Config:
+        # Allow empty strings to be treated as None for optional fields
+        anystr_strip_whitespace = True
+
+class ParentDetailsDraftSchema(BaseModel):
+    first_name: Optional[str] = ""
+    last_name: Optional[str] = ""
+    email: Optional[str] = ""
+    phone: Optional[str] = ""
+    relationship_type: Optional[str] = ""
+    occupation: Optional[str] = ""
+    employer_name: Optional[str] = ""
+    annual_income: Optional[Decimal] = None
+    education_qualification: Optional[str] = ""
+    is_primary_contact: bool = True
+
+    class Config:
+        anystr_strip_whitespace = True
+
+class AddressDraftSchema(BaseModel):
+    address_line1: Optional[str] = ""
+    address_line2: Optional[str] = ""
+    city: Optional[str] = ""
+    state: Optional[str] = ""
+    postal_code: Optional[str] = ""
+    country: str = "India"
+
+    class Config:
+        anystr_strip_whitespace = True
+
 # ============================================================================
 # Application Schemas
 # ============================================================================
@@ -57,6 +106,26 @@ class ApplicationCreate(BaseModel):
     # Academic details
     class_applying_id: int
     academic_year_id: int
+
+    # Additional info
+    source: Optional[str] = "online"
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+
+class ApplicationDraftCreate(BaseModel):
+    """Schema for creating a draft admission application with optional fields"""
+    # Student details (all optional for drafts)
+    student_details: StudentDetailsDraftSchema
+
+    # Parent details (all optional for drafts)
+    parent_details: ParentDetailsDraftSchema
+
+    # Address (all optional for drafts)
+    address: AddressDraftSchema
+
+    # Academic details
+    class_applying_id: Optional[int] = 1  # Default to class 1
+    academic_year_id: Optional[int] = 1  # Default to current year
 
     # Additional info
     source: Optional[str] = "online"

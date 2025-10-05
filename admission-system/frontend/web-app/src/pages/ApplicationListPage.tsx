@@ -22,6 +22,10 @@ import {
   Chip,
   TablePagination,
   Button,
+  Card,
+  CardContent,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -36,6 +40,8 @@ const ApplicationListPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showError } = useNotification();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -100,31 +106,32 @@ const ApplicationListPage = () => {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Header */}
       <AppBar position="static" elevation={1}>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => navigate('/dashboard')}>
+        <Toolbar sx={{ minHeight: { xs: 48, sm: 56 } }}>
+          <IconButton edge="start" color="inherit" onClick={() => navigate('/dashboard')} size="medium">
             <ArrowBackIcon />
           </IconButton>
-          <SchoolIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          <SchoolIcon sx={{ mr: 1.5, fontSize: 24 }} />
+          <Typography variant="h6" sx={{ flexGrow: 1, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
             Applications
           </Typography>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+      <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3, md: 4 } }}>
         {/* Filters */}
-        <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+        <Box sx={{ mb: 2, display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
           <TextField
-            placeholder="Search by name or application number..."
+            placeholder="Search applications..."
             variant="outlined"
             size="small"
             onChange={handleSearchChange}
+            fullWidth={isMobile}
             InputProps={{
               startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
             }}
-            sx={{ flexGrow: 1, minWidth: 300 }}
+            sx={{ flexGrow: 1, minWidth: { xs: 'auto', sm: 300 } }}
           />
-          <FormControl size="small" sx={{ minWidth: 200 }}>
+          <FormControl size="small" fullWidth={isMobile} sx={{ minWidth: { xs: 'auto', sm: 200 } }}>
             <InputLabel>Status</InputLabel>
             <Select
               value={filters.status || ''}
@@ -143,81 +150,157 @@ const ApplicationListPage = () => {
           </FormControl>
         </Box>
 
-        {/* Table */}
-        <Paper>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell><strong>Application #</strong></TableCell>
-                  <TableCell><strong>Student Name</strong></TableCell>
-                  <TableCell><strong>Class</strong></TableCell>
-                  <TableCell><strong>Parent</strong></TableCell>
-                  <TableCell><strong>Status</strong></TableCell>
-                  <TableCell><strong>Submitted Date</strong></TableCell>
-                  <TableCell><strong>Actions</strong></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={7}>
-                      <TableSkeleton rows={5} />
-                    </TableCell>
-                  </TableRow>
-                ) : applications.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      No applications found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  applications.map((app) => (
-                    <TableRow
+        {/* Mobile List View */}
+        {isMobile ? (
+          <Box>
+            {loading ? (
+              <Typography>Loading...</Typography>
+            ) : applications.length === 0 ? (
+              <Paper sx={{ p: 4, textAlign: 'center' }}>
+                <Typography color="text.secondary">No applications found</Typography>
+              </Paper>
+            ) : (
+              <>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  {applications.map((app) => (
+                    <Card
                       key={app.id}
-                      hover
-                      sx={{ cursor: 'pointer' }}
+                      sx={{
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        '&:hover': {
+                          transform: 'translateX(4px)',
+                          boxShadow: 3
+                        },
+                      }}
                       onClick={() => navigate(`/applications/${app.id}`)}
                     >
-                      <TableCell>{app.application_number}</TableCell>
-                      <TableCell>{app.student_name || '-'}</TableCell>
-                      <TableCell>{app.class_name || '-'}</TableCell>
-                      <TableCell>{app.parent_name || '-'}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={app.application_status.replace('_', ' ').toUpperCase()}
-                          color={getStatusColor(app.application_status)}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>{formatDate(app.submission_date)}</TableCell>
-                      <TableCell>
-                        <Button
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/applications/${app.id}`);
-                          }}
-                        >
-                          View
-                        </Button>
+                      <CardContent sx={{ py: 2, px: 2.5, '&:last-child': { pb: 2 } }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography variant="subtitle2" fontWeight={600} color="primary" noWrap>
+                              {app.application_number}
+                            </Typography>
+                            <Typography variant="body2" fontWeight={600} noWrap>
+                              {app.student_name || '-'}
+                            </Typography>
+                          </Box>
+                          <Chip
+                            label={app.application_status?.replace('_', ' ').toUpperCase() || 'DRAFT'}
+                            color={getStatusColor(app.application_status)}
+                            size="small"
+                            sx={{ ml: 2, flexShrink: 0 }}
+                          />
+                        </Box>
+                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Class: {app.class_name || '-'}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Parent: {app.parent_name || '-'}
+                          </Typography>
+                          {app.submission_date && (
+                            <Typography variant="caption" color="text.secondary">
+                              {formatDate(app.submission_date)}
+                            </Typography>
+                          )}
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Box>
+                {/* Mobile Pagination */}
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                  <TablePagination
+                    component="div"
+                    count={total}
+                    page={(filters.page || 1) - 1}
+                    onPageChange={handlePageChange}
+                    rowsPerPage={filters.page_size || 10}
+                    onRowsPerPageChange={handleRowsPerPageChange}
+                    rowsPerPageOptions={[10, 25, 50]}
+                  />
+                </Box>
+              </>
+            )}
+          </Box>
+        ) : (
+          /* Desktop Table View */
+          <Paper>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell><strong>Application #</strong></TableCell>
+                    <TableCell><strong>Student Name</strong></TableCell>
+                    <TableCell><strong>Class</strong></TableCell>
+                    <TableCell><strong>Parent</strong></TableCell>
+                    <TableCell><strong>Status</strong></TableCell>
+                    <TableCell><strong>Submitted Date</strong></TableCell>
+                    <TableCell><strong>Actions</strong></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={7}>
+                        <TableSkeleton rows={5} />
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            component="div"
-            count={total}
-            page={(filters.page || 1) - 1}
-            onPageChange={handlePageChange}
-            rowsPerPage={filters.page_size || 10}
-            onRowsPerPageChange={handleRowsPerPageChange}
-            rowsPerPageOptions={[10, 25, 50, 100]}
-          />
-        </Paper>
+                  ) : applications.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        No applications found
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    applications.map((app) => (
+                      <TableRow
+                        key={app.id}
+                        hover
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => navigate(`/applications/${app.id}`)}
+                      >
+                        <TableCell>{app.application_number}</TableCell>
+                        <TableCell>{app.student_name || '-'}</TableCell>
+                        <TableCell>{app.class_name || '-'}</TableCell>
+                        <TableCell>{app.parent_name || '-'}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={app.application_status?.replace('_', ' ').toUpperCase() || 'DRAFT'}
+                            color={getStatusColor(app.application_status)}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>{formatDate(app.submission_date)}</TableCell>
+                        <TableCell>
+                          <Button
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/applications/${app.id}`);
+                            }}
+                          >
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              component="div"
+              count={total}
+              page={(filters.page || 1) - 1}
+              onPageChange={handlePageChange}
+              rowsPerPage={filters.page_size || 10}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              rowsPerPageOptions={[10, 25, 50, 100]}
+            />
+          </Paper>
+        )}
       </Container>
     </Box>
   );

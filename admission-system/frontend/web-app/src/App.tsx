@@ -8,7 +8,8 @@ import theme from './theme';
 // Pages
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';
+import ParentDashboard from './pages/ParentDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import ApplicationFormPage from './pages/ApplicationFormPage';
 import ApplicationListPage from './pages/ApplicationListPage';
 import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
@@ -33,6 +34,12 @@ const ProtectedRoute = ({ children, adminOnly = false }: { children: React.React
   return <>{children}</>;
 };
 
+// Dashboard Route Component - Routes to correct dashboard based on role
+const DashboardRoute = () => {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <AdminDashboard /> : <ParentDashboard />;
+};
+
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
 
@@ -54,7 +61,7 @@ function AppRoutes() {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <DashboardRoute />
           </ProtectedRoute>
         }
       />

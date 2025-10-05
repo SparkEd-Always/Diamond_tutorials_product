@@ -66,16 +66,24 @@ const LoginPage = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          py: 4,
-        }}
-      >
+    <Box
+      sx={{
+        width: '100vw',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'background.default',
+      }}
+    >
+      <Container maxWidth="sm">
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            py: 4,
+          }}
+        >
         {/* Logo */}
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <SchoolIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
@@ -152,8 +160,9 @@ const LoginPage = () => {
             ← Back to Home
           </Link>
         </Box>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

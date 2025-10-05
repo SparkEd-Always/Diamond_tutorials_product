@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Box,
@@ -14,16 +14,16 @@ import {
   Menu,
   MenuItem,
   Chip,
-} from '@mui/material';
-import { useAuth } from '../contexts/AuthContext';
-import { admissionApi } from '../services/api';
-import type { Application } from '../types';
-import SchoolIcon from '@mui/icons-material/School';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import AddIcon from '@mui/icons-material/Add';
-import ListIcon from '@mui/icons-material/List';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import config from '../config';
+} from "@mui/material";
+import { useAuth } from "../contexts/AuthContext";
+import { admissionApi } from "../services/api";
+import type { Application } from "../types";
+import SchoolIcon from "@mui/icons-material/School";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import AddIcon from "@mui/icons-material/Add";
+import ListIcon from "@mui/icons-material/List";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import config from "../config";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -44,18 +44,27 @@ const DashboardPage = () => {
 
   const loadApplications = async () => {
     try {
-      const response = await admissionApi.listApplications({ page: 1, page_size: 10 });
+      const response = await admissionApi.listApplications({
+        page: 1,
+        page_size: 10,
+      });
       setApplications(response.applications);
 
       // Calculate stats
       const total = response.total;
-      const draft = response.applications.filter(app => app.application_status === 'draft').length;
-      const submitted = response.applications.filter(app => app.application_status === 'submitted').length;
-      const underReview = response.applications.filter(app => app.application_status === 'under_review').length;
+      const draft = response.applications.filter(
+        (app) => app.application_status === "draft"
+      ).length;
+      const submitted = response.applications.filter(
+        (app) => app.application_status === "submitted"
+      ).length;
+      const underReview = response.applications.filter(
+        (app) => app.application_status === "under_review"
+      ).length;
 
       setStats({ total, draft, submitted, underReview });
     } catch (error) {
-      console.error('Failed to load applications:', error);
+      console.error("Failed to load applications:", error);
     } finally {
       setLoading(false);
     }
@@ -71,22 +80,22 @@ const DashboardPage = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      draft: 'default',
-      submitted: 'info',
-      under_review: 'warning',
-      enrolled: 'success',
-      rejected: 'error',
+      draft: "default",
+      submitted: "info",
+      under_review: "warning",
+      enrolled: "success",
+      rejected: "error",
     };
-    return colors[status] || 'default';
+    return colors[status] || "default";
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       {/* Header */}
       <AppBar position="static" elevation={1}>
         <Toolbar>
@@ -97,11 +106,7 @@ const DashboardPage = () => {
           <Typography variant="body2" sx={{ mr: 2 }}>
             {user?.email}
           </Typography>
-          <IconButton
-            size="large"
-            onClick={handleMenu}
-            color="inherit"
-          >
+          <IconButton size="large" onClick={handleMenu} color="inherit">
             <AccountCircle />
           </IconButton>
           <Menu
@@ -118,11 +123,12 @@ const DashboardPage = () => {
         {/* Welcome Section */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" gutterBottom fontWeight={600}>
-            <DashboardIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+            <DashboardIcon sx={{ mr: 1, verticalAlign: "middle" }} />
             Dashboard
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Welcome back! Here's an overview of your {isAdmin ? 'admission system' : 'applications'}.
+            Welcome back! Here's an overview of your{" "}
+            {isAdmin ? "admission system" : "applications"}.
           </Typography>
         </Box>
 
@@ -146,7 +152,11 @@ const DashboardPage = () => {
                 <Typography color="text.secondary" gutterBottom>
                   Draft
                 </Typography>
-                <Typography variant="h3" fontWeight={600} color="text.secondary">
+                <Typography
+                  variant="h3"
+                  fontWeight={600}
+                  color="text.secondary"
+                >
                   {stats.draft}
                 </Typography>
               </CardContent>
@@ -186,7 +196,7 @@ const DashboardPage = () => {
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
-                  onClick={() => navigate('/apply')}
+                  onClick={() => navigate("/apply")}
                   size="large"
                 >
                   New Application
@@ -197,7 +207,7 @@ const DashboardPage = () => {
               <Button
                 variant="outlined"
                 startIcon={<ListIcon />}
-                onClick={() => navigate('/applications')}
+                onClick={() => navigate("/applications")}
                 size="large"
               >
                 View All Applications
@@ -214,12 +224,12 @@ const DashboardPage = () => {
           {loading ? (
             <Typography>Loading...</Typography>
           ) : applications.length === 0 ? (
-            <Card sx={{ p: 4, textAlign: 'center' }}>
+            <Card sx={{ p: 4, textAlign: "center" }}>
               <Typography color="text.secondary" paragraph>
                 No applications found
               </Typography>
               {isParent && (
-                <Button variant="contained" onClick={() => navigate('/apply')}>
+                <Button variant="contained" onClick={() => navigate("/apply")}>
                   Create Your First Application
                 </Button>
               )}
@@ -230,14 +240,20 @@ const DashboardPage = () => {
                 <Grid item xs={12} key={app.id}>
                   <Card
                     sx={{
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s',
-                      '&:hover': { transform: 'translateX(4px)' },
+                      cursor: "pointer",
+                      transition: "transform 0.2s",
+                      "&:hover": { transform: "translateX(4px)" },
                     }}
                     onClick={() => navigate(`/applications/${app.id}`)}
                   >
                     <CardContent>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
                         <Box>
                           <Typography variant="h6" fontWeight={600}>
                             {app.application_number}
@@ -246,8 +262,15 @@ const DashboardPage = () => {
                             {app.student_name} • {app.class_name}
                           </Typography>
                         </Box>
+                        <Box
+                          sx={{
+                            width: 20,
+                          }}
+                        />
                         <Chip
-                          label={app.application_status.replace('_', ' ').toUpperCase()}
+                          label={app.application_status
+                            .replace("_", " ")
+                            .toUpperCase()}
                           color={getStatusColor(app.application_status) as any}
                           size="small"
                         />

@@ -87,6 +87,11 @@ export const admissionApi = {
     return response.data;
   },
 
+  createDraftApplication: async (data: ApplicationFormData): Promise<{ message: string; application: Application }> => {
+    const response = await api.post('/admissions/applications/draft', data);
+    return response.data;
+  },
+
   listApplications: async (filters?: ApplicationFilters): Promise<PaginatedResponse<Application>> => {
     const response = await api.get('/admissions/applications', { params: filters });
     return response.data;

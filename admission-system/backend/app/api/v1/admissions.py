@@ -16,6 +16,7 @@ from ...models.admission import (
 from ...models.academic import AcademicYear, Class
 from ...schemas.admission import (
     ApplicationCreate,
+    ApplicationDraftCreate,
     ApplicationUpdate,
     ApplicationResponse,
     ApplicationListResponse,
@@ -134,6 +135,110 @@ async def create_application(
 
     return {
         "message": "Application created successfully",
+        "application": {
+            "id": application.id,
+            "application_number": application.application_number,
+            "status": application.application_status.value,
+            "created_at": application.created_at
+        }
+    }
+
+@router.post("/applications/draft", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def create_draft_application(
+    application_data: ApplicationDraftCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Create a draft admission application with partial data
+    Parent can save incomplete applications as drafts
+    """
+    # Get parent record - create if doesn't exist
+    parent = db.query(Parent).filter(Parent.user_id == current_user.id).first()
+    if not parent:
+        # Create minimal parent record
+        parent = Parent(
+            user_id=current_user.id,
+            status="active"
+        )
+        db.add(parent)
+        db.flush()
+
+    # Create minimal student user account with unique email
+    student_email = f"draft_{datetime.now().timestamp()}@temp.com"
+    student_user = User(
+        email=student_email,
+        password_hash="temp_password_hash",
+        role=UserRole.STUDENT,
+        is_active=False,
+        is_verified=False
+    )
+    db.add(student_user)
+    db.flush()
+
+    # Create student profile with available data
+    student_profile = UserProfile(
+        user_id=student_user.id,
+        first_name=application_data.student_details.first_name or "Unknown",
+        middle_name=application_data.student_details.middle_name,
+        last_name=application_data.student_details.last_name or "Unknown",
+        date_of_birth=application_data.student_details.date_of_birth,
+        gender=Gender(application_data.student_details.gender) if application_data.student_details.gender else Gender.MALE,
+        address_line1=application_data.address.address_line1,
+        address_line2=application_data.address.address_line2,
+        city=application_data.address.city,
+        state=application_data.address.state,
+        postal_code=application_data.address.postal_code,
+        country=application_data.address.country
+    )
+    db.add(student_profile)
+    db.flush()
+
+    # Create student record
+    student = Student(
+        user_id=student_user.id,
+        blood_group=application_data.student_details.blood_group,
+        medical_conditions=application_data.student_details.medical_conditions,
+        previous_school_name=application_data.student_details.previous_school_name,
+        previous_school_address=application_data.student_details.previous_school_address,
+        transport_required=application_data.student_details.transport_required,
+        emergency_contact_name=application_data.emergency_contact_name,
+        emergency_contact_phone=application_data.emergency_contact_phone,
+        status="applicant"
+    )
+    db.add(student)
+    db.flush()
+
+    # Create student-parent relationship
+    relationship_type = application_data.parent_details.relationship_type or "guardian"
+    student_parent = StudentParent(
+        student_id=student.id,
+        parent_id=parent.id,
+        relationship_type=relationship_type,
+        is_primary=True
+    )
+    db.add(student_parent)
+
+    # Generate application number
+    academic_year_id = application_data.academic_year_id or 1
+    app_number = generate_application_number(db, academic_year_id)
+
+    # Create admission application as DRAFT
+    application = AdmissionApplication(
+        application_number=app_number,
+        student_id=student.id,
+        parent_id=parent.id,
+        academic_year_id=academic_year_id,
+        class_applying_id=application_data.class_applying_id or 1,
+        application_status=ApplicationStatus.DRAFT,
+        source=application_data.source or "online"
+    )
+    db.add(application)
+    db.commit()
+    db.refresh(application)
+
+    return {
+        "message": "Draft application saved successfully",
         "application": {
             "id": application.id,
             "application_number": application.application_number,

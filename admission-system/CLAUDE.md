@@ -3,7 +3,7 @@
 ## Project Overview
 Standalone Student Admission Management System built with FastAPI (backend) and React + TypeScript (frontend). This is a complete, production-ready application for managing student admissions in educational institutions.
 
-## Current Status: ✅ FULLY OPERATIONAL & TESTED
+## Current Status: 🔄 REFINING USER EXPERIENCE
 
 ### System Running
 - **Backend**: http://localhost:8000 (FastAPI + SQLite)
@@ -18,7 +18,8 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 - ✅ All critical bugs fixed (type imports, CORS, authentication, UI layout)
 - ✅ Approve/Reject workflows fully functional
 - ✅ UI optimized for desktop with centered, responsive layout
-- ✅ Ready for production use
+- ✅ Document upload feature implemented (Step 5)
+- 🔄 **Current Phase**: UX refinements and workflow improvements
 
 ### Recent Fixes & Improvements (October 5, 2025)
 1. ✅ **Fixed ApplicationDetailsPage TypeError**: Added optional chaining (`?.`) to handle undefined `application_status`
@@ -27,6 +28,45 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 4. ✅ **Fixed UI Layout**: Changed containers from `maxWidth="lg"` to `maxWidth="xl"` with responsive padding
 5. ✅ **Created Database Tools**: Live monitor, application viewer, query tools, and test data generator
 6. ✅ **Centered UI**: All pages now properly centered with better space utilization
+7. ✅ **Document Upload**: Added Step 5 with 3 optional document types (5MB limit, all formats)
+
+### 🎯 Current Refinement Tasks
+
+#### Admission Flow Improvements (ApplicationFormPage)
+**Step 1 - Student Details:**
+- [ ] Blood group dropdown (A+, A-, B+, B-, AB+, AB-, O+, O-, Unknown)
+- [ ] Date of birth calendar picker (Material-UI DatePicker)
+- [ ] Class dropdown (Pre-KG to Class 10 from backend)
+- [ ] Academic year dropdown (fetch from backend API)
+
+**Step 5 - Document Upload:**
+- ✅ Recent Marks Card, Aadhar Card, Birth Certificate
+- ✅ 5MB file limit, all file types accepted
+- ✅ Visual feedback with upload status
+
+#### Application Details Screen (ApplicationDetailsPage)
+- [ ] Redesign layout using Box instead of Grid
+- [ ] Section details into logical groups:
+  - Student Information
+  - Parent Information
+  - Address Details
+  - Academic Details
+  - Documents
+  - Status History
+- [ ] Improve readability with better typography and spacing
+- [ ] Prominent application status display with color coding
+- [ ] Better mobile responsiveness
+
+#### Dashboard Improvements (DashboardPage)
+- [ ] Recent updates section (last 5 status changes across all applications)
+- [ ] Notifications panel (pending actions, reminders)
+- [ ] Quick stats cards (Total applications, Pending review, etc.)
+
+#### Application List Enhancements (ApplicationListPage)
+- [ ] Show "Last Edited" timestamp
+- [ ] Show "Last Updated" timestamp
+- [ ] Sort by last updated/edited
+- [ ] Better timestamp formatting (relative time: "2 hours ago")
 
 ## Technology Stack
 
@@ -438,13 +478,92 @@ VITE_SCHOOL_NAME=ABC International School
 5. **Analytics**: No dashboard metrics or reports yet
 6. **Mobile App**: Web-only (no native mobile apps)
 
-## Next Development Tasks
+## Refinement Priorities (In Progress)
+
+### Phase 1: Form Enhancements (ApplicationFormPage) 🔄
+**Objective**: Improve data input experience with proper UI controls
+
+1. **Step 1 - Student Details**:
+   - Blood group dropdown with standard options (A+, A-, B+, B-, AB+, AB-, O+, O-, Unknown)
+   - Date of birth calendar picker (Material-UI DatePicker component)
+   - Replace plain text inputs with proper selectors
+
+2. **Step 4 - Academic Details**:
+   - Class dropdown (fetch from `/api/v1/academic/classes`)
+   - Academic year dropdown (fetch from `/api/v1/academic/years`)
+   - Remove manual ID entry, use proper selection
+
+**Dependencies**: May need to install `@mui/x-date-pickers` for calendar component
+
+### Phase 2: Application Details Redesign (ApplicationDetailsPage) 🔄
+**Objective**: Improve readability and presentation
+
+**Layout Changes**:
+- Replace Grid with Box for simpler layout
+- Use Paper components for each section
+- Add section headers with icons
+- Improve typography hierarchy
+
+**Sections to Create**:
+1. **Application Overview** (top card with status badge)
+2. **Student Information** (name, DOB, gender, blood group, medical)
+3. **Parent Information** (name, contact, occupation, education)
+4. **Address Details** (residential address)
+5. **Academic Details** (class, year, previous school, transport)
+6. **Documents** (uploaded files with download links)
+7. **Status History** (timeline of status changes)
+
+**Status Display**:
+- Large status badge at top
+- Color-coded based on status
+- Show application number prominently
+
+### Phase 3: Dashboard Enhancements (DashboardPage) 🔄
+**Objective**: Add notifications and recent activity
+
+**New Features**:
+1. **Recent Updates Section**:
+   - Last 5 status changes across all applications
+   - Format: "Application #ABC123 moved to Under Review - 2 hours ago"
+   - Show relative timestamps
+
+2. **Notifications Panel**:
+   - Pending actions (documents needed, tests scheduled)
+   - System reminders
+   - Badge count on notifications icon
+
+3. **Quick Stats Cards** (Admin only):
+   - Total applications
+   - Pending review count
+   - Approved count
+   - Rejected count
+
+**API Requirements**:
+- New endpoint: `/api/v1/admissions/recent-updates`
+- New endpoint: `/api/v1/notifications`
+
+### Phase 4: Application List Improvements (ApplicationListPage) 🔄
+**Objective**: Better tracking and sorting
+
+**New Columns/Fields**:
+- Last Edited (timestamp from `updated_at`)
+- Last Updated (same as updated_at)
+- Format timestamps as relative time ("2 hours ago", "3 days ago")
+
+**Features**:
+- Sort by last updated (newest first)
+- Sort by last edited
+- Better mobile card layout with timestamps
+
+**Library**: Consider using `date-fns` or `dayjs` for relative time formatting
+
+## Next Development Tasks (Future)
 
 ### High Priority
-1. Add payment gateway integration (Razorpay/Stripe)
-2. Implement email notifications (SendGrid/AWS SES)
-3. Add document verification workflow
-4. Create admin analytics dashboard
+1. Complete UX refinements (Phases 1-4 above)
+2. Add payment gateway integration (Razorpay/Stripe)
+3. Implement email notifications (SendGrid/AWS SES)
+4. Add document verification workflow
 5. Add full-text search functionality
 
 ### Medium Priority
@@ -484,9 +603,107 @@ VITE_SCHOOL_NAME=ABC International School
 ---
 
 **Last Updated**: October 5, 2025
-**Version**: 1.1.0
-**Status**: Production Ready ✅ - Fully Tested with 17 Applications
+**Version**: 1.2.0-beta (UX Refinements)
+**Status**: 🔄 Refining User Experience - 4 Phase Enhancement Plan
 **Developers**: Claude AI + Human Team
+
+## Implementation Notes for Refinements
+
+### Phase 1 Implementation Guide
+
+#### Blood Group Dropdown
+```typescript
+<FormControl fullWidth>
+  <InputLabel>Blood Group</InputLabel>
+  <Select value={formData.student_details.blood_group} ...>
+    <MenuItem value="A+">A+</MenuItem>
+    <MenuItem value="A-">A-</MenuItem>
+    <MenuItem value="B+">B+</MenuItem>
+    <MenuItem value="B-">B-</MenuItem>
+    <MenuItem value="AB+">AB+</MenuItem>
+    <MenuItem value="AB-">AB-</MenuItem>
+    <MenuItem value="O+">O+</MenuItem>
+    <MenuItem value="O-">O-</MenuItem>
+    <MenuItem value="Unknown">Unknown</MenuItem>
+  </Select>
+</FormControl>
+```
+
+#### Date Picker Installation
+```bash
+npm install @mui/x-date-pickers dayjs
+```
+
+#### Class & Academic Year Dropdowns
+- Fetch data on component mount using `useEffect`
+- Store in state: `classes` and `academicYears`
+- Populate Select components with fetched data
+- Handle loading states
+
+### Phase 2 Implementation Guide
+
+#### Section Template (ApplicationDetailsPage)
+```typescript
+<Paper sx={{ p: 3, mb: 2 }}>
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+    <PersonIcon color="primary" />
+    <Typography variant="h6">Student Information</Typography>
+  </Box>
+  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <Typography variant="body2" fontWeight={600} sx={{ minWidth: 120 }}>
+        Full Name:
+      </Typography>
+      <Typography variant="body2">
+        {student.first_name} {student.middle_name} {student.last_name}
+      </Typography>
+    </Box>
+    {/* More fields... */}
+  </Box>
+</Paper>
+```
+
+### Phase 3 Implementation Guide
+
+#### Recent Updates API Response Format
+```json
+{
+  "updates": [
+    {
+      "application_number": "ABC123",
+      "student_name": "John Doe",
+      "old_status": "submitted",
+      "new_status": "under_review",
+      "changed_at": "2025-10-05T14:30:00",
+      "changed_by": "Admin User"
+    }
+  ]
+}
+```
+
+#### Relative Time Formatting
+```typescript
+import { formatDistanceToNow } from 'date-fns';
+
+const relativeTime = formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+// Output: "2 hours ago"
+```
+
+### Phase 4 Implementation Guide
+
+#### Updated ApplicationResponse Schema
+```python
+class ApplicationResponse(BaseModel):
+    id: int
+    application_number: str
+    application_status: str
+    submission_date: Optional[datetime]
+    created_at: datetime
+    updated_at: datetime  # This is "Last Updated"
+    last_edited_at: Optional[datetime] = None  # Add if tracking edits separately
+```
+
+---
 
 ## Quick Start Guide
 

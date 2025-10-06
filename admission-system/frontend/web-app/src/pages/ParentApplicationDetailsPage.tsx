@@ -8,12 +8,8 @@ import {
   Toolbar,
   IconButton,
   Paper,
-  Grid,
   Chip,
-  Divider,
   Button,
-  Card,
-  CardContent,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -30,7 +26,6 @@ import SchoolIcon from '@mui/icons-material/School';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
-import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import DescriptionIcon from '@mui/icons-material/Description';
 import HistoryIcon from '@mui/icons-material/History';
@@ -38,10 +33,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
-const ApplicationDetailsPage = () => {
+const ParentApplicationDetailsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { isAdmin } = useAuth();
   const { showError, showNotification } = useNotification();
   const [application, setApplication] = useState<ApplicationDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,36 +58,6 @@ const ApplicationDetailsPage = () => {
     }
   };
 
-  const handleApprove = async () => {
-    if (!application || !id) return;
-    try {
-      await admissionApi.updateApplicationStatus(
-        parseInt(id),
-        'accepted',
-        'Application approved by admin'
-      );
-      showNotification('Application approved successfully', 'success');
-      loadApplication(parseInt(id));
-    } catch (error: any) {
-      showError(error.response?.data?.detail || 'Failed to approve application');
-    }
-  };
-
-  const handleReject = async () => {
-    if (!application || !id) return;
-    try {
-      await admissionApi.updateApplicationStatus(
-        parseInt(id),
-        'rejected',
-        'Application rejected by admin'
-      );
-      showNotification('Application rejected', 'info');
-      loadApplication(parseInt(id));
-    } catch (error: any) {
-      showError(error.response?.data?.detail || 'Failed to reject application');
-    }
-  };
-
   const handleContinueFilling = () => {
     if (!id) return;
     navigate(`/apply/${id}`);
@@ -113,7 +77,6 @@ const ApplicationDetailsPage = () => {
   };
 
   const handleUploadDocuments = () => {
-    // Scroll to the documents section
     const documentsSection = document.getElementById('documents-section');
     if (documentsSection) {
       documentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -137,7 +100,6 @@ const ApplicationDetailsPage = () => {
     return colors[status] || 'default';
   };
 
-  // Helper component for displaying field information
   const InfoField = ({ label, value }: { label: string; value: string | null | undefined }) => (
     <Box sx={{ mb: 2 }}>
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
@@ -158,6 +120,17 @@ const ApplicationDetailsPage = () => {
     });
   };
 
+  const formatDateTime = (dateString?: string) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleString('en-IN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   if (loading) {
     return (
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -170,7 +143,7 @@ const ApplicationDetailsPage = () => {
             <Typography variant="h6">Application Details</Typography>
           </Toolbar>
         </AppBar>
-        <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+        <Container maxWidth="lg" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
           <DetailsSkeleton />
         </Container>
       </Box>
@@ -180,6 +153,8 @@ const ApplicationDetailsPage = () => {
   if (!application) {
     return <Box sx={{ p: 4 }}>Application not found</Box>;
   }
+
+
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -191,36 +166,48 @@ const ApplicationDetailsPage = () => {
           </IconButton>
           <SchoolIcon sx={{ mr: 2 }} />
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Application Details
+            My Application
           </Typography>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-        {/* Application Overview - Prominent Status Card */}
+      <Container maxWidth="lg" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+        {/* Application Overview */}
         <Paper
+          variant="outlined"
           sx={{
             p: 4,
             mb: 3,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white'
+            borderWidth: 2,
+            borderColor: 'primary.main'
           }}
         >
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, textAlign: 'center' }}>
             <Box>
-              <Typography variant="overline" sx={{ opacity: 0.9, display: 'block' }}>
-                Application Number
+
+
+            <Typography variant="body2" color="text.secondary">
+              Application Number
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
+              {application.application.application_number}
+            </Typography>
+            </Box>
+            
+            <Box>
+              <Typography variant="body2" color="text.secondary">
+                {application.application.application_status === 'draft' ? 'Last Edited:' : 'Submitted:'}
               </Typography>
-              <Typography variant="h4" fontWeight={700} gutterBottom>
-                {application.application.application_number}
-              </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                Submitted: {formatDate(application.application.submission_date)}
+              <Typography variant="body1" fontWeight={500}>
+                {application.application.application_status === 'draft'
+                  ? formatDateTime(application.application.updated_at)
+                  : formatDate(application.application.submission_date)
+                }
               </Typography>
             </Box>
             <Chip
-              label={application.application.status?.replace('_', ' ').toUpperCase() || 'DRAFT'}
-              color={getStatusColor(application.application.status)}
+              label={application.application.application_status?.replace('_', ' ').toUpperCase() || 'DRAFT'}
+              color={getStatusColor(application.application.application_status)}
               size="large"
               sx={{
                 fontSize: '1rem',
@@ -232,6 +219,47 @@ const ApplicationDetailsPage = () => {
           </Box>
         </Paper>
 
+
+
+        {/* Action Buttons */}
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+          {application.application.application_status === 'draft' &&
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              startIcon={<EditIcon />}
+              onClick={handleContinueFilling}
+            >
+              Continue Filling
+            </Button>
+          }
+
+          {['documents_pending', 'submitted', 'under_review'].includes(application.application.application_status) && (
+            <Button
+              variant="outlined"
+              color="primary"
+              size="large"
+              startIcon={<UploadFileIcon />}
+              onClick={handleUploadDocuments}
+            >
+              Upload Documents
+            </Button>
+          )}
+
+          {/* {['draft', 'submitted'].includes(application.application.application_status) && (
+            <Button
+              variant="outlined"
+              color="error"
+              size="large"
+              startIcon={<DeleteIcon />}
+              onClick={() => setDeleteDialogOpen(true)}
+            >
+              Delete Application
+            </Button>
+          )} */}
+        </Box>
+
         {/* Student Information */}
         <Paper sx={{ p: 3, mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
@@ -240,7 +268,7 @@ const ApplicationDetailsPage = () => {
               Student Information
             </Typography>
           </Box>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 3 }}>
             <InfoField
               label="Full Name"
               value={`${application.student.first_name} ${application.student.last_name}`}
@@ -265,14 +293,6 @@ const ApplicationDetailsPage = () => {
                 />
               </Box>
             )}
-            {application.student.medical_conditions && (
-              <Box sx={{ gridColumn: { sm: '1 / -1' } }}>
-                <InfoField
-                  label="Medical Conditions"
-                  value={application.student.medical_conditions}
-                />
-              </Box>
-            )}
           </Box>
         </Paper>
 
@@ -284,7 +304,7 @@ const ApplicationDetailsPage = () => {
               Parent Information
             </Typography>
           </Box>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 3 }}>
             <InfoField
               label="Full Name"
               value={`${application.parent.first_name} ${application.parent.last_name}`}
@@ -326,7 +346,7 @@ const ApplicationDetailsPage = () => {
           </Box>
         </Paper>
 
-        {/* Document Upload Section */}
+        {/* Documents */}
         <Paper id="documents-section" sx={{ p: 3, mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
             <DescriptionIcon color="primary" sx={{ fontSize: 28 }} />
@@ -347,11 +367,10 @@ const ApplicationDetailsPage = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
               <HistoryIcon color="primary" sx={{ fontSize: 28 }} />
               <Typography variant="h6" fontWeight={600}>
-                Status History
+                Application Timeline
               </Typography>
             </Box>
             <Box sx={{ position: 'relative', pl: 3 }}>
-              {/* Timeline line */}
               <Box
                 sx={{
                   position: 'absolute',
@@ -390,79 +409,14 @@ const ApplicationDetailsPage = () => {
                     <Typography variant="body1" fontWeight={600} gutterBottom>
                       {history.new_status?.replace('_', ' ').toUpperCase() || 'UNKNOWN'}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography variant="body2" color="text.secondary">
                       {formatDate(history.change_date)}
                     </Typography>
-                    {history.change_reason && (
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        {history.change_reason}
-                      </Typography>
-                    )}
                   </Box>
                 </Box>
               ))}
             </Box>
           </Paper>
-        )}
-
-        {/* Actions */}
-        {isAdmin ? (
-          <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleApprove}
-              disabled={application.application.status === 'accepted' || application.application.status === 'rejected'}
-            >
-              Approve
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={handleReject}
-              disabled={application.application.status === 'accepted' || application.application.status === 'rejected'}
-            >
-              Reject
-            </Button>
-          </Box>
-        ) : (
-          <Box sx={{ mt: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            {/* Continue Filling - Show for draft applications */}
-            {application.application.status === 'draft' && (
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<EditIcon />}
-                onClick={handleContinueFilling}
-              >
-                Continue Filling
-              </Button>
-            )}
-
-            {/* Upload Documents - Show for submitted, under_review, or documents_pending */}
-            {['documents_pending', 'submitted', 'under_review'].includes(application.application.status) && (
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<UploadFileIcon />}
-                onClick={handleUploadDocuments}
-              >
-                Upload Documents
-              </Button>
-            )}
-
-            {/* Delete Application - Show for draft or submitted (early stage) */}
-            {['draft', 'submitted'].includes(application.application.status) && (
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                Delete Application
-              </Button>
-            )}
-          </Box>
         )}
       </Container>
 
@@ -470,14 +424,10 @@ const ApplicationDetailsPage = () => {
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        aria-labelledby="delete-dialog-title"
-        aria-describedby="delete-dialog-description"
       >
-        <DialogTitle id="delete-dialog-title">
-          Delete Application
-        </DialogTitle>
+        <DialogTitle>Delete Application</DialogTitle>
         <DialogContent>
-          <DialogContentText id="delete-dialog-description">
+          <DialogContentText>
             Are you sure you want to delete this application? This action cannot be undone.
           </DialogContentText>
           {application && (
@@ -495,7 +445,7 @@ const ApplicationDetailsPage = () => {
           <Button onClick={() => setDeleteDialogOpen(false)} color="inherit">
             Cancel
           </Button>
-          <Button onClick={handleDeleteApplication} color="error" variant="contained" autoFocus>
+          <Button onClick={handleDeleteApplication} color="error" variant="contained">
             Delete
           </Button>
         </DialogActions>
@@ -504,4 +454,4 @@ const ApplicationDetailsPage = () => {
   );
 };
 
-export default ApplicationDetailsPage;
+export default ParentApplicationDetailsPage;

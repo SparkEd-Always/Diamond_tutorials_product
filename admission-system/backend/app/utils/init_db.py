@@ -11,6 +11,7 @@ from ..models.user_profile import UserProfile, Gender
 from ..models.academic import AcademicYear, Class, Section
 from ..models.admission import DocumentType
 from ..models.student import Student, Parent, StudentParent
+from ..models.workflow import AdmissionWorkflowStep
 
 def create_admin_user(db: Session):
     """Create default admin user"""
@@ -165,6 +166,10 @@ def initialize_database():
         create_admin_user(db)
         create_academic_year(db)
         create_document_types(db)
+
+        # Seed workflow steps
+        from .seed_workflow import seed_default_workflow_steps
+        seed_default_workflow_steps(db)
 
         print("\nDatabase initialization complete!")
         print("\nLogin credentials:")

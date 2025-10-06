@@ -214,3 +214,6 @@ export interface ApplicationFilters {
   page?: number;
   page_size?: number;
 }
+
+// Re-export workflow types
+export * from './workflow';

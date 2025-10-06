@@ -8,19 +8,20 @@ import {
   Toolbar,
   IconButton,
   Paper,
-  Grid,
   Chip,
-  Divider,
   Button,
-  Card,
-  CardContent,
+  TextField,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Divider,
+  Alert,
 } from '@mui/material';
-import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
 import { admissionApi } from '../services/api';
 import { DetailsSkeleton } from '../components/common/SkeletonLoader';
@@ -34,18 +35,23 @@ import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import DescriptionIcon from '@mui/icons-material/Description';
 import HistoryIcon from '@mui/icons-material/History';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
+import EventIcon from '@mui/icons-material/Event';
+import CommentIcon from '@mui/icons-material/Comment';
 
-const ApplicationDetailsPage = () => {
+const AdminApplicationDetailsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { isAdmin } = useAuth();
   const { showError, showNotification } = useNotification();
   const [application, setApplication] = useState<ApplicationDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [commentDialogOpen, setCommentDialogOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [statusReason, setStatusReason] = useState('');
+  const [comment, setComment] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -94,29 +100,21 @@ const ApplicationDetailsPage = () => {
     }
   };
 
-  const handleContinueFilling = () => {
-    if (!id) return;
-    navigate(`/apply/${id}`);
-  };
-
-  const handleDeleteApplication = async () => {
-    if (!id) return;
+  const handleChangeStatus = async () => {
+    if (!id || !selectedStatus) return;
     try {
-      await admissionApi.deleteApplication(parseInt(id));
-      showNotification('Application deleted successfully', 'success');
-      navigate('/applications');
+      await admissionApi.updateApplicationStatus(
+        parseInt(id),
+        selectedStatus,
+        statusReason || `Status changed to ${selectedStatus}`
+      );
+      showNotification('Status updated successfully', 'success');
+      setStatusDialogOpen(false);
+      setSelectedStatus('');
+      setStatusReason('');
+      loadApplication(parseInt(id));
     } catch (error: any) {
-      showError(error.response?.data?.detail || 'Failed to delete application');
-    } finally {
-      setDeleteDialogOpen(false);
-    }
-  };
-
-  const handleUploadDocuments = () => {
-    // Scroll to the documents section
-    const documentsSection = document.getElementById('documents-section');
-    if (documentsSection) {
-      documentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showError(error.response?.data?.detail || 'Failed to update status');
     }
   };
 
@@ -125,6 +123,7 @@ const ApplicationDetailsPage = () => {
       draft: 'default',
       submitted: 'info',
       under_review: 'warning',
+      documents_pending: 'warning',
       test_scheduled: 'warning',
       test_completed: 'info',
       interview_scheduled: 'warning',
@@ -133,11 +132,11 @@ const ApplicationDetailsPage = () => {
       accepted: 'success',
       enrolled: 'success',
       rejected: 'error',
+      waitlisted: 'warning',
     };
     return colors[status] || 'default';
   };
 
-  // Helper component for displaying field information
   const InfoField = ({ label, value }: { label: string; value: string | null | undefined }) => (
     <Box sx={{ mb: 2 }}>
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
@@ -167,7 +166,7 @@ const ApplicationDetailsPage = () => {
               <ArrowBackIcon />
             </IconButton>
             <SchoolIcon sx={{ mr: 2 }} />
-            <Typography variant="h6">Application Details</Typography>
+            <Typography variant="h6">Application Details (Admin)</Typography>
           </Toolbar>
         </AppBar>
         <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
@@ -181,6 +180,8 @@ const ApplicationDetailsPage = () => {
     return <Box sx={{ p: 4 }}>Application not found</Box>;
   }
 
+  const isFinalized = ['accepted', 'rejected', 'enrolled'].includes(application.application.application_status);
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Header */}
@@ -191,13 +192,19 @@ const ApplicationDetailsPage = () => {
           </IconButton>
           <SchoolIcon sx={{ mr: 2 }} />
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Application Details
+            Application Review (Admin)
           </Typography>
+          <Chip
+            label="ADMIN MODE"
+            color="secondary"
+            size="small"
+            sx={{ fontWeight: 600 }}
+          />
         </Toolbar>
       </AppBar>
 
       <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-        {/* Application Overview - Prominent Status Card */}
+        {/* Application Overview */}
         <Paper
           sx={{
             p: 4,
@@ -219,8 +226,8 @@ const ApplicationDetailsPage = () => {
               </Typography>
             </Box>
             <Chip
-              label={application.application.status?.replace('_', ' ').toUpperCase() || 'DRAFT'}
-              color={getStatusColor(application.application.status)}
+              label={application.application.application_status?.replace('_', ' ').toUpperCase() || 'DRAFT'}
+              color={getStatusColor(application.application.application_status)}
               size="large"
               sx={{
                 fontSize: '1rem',
@@ -229,6 +236,70 @@ const ApplicationDetailsPage = () => {
                 px: 3
               }}
             />
+          </Box>
+        </Paper>
+
+        {/* Admin Action Buttons */}
+        <Paper sx={{ p: 3, mb: 3 }}>
+          <Typography variant="h6" fontWeight={600} gutterBottom>
+            Admin Actions
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+
+          {isFinalized && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              This application has been finalized. Status: {application.application.application_status.toUpperCase()}
+            </Alert>
+          )}
+
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Button
+              variant="contained"
+              color="success"
+              size="large"
+              startIcon={<CheckCircleIcon />}
+              onClick={handleApprove}
+              disabled={isFinalized}
+            >
+              Approve Application
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              size="large"
+              startIcon={<CancelIcon />}
+              onClick={handleReject}
+              disabled={isFinalized}
+            >
+              Reject Application
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              size="large"
+              startIcon={<ChangeCircleIcon />}
+              onClick={() => setStatusDialogOpen(true)}
+            >
+              Change Status
+            </Button>
+            <Button
+              variant="outlined"
+              color="info"
+              size="large"
+              startIcon={<CommentIcon />}
+              onClick={() => setCommentDialogOpen(true)}
+            >
+              Add Comment
+            </Button>
+            <Button
+              variant="outlined"
+              color="warning"
+              size="large"
+              startIcon={<EventIcon />}
+              onClick={() => showNotification('Test scheduling feature coming soon', 'info')}
+            >
+              Schedule Test
+            </Button>
           </Box>
         </Paper>
 
@@ -326,8 +397,8 @@ const ApplicationDetailsPage = () => {
           </Box>
         </Paper>
 
-        {/* Document Upload Section */}
-        <Paper id="documents-section" sx={{ p: 3, mb: 3 }}>
+        {/* Documents */}
+        <Paper sx={{ p: 3, mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
             <DescriptionIcon color="primary" sx={{ fontSize: 28 }} />
             <Typography variant="h6" fontWeight={600}>
@@ -347,11 +418,10 @@ const ApplicationDetailsPage = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
               <HistoryIcon color="primary" sx={{ fontSize: 28 }} />
               <Typography variant="h6" fontWeight={600}>
-                Status History
+                Status History & Audit Trail
               </Typography>
             </Box>
             <Box sx={{ position: 'relative', pl: 3 }}>
-              {/* Timeline line */}
               <Box
                 sx={{
                   position: 'absolute',
@@ -395,7 +465,7 @@ const ApplicationDetailsPage = () => {
                     </Typography>
                     {history.change_reason && (
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        {history.change_reason}
+                        Reason: {history.change_reason}
                       </Typography>
                     )}
                   </Box>
@@ -404,99 +474,97 @@ const ApplicationDetailsPage = () => {
             </Box>
           </Paper>
         )}
-
-        {/* Actions */}
-        {isAdmin ? (
-          <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleApprove}
-              disabled={application.application.status === 'accepted' || application.application.status === 'rejected'}
-            >
-              Approve
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={handleReject}
-              disabled={application.application.status === 'accepted' || application.application.status === 'rejected'}
-            >
-              Reject
-            </Button>
-          </Box>
-        ) : (
-          <Box sx={{ mt: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            {/* Continue Filling - Show for draft applications */}
-            {application.application.status === 'draft' && (
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<EditIcon />}
-                onClick={handleContinueFilling}
-              >
-                Continue Filling
-              </Button>
-            )}
-
-            {/* Upload Documents - Show for submitted, under_review, or documents_pending */}
-            {['documents_pending', 'submitted', 'under_review'].includes(application.application.status) && (
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<UploadFileIcon />}
-                onClick={handleUploadDocuments}
-              >
-                Upload Documents
-              </Button>
-            )}
-
-            {/* Delete Application - Show for draft or submitted (early stage) */}
-            {['draft', 'submitted'].includes(application.application.status) && (
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                Delete Application
-              </Button>
-            )}
-          </Box>
-        )}
       </Container>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Change Status Dialog */}
       <Dialog
-        open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-        aria-labelledby="delete-dialog-title"
-        aria-describedby="delete-dialog-description"
+        open={statusDialogOpen}
+        onClose={() => setStatusDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
       >
-        <DialogTitle id="delete-dialog-title">
-          Delete Application
-        </DialogTitle>
+        <DialogTitle>Change Application Status</DialogTitle>
         <DialogContent>
-          <DialogContentText id="delete-dialog-description">
-            Are you sure you want to delete this application? This action cannot be undone.
-          </DialogContentText>
-          {application && (
-            <Box sx={{ mt: 2, p: 2, bgcolor: '#fee', border: '1px solid #f44336', borderRadius: 1 }}>
-              <Typography variant="body2" fontWeight={600}>
-                Application: {application.application.application_number}
-              </Typography>
-              <Typography variant="body2">
-                Student: {application.student.first_name} {application.student.last_name}
-              </Typography>
-            </Box>
-          )}
+          <Box sx={{ pt: 2 }}>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel>New Status</InputLabel>
+              <Select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                label="New Status"
+              >
+                <MenuItem value="submitted">Submitted</MenuItem>
+                <MenuItem value="under_review">Under Review</MenuItem>
+                <MenuItem value="documents_pending">Documents Pending</MenuItem>
+                <MenuItem value="test_scheduled">Test Scheduled</MenuItem>
+                <MenuItem value="test_completed">Test Completed</MenuItem>
+                <MenuItem value="interview_scheduled">Interview Scheduled</MenuItem>
+                <MenuItem value="interview_completed">Interview Completed</MenuItem>
+                <MenuItem value="decision_made">Decision Made</MenuItem>
+                <MenuItem value="waitlisted">Waitlisted</MenuItem>
+                <MenuItem value="accepted">Accepted</MenuItem>
+                <MenuItem value="rejected">Rejected</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="Reason for Change (Optional)"
+              value={statusReason}
+              onChange={(e) => setStatusReason(e.target.value)}
+              placeholder="Explain why you're changing the status..."
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)} color="inherit">
+          <Button onClick={() => setStatusDialogOpen(false)} color="inherit">
             Cancel
           </Button>
-          <Button onClick={handleDeleteApplication} color="error" variant="contained" autoFocus>
-            Delete
+          <Button
+            onClick={handleChangeStatus}
+            variant="contained"
+            disabled={!selectedStatus}
+          >
+            Update Status
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Add Comment Dialog */}
+      <Dialog
+        open={commentDialogOpen}
+        onClose={() => setCommentDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Add Internal Comment</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              label="Comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Add internal notes about this application..."
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCommentDialogOpen(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              showNotification('Comment feature coming soon', 'info');
+              setCommentDialogOpen(false);
+            }}
+            variant="contained"
+            disabled={!comment}
+          >
+            Save Comment
           </Button>
         </DialogActions>
       </Dialog>
@@ -504,4 +572,4 @@ const ApplicationDetailsPage = () => {
   );
 };
 
-export default ApplicationDetailsPage;
+export default AdminApplicationDetailsPage;

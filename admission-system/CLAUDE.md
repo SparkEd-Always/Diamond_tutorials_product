@@ -3,13 +3,13 @@
 ## Project Overview
 Standalone Student Admission Management System built with FastAPI (backend) and React + TypeScript (frontend). This is a complete, production-ready application for managing student admissions in educational institutions.
 
-## Current Status: 🔄 REFINING USER EXPERIENCE
+## Current Status: ✅ ADMIN WORKFLOW SYSTEM COMPLETE
 
 ### System Running
 - **Backend**: http://localhost:8000 (FastAPI + SQLite)
-- **Frontend**: http://localhost:5173 (React 19 + TypeScript + Vite 7.1.9)
+- **Frontend**: http://localhost:5178 (React 19 + TypeScript + Vite 7.1.9)
 - **API Documentation**: http://localhost:8000/docs (Swagger UI)
-- **Database**: SQLite (`admission-system/backend/admission.db`) - 17 test applications
+- **Database**: SQLite (`admission-system/backend/admission.db`) - 17 test applications + 7 workflow steps
 
 ### Deployment Status
 - ✅ Backend server running successfully
@@ -19,7 +19,17 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 - ✅ Approve/Reject workflows fully functional
 - ✅ UI optimized for desktop with centered, responsive layout
 - ✅ Document upload feature implemented (Step 5)
-- 🔄 **Current Phase**: UX refinements and workflow improvements
+- ✅ **Admin Workflow Settings** - Configurable admission process steps (CRUD operations)
+- ✅ Separate Parent/Admin application detail pages
+- 🔄 **Next Phase**: Parent workflow tracker component
+
+### Recent Fixes & Improvements (October 6, 2025)
+1. ✅ **Admin Workflow Settings Page**: Complete CRUD interface for managing workflow steps
+2. ✅ **Workflow Step Editor Dialog**: Create/edit workflow steps with validation
+3. ✅ **7 Default Workflow Steps Seeded**: Application → Documents → Test → Interview → Decision → Fee → Enrollment
+4. ✅ **Fixed TypeScript Import Issues**: Used `import type` for type-only imports to resolve module loading errors
+5. ✅ **Updated CORS Configuration**: Added support for ports 5173-5180 for development flexibility
+6. ✅ **Vite Cache Issues Resolved**: Cleared `.vite` cache to fix stale module problems
 
 ### Recent Fixes & Improvements (October 5, 2025)
 1. ✅ **Fixed ApplicationDetailsPage TypeError**: Added optional chaining (`?.`) to handle undefined `application_status`
@@ -90,7 +100,7 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 
 ## Architecture
 
-### Database Schema (14 Tables)
+### Database Schema (16 Tables)
 1. **users** - Authentication and basic user info
 2. **user_profiles** - Extended profile data (name, DOB, gender, address)
 3. **academic_years** - School academic year configuration
@@ -105,8 +115,10 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 12. **document_types** - Document type definitions (10 types)
 13. **admission_tests** - Test records
 14. **interviews** - Interview schedules
+15. **admission_workflow_steps** - Configurable workflow template (7 default steps) ✨ NEW
+16. **application_workflow_progress** - Per-application workflow tracking ✨ NEW
 
-### API Endpoints (30+)
+### API Endpoints (37+)
 
 #### Authentication (`/api/v1/auth`)
 - `POST /register` - Parent registration
@@ -133,6 +145,14 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 #### Academic Data (`/api/v1/academic`)
 - `GET /years` - List academic years
 - `GET /classes` - List classes
+
+#### Workflow Management (`/api/v1/workflow`) ✨ NEW
+- `GET /workflow-steps` - Get all workflow steps (with optional include_inactive)
+- `POST /workflow-steps` - Create new step (admin only)
+- `PUT /workflow-steps/{id}` - Update step (admin only)
+- `DELETE /workflow-steps/{id}` - Delete step (admin only)
+- `GET /applications/{id}/workflow` - Get workflow tracking for an application
+- `POST /applications/{id}/workflow/{step_id}/complete` - Mark step complete (admin only)
 
 ## User Journeys
 
@@ -602,9 +622,114 @@ VITE_SCHOOL_NAME=ABC International School
 
 ---
 
-**Last Updated**: October 5, 2025
-**Version**: 1.2.0-beta (UX Refinements)
-**Status**: 🔄 Refining User Experience - 4 Phase Enhancement Plan
+## Common Debugging Issues & Solutions
+
+### Issue 1: TypeScript Module Export Errors
+**Symptom**: `The requested module '/src/types/workflow.ts' does not provide an export named 'ApplicationWorkflowTracker'`
+
+**Root Cause**: TypeScript/Vite module loading issues with runtime vs type-only imports
+
+**Solution**:
+```typescript
+// ❌ Wrong - tries to load at runtime
+import { WorkflowStep } from '../types/workflow';
+
+// ✅ Correct - type-only import
+import type { WorkflowStep } from '../types/workflow';
+```
+
+**Files Affected**:
+- `src/services/workflowApi.ts`
+- `src/components/WorkflowStepEditor.tsx`
+- `src/pages/AdminWorkflowSettingsPage.tsx`
+
+### Issue 2: CORS Errors After Port Change
+**Symptom**: `Access to XMLHttpRequest at 'http://localhost:8000/api/v1/auth/login' from origin 'http://localhost:5178' has been blocked by CORS`
+
+**Root Cause**: Backend CORS configuration doesn't include the new frontend port
+
+**Solution**:
+1. Update `backend/app/core/config.py`:
+```python
+CORS_ORIGINS: list = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
+    "http://localhost:5176",
+    "http://localhost:5177",
+    "http://localhost:5178",
+    # Add more ports as needed
+]
+```
+2. Restart backend server (auto-reload should work, but manual restart is safer)
+
+### Issue 3: Vite Cache Causing Stale Modules
+**Symptom**: Browser shows cached/old version of files, 304 Not Modified status codes
+
+**Solution**:
+```bash
+# Clear Vite cache
+cd admission-system/frontend/web-app
+rm -rf .vite
+rm -rf node_modules/.vite
+rm -rf dist
+
+# Restart dev server
+npm run dev
+```
+
+**Browser Steps**:
+1. Close ALL browser tabs with old frontend
+2. Clear browser cache (Ctrl+Shift+Delete)
+3. Open NEW tab with fresh URL
+4. Hard refresh (Ctrl+F5)
+
+### Issue 4: Backend Not Reloading After Config Changes
+**Symptom**: CORS errors persist even after updating config.py
+
+**Solution**:
+1. Check if server detected change: Look for `WARNING: StatReload detected changes in 'app\core\config.py'. Reloading...`
+2. If not reloading, manually restart:
+```bash
+# Kill the server (Ctrl+C)
+# Restart
+cd admission-system/backend
+python -m app.main
+```
+
+### Issue 5: Import Path Circular Dependencies
+**Symptom**: Module not found or circular dependency errors
+
+**Solution**:
+- Export all types from main `src/types/index.ts`:
+```typescript
+// Re-export workflow types
+export * from './workflow';
+```
+- Then import from main types file:
+```typescript
+import type { WorkflowStep } from '../types';
+// or
+import type { WorkflowStep } from '../types/workflow';
+```
+
+### Debugging Checklist
+When encountering errors:
+1. ✅ Check browser console for detailed error messages
+2. ✅ Check Network tab for failed requests (status codes, CORS headers)
+3. ✅ Verify backend is running and responding
+4. ✅ Check if CORS includes the current frontend port
+5. ✅ Clear Vite cache if seeing stale modules
+6. ✅ Use `import type` for TypeScript type imports
+7. ✅ Restart both backend and frontend servers
+8. ✅ Clear browser cache completely
+9. ✅ Check file actually exists on disk with correct exports
+
+---
+
+**Last Updated**: October 6, 2025
+**Version**: 1.3.0-beta (Admin Workflow System Complete)
+**Status**: ✅ Admin Workflow Settings Implemented | 🔄 Next: Parent Workflow Tracker
 **Developers**: Claude AI + Human Team
 
 ## Implementation Notes for Refinements

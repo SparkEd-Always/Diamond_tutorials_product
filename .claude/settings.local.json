@@ -13,7 +13,8 @@
       "Bash(pip install:*)",
       "Bash(curl:*)",
       "Bash(npm run dev:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

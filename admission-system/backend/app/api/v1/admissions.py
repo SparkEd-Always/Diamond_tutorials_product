@@ -371,7 +371,7 @@ async def get_application(
         "application": {
             "id": application.id,
             "application_number": application.application_number,
-            "status": application.application_status.value,
+            "application_status": application.application_status.value,
             "submission_date": application.submission_date,
             "review_date": application.review_date,
             "decision_date": application.decision_date,

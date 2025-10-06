@@ -12,7 +12,9 @@ import ParentDashboard from './pages/ParentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ApplicationFormPage from './pages/ApplicationFormPage';
 import ApplicationListPage from './pages/ApplicationListPage';
-import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
+import ParentApplicationDetailsPage from './pages/ParentApplicationDetailsPage';
+import AdminApplicationDetailsPage from './pages/AdminApplicationDetailsPage';
+import AdminWorkflowSettingsPage from './pages/AdminWorkflowSettingsPage';
 import HomePage from './pages/HomePage';
 
 // Protected Route Component
@@ -38,6 +40,12 @@ const ProtectedRoute = ({ children, adminOnly = false }: { children: React.React
 const DashboardRoute = () => {
   const { isAdmin } = useAuth();
   return isAdmin ? <AdminDashboard /> : <ParentDashboard />;
+};
+
+// Application Details Route - Routes to correct details page based on role
+const ApplicationDetailsRoute = () => {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <AdminApplicationDetailsPage /> : <ParentApplicationDetailsPage />;
 };
 
 function AppRoutes() {
@@ -85,7 +93,17 @@ function AppRoutes() {
         path="/applications/:id"
         element={
           <ProtectedRoute>
-            <ApplicationDetailsPage />
+            <ApplicationDetailsRoute />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin Only Routes */}
+      <Route
+        path="/admin/workflow-settings"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminWorkflowSettingsPage />
           </ProtectedRoute>
         }
       />

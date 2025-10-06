@@ -38,6 +38,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import PeopleIcon from "@mui/icons-material/People";
+import SettingsIcon from "@mui/icons-material/Settings";
 import config from "../config";
 
 interface DashboardStats {
@@ -316,6 +317,15 @@ const AdminDashboard = () => {
                   color="success"
                 >
                   Schedule Tests
+                </Button>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  size="large"
+                  startIcon={<SettingsIcon />}
+                  onClick={() => navigate("/admin/workflow-settings")}
+                >
+                  Workflow Settings
                 </Button>
                 <Button
                   variant="outlined"

@@ -19,6 +19,7 @@ from ..models.form_configuration import (
     FormTemplateField,
     School
 )
+from ..models.application_review import ApplicationFieldReview, ApplicationReview
 
 def create_admin_user(db: Session):
     """Create default admin user"""

@@ -35,7 +35,7 @@ const HomePage = () => {
   ];
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ width:'100vw',minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Header */}
       <AppBar position="static" elevation={0} sx={{ bgcolor: 'white', borderBottom: 1, borderColor: 'divider' }}>
         <Toolbar>

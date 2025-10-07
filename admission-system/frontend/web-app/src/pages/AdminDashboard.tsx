@@ -236,142 +236,232 @@ const AdminDashboard = () => {
           </Grid>
         </Grid>
 
-        {/* Application Status Overview - Actionable Cards */}
+        {/* Application Workflow Pipeline */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h6" gutterBottom fontWeight={600}>
-            Application Status Overview
+            Application Workflow Pipeline
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Click on any status to view and take action on applications
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Click on any stage to view applications
           </Typography>
 
-          <Grid container spacing={2}>
-            {/* Submitted - Needs Action */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ bgcolor: 'info.light', color: 'info.contrastText' }}>
-                <CardActionArea onClick={() => handleStatusClick('submitted')}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <AssignmentIcon />
-                      <Typography fontWeight={500}>New Submissions</Typography>
-                    </Box>
-                    <Typography variant="h3" fontWeight={600}>
-                      {stats.submitted}
-                    </Typography>
-                    <Typography variant="caption">Click to start review process</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-
-            {/* Under Review */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ bgcolor: 'warning.light', color: 'warning.contrastText' }}>
-                <CardActionArea onClick={() => handleStatusClick('under_review')}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <PendingActionsIcon />
-                      <Typography fontWeight={500}>Under Review</Typography>
-                    </Box>
-                    <Typography variant="h3" fontWeight={600}>
-                      {stats.underReview}
-                    </Typography>
-                    <Typography variant="caption">Click to review applications</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-
-            {/* Test Scheduled */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <CardActionArea onClick={() => handleStatusClick('test_scheduled')}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <AssignmentIcon color="primary" />
-                      <Typography color="text.secondary" fontWeight={500}>Test Scheduled</Typography>
-                    </Box>
-                    <Typography variant="h3" fontWeight={600} color="primary.main">
-                      {stats.testScheduled}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">Click to view scheduled tests</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-
-            {/* Interview Scheduled */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <CardActionArea onClick={() => handleStatusClick('interview_scheduled')}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <PeopleIcon color="primary" />
-                      <Typography color="text.secondary" fontWeight={500}>Interview Scheduled</Typography>
-                    </Box>
-                    <Typography variant="h3" fontWeight={600} color="primary.main">
-                      {stats.interviewScheduled}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">Click to view scheduled interviews</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-
-            {/* Decision Made */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <CardActionArea onClick={() => handleStatusClick('decision_made')}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <CheckCircleIcon color="success" />
-                      <Typography color="text.secondary" fontWeight={500}>Decision Made</Typography>
-                    </Box>
-                    <Typography variant="h3" fontWeight={600} color="success.main">
-                      {stats.decisionMade}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">Click to view approved applications</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-
-            {/* Rejected */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <CardActionArea onClick={() => handleStatusClick('rejected')}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <ErrorIcon color="error" />
-                      <Typography color="text.secondary" fontWeight={500}>Rejected</Typography>
-                    </Box>
-                    <Typography variant="h3" fontWeight={600} color="error.main">
-                      {stats.rejected}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">Click to view rejected applications</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-
-            {/* Assign Tasks - Coming Soon */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ bgcolor: 'grey.100', position: 'relative' }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <AssignmentIcon color="disabled" />
-                    <Typography color="text.secondary" fontWeight={500}>Assign Tasks</Typography>
-                  </Box>
-                  <Chip
-                    label="COMING SOON"
-                    size="small"
-                    color="primary"
-                    sx={{ mt: 1 }}
-                  />
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 2 }}>
-                    Delegate application reviews to team members
+          <Paper sx={{ p: 3 }}>
+            <Stack direction="row" spacing={0} alignItems="center" sx={{ overflowX: 'auto' }}>
+              {/* Submitted */}
+              <Box
+                onClick={() => handleStatusClick('submitted')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <AssignmentIcon sx={{ fontSize: 32, mb: 1, color: 'info.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.submitted > 0 ? 'info.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.submitted}
                   </Typography>
-                </CardContent>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Submitted
+                </Typography>
+              </Box>
+
+              <Box sx={{ px: 1, color: 'text.secondary', fontSize: 24 }}>→</Box>
+
+              {/* Under Review */}
+              <Box
+                onClick={() => handleStatusClick('under_review')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <PendingActionsIcon sx={{ fontSize: 32, mb: 1, color: 'warning.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.underReview > 0 ? 'warning.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.underReview}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Under Review
+                </Typography>
+              </Box>
+
+              <Box sx={{ px: 1, color: 'text.secondary', fontSize: 24 }}>→</Box>
+
+              {/* Tests */}
+              <Box
+                onClick={() => handleStatusClick('test_scheduled')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <AssignmentIcon sx={{ fontSize: 32, mb: 1, color: 'primary.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.testScheduled > 0 ? 'primary.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.testScheduled}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Tests
+                </Typography>
+              </Box>
+
+              <Box sx={{ px: 1, color: 'text.secondary', fontSize: 24 }}>→</Box>
+
+              {/* Interviews */}
+              <Box
+                onClick={() => handleStatusClick('interview_scheduled')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <PeopleIcon sx={{ fontSize: 32, mb: 1, color: 'secondary.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.interviewScheduled > 0 ? 'secondary.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.interviewScheduled}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Interviews
+                </Typography>
+              </Box>
+
+              <Box sx={{ px: 1, color: 'text.secondary', fontSize: 24 }}>→</Box>
+
+              {/* Decision */}
+              <Box
+                onClick={() => handleStatusClick('decision_made')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <CheckCircleIcon sx={{ fontSize: 32, mb: 1, color: 'success.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.decisionMade > 0 ? 'success.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.decisionMade}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Decision
+                </Typography>
+              </Box>
+            </Stack>
+
+        
+          </Paper>
+        </Box>
+
+        {/* Management Tools */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" gutterBottom fontWeight={600}>
+            Management Tools
+          </Typography>
+          <Grid container spacing={2}>
+
+            {/* Applications Management */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card>
+                <CardActionArea onClick={() => navigate('/applications')}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <ListIcon color="action" />
+                      <Typography color="text.secondary" fontWeight={500}>Applications</Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={600} sx={{ mt: 1 }}>
+                      View All Applications
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">Click to review and manage all applications</Typography>
+                  </CardContent>
+                </CardActionArea>
               </Card>
             </Grid>
 
@@ -412,63 +502,6 @@ const AdminDashboard = () => {
             </Grid>
           </Grid>
         </Box>
-
-        {/* Quick Actions Section */}
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom fontWeight={600}>
-            Quick Actions
-          </Typography>
-          <Divider sx={{ mb: 3 }} />
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={3}>
-              <Button
-                variant="contained"
-                fullWidth
-                size="large"
-                startIcon={<ListIcon />}
-                onClick={() => navigate("/applications")}
-              >
-                View All Applications
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Button
-                variant="outlined"
-                fullWidth
-                size="large"
-                startIcon={<PendingActionsIcon />}
-                onClick={() => navigate("/applications?status=submitted")}
-                color="warning"
-              >
-                Review Pending ({pendingReviewCount})
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Button
-                variant="outlined"
-                fullWidth
-                size="large"
-                startIcon={<CheckCircleIcon />}
-                color="success"
-                disabled
-              >
-                Schedule Tests
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Button
-                variant="outlined"
-                fullWidth
-                size="large"
-                startIcon={<PeopleIcon />}
-                color="info"
-                disabled
-              >
-                Schedule Interviews
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
       </Container>
     </Box>
   );

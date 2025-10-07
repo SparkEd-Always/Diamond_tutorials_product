@@ -11,9 +11,11 @@ import RegisterPage from './pages/RegisterPage';
 import ParentDashboard from './pages/ParentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ApplicationFormPage from './pages/ApplicationFormPage';
-import ApplicationListPage from './pages/ApplicationListPage';
+import ParentApplicationListPage from './pages/ParentApplicationListPage';
+import AdminApplicationListPage from './pages/AdminApplicationListPage';
 import ParentApplicationDetailsPage from './pages/ParentApplicationDetailsPage';
 import AdminApplicationDetailsPage from './pages/AdminApplicationDetailsPage';
+import AdminApplicationReviewPage from './pages/AdminApplicationReviewPage';
 import AdminWorkflowSettingsPage from './pages/AdminWorkflowSettingsPage';
 import FormBuilderPage from './pages/FormBuilderPage';
 import FormListPage from './pages/FormListPage';
@@ -42,6 +44,12 @@ const ProtectedRoute = ({ children, adminOnly = false }: { children: React.React
 const DashboardRoute = () => {
   const { isAdmin } = useAuth();
   return isAdmin ? <AdminDashboard /> : <ParentDashboard />;
+};
+
+// Application List Route - Routes to correct list page based on role
+const ApplicationListRoute = () => {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <AdminApplicationListPage /> : <ParentApplicationListPage />;
 };
 
 // Application Details Route - Routes to correct details page based on role
@@ -87,7 +95,7 @@ function AppRoutes() {
         path="/applications"
         element={
           <ProtectedRoute>
-            <ApplicationListPage />
+            <ApplicationListRoute />
           </ProtectedRoute>
         }
       />
@@ -101,6 +109,14 @@ function AppRoutes() {
       />
 
       {/* Admin Only Routes */}
+      <Route
+        path="/admin/applications/:id/review"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminApplicationReviewPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/admin/workflow-settings"
         element={

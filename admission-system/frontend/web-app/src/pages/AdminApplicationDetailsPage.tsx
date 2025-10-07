@@ -159,7 +159,7 @@ const AdminApplicationDetailsPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Box sx={{ width: '100vw',minHeight: '100vh', bgcolor: 'background.default' }}>
         <AppBar position="static" elevation={1}>
           <Toolbar>
             <IconButton edge="start" color="inherit" onClick={() => navigate('/applications')}>
@@ -183,7 +183,7 @@ const AdminApplicationDetailsPage = () => {
   const isFinalized = ['accepted', 'rejected', 'enrolled'].includes(application.application.application_status);
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ width:'100vw',minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Header */}
       <AppBar position="static" elevation={1}>
         <Toolbar>

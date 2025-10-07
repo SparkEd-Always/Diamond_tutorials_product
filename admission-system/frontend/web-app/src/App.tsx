@@ -15,6 +15,8 @@ import ApplicationListPage from './pages/ApplicationListPage';
 import ParentApplicationDetailsPage from './pages/ParentApplicationDetailsPage';
 import AdminApplicationDetailsPage from './pages/AdminApplicationDetailsPage';
 import AdminWorkflowSettingsPage from './pages/AdminWorkflowSettingsPage';
+import FormBuilderPage from './pages/FormBuilderPage';
+import FormListPage from './pages/FormListPage';
 import HomePage from './pages/HomePage';
 
 // Protected Route Component
@@ -104,6 +106,30 @@ function AppRoutes() {
         element={
           <ProtectedRoute adminOnly={true}>
             <AdminWorkflowSettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/forms"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <FormListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/forms/:id/edit"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <FormBuilderPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/form-builder"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <FormBuilderPage />
           </ProtectedRoute>
         }
       />

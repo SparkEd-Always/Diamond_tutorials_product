@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Paper,
@@ -33,6 +34,8 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   DragIndicator as DragIcon,
+  RestartAlt as ResetIcon,
+  ArrowBack as BackIcon,
 } from '@mui/icons-material';
 import { useNotification } from '../contexts/NotificationContext';
 import workflowApi from '../services/workflowApi';
@@ -40,6 +43,7 @@ import type { WorkflowStep } from '../types/workflow';
 import WorkflowStepEditor from '../components/WorkflowStepEditor';
 
 const AdminWorkflowSettingsPage: React.FC = () => {
+  const navigate = useNavigate();
   const { showNotification } = useNotification();
   const [steps, setSteps] = useState<WorkflowStep[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +51,7 @@ const AdminWorkflowSettingsPage: React.FC = () => {
   const [editingStep, setEditingStep] = useState<WorkflowStep | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [stepToDelete, setStepToDelete] = useState<WorkflowStep | null>(null);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
   // Load workflow steps on mount
   useEffect(() => {
@@ -96,6 +101,12 @@ const AdminWorkflowSettingsPage: React.FC = () => {
   };
 
   const handleToggleActive = async (step: WorkflowStep) => {
+    // Optimistic UI update - update immediately without reload
+    const updatedSteps = steps.map((s) =>
+      s.id === step.id ? { ...s, is_active: !s.is_active } : s
+    );
+    setSteps(updatedSteps);
+
     try {
       await workflowApi.updateWorkflowStep(step.id, {
         is_active: !step.is_active,
@@ -104,8 +115,9 @@ const AdminWorkflowSettingsPage: React.FC = () => {
         `Workflow step ${step.is_active ? 'deactivated' : 'activated'} successfully`,
         'success'
       );
-      loadWorkflowSteps();
     } catch (error: any) {
+      // Revert on error
+      setSteps(steps);
       showNotification('Failed to update workflow step', 'error');
     }
   };
@@ -114,6 +126,21 @@ const AdminWorkflowSettingsPage: React.FC = () => {
     // This will be called from WorkflowStepEditor dialog
     setEditorOpen(false);
     loadWorkflowSteps();
+  };
+
+  const handleResetClick = () => {
+    setResetConfirmOpen(true);
+  };
+
+  const handleResetConfirm = async () => {
+    try {
+      const newSteps = await workflowApi.resetWorkflowToDefault();
+      setSteps(newSteps);
+      setResetConfirmOpen(false);
+      showNotification('Workflow steps reset to default successfully', 'success');
+    } catch (error: any) {
+      showNotification(error.response?.data?.detail || 'Failed to reset workflow steps', 'error');
+    }
   };
 
   if (loading) {
@@ -125,20 +152,30 @@ const AdminWorkflowSettingsPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+    <Box width="100vw" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 }, justyContent: 'center' }}>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
-          <Typography variant="h4" gutterBottom>
-            Workflow Settings
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage admission workflow steps. Configure the steps that applications go through.
-          </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <IconButton onClick={() => navigate('/dashboard')} sx={{ mr: 2 }}>
+            <BackIcon />
+          </IconButton>
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography variant="h4" gutterBottom>
+              Workflow Settings
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Manage admission workflow steps. Configure the steps that applications go through.
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button variant="outlined" startIcon={<ResetIcon />} onClick={handleResetClick} color="warning">
+              Revert to Default
+            </Button>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddStep}>
+              Add New Step
+            </Button>
+          </Box>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddStep}>
-          Add New Step
-        </Button>
       </Box>
 
       {/* Info Alert */}
@@ -317,7 +354,42 @@ const AdminWorkflowSettingsPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+
+      {/* Reset Confirmation Dialog */}
+      <Dialog open={resetConfirmOpen} onClose={() => setResetConfirmOpen(false)}>
+        <DialogTitle>Revert to Default Workflow?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This will <strong>delete all current workflow steps</strong> and restore the default 7-step
+            admission workflow:
+            <br />
+            <br />
+            1. Application Submitted
+            <br />
+            2. Documents Verification
+            <br />
+            3. Entrance Test
+            <br />
+            4. Interview
+            <br />
+            5. Admission Decision
+            <br />
+            6. Fee Payment
+            <br />
+            7. Enrollment Complete
+            <br />
+            <br />
+            <strong>Warning:</strong> This action cannot be undone. All customizations will be lost.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setResetConfirmOpen(false)}>Cancel</Button>
+          <Button onClick={handleResetConfirm} variant="contained" color="warning">
+            Revert to Default
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

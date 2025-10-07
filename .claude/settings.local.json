@@ -14,7 +14,10 @@
       "Bash(curl:*)",
       "Bash(npm run dev:*)",
       "Bash(cmd /c:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(tasklist)",
+      "Bash(cp:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": []

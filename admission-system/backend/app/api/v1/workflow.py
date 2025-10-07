@@ -107,6 +107,98 @@ async def delete_workflow_step(
     return {"message": "Workflow step deleted successfully"}
 
 
+@router.post("/workflow-steps/reset-to-default", response_model=List[WorkflowStepResponse])
+async def reset_workflow_to_default(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Reset workflow steps to default configuration (Admin only).
+    Deletes all existing steps and recreates the 7 default steps.
+    """
+    if current_user.role not in [UserRole.ADMIN, UserRole.SUPER_ADMIN]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    # Delete all existing workflow steps
+    db.query(AdmissionWorkflowStep).delete()
+    db.commit()
+
+    # Define default steps
+    default_steps = [
+        {
+            "step_name": "Application Submitted",
+            "step_description": "Student has submitted the admission application form",
+            "step_order": 1,
+            "is_required": True,
+            "is_active": True,
+            "created_by": current_user.id
+        },
+        {
+            "step_name": "Documents Verification",
+            "step_description": "Uploaded documents are being verified by the admission team",
+            "step_order": 2,
+            "is_required": True,
+            "is_active": True,
+            "created_by": current_user.id
+        },
+        {
+            "step_name": "Entrance Test",
+            "step_description": "Student needs to appear for the entrance test",
+            "step_order": 3,
+            "is_required": True,
+            "is_active": True,
+            "created_by": current_user.id
+        },
+        {
+            "step_name": "Interview",
+            "step_description": "Parent and student interview with the admission committee",
+            "step_order": 4,
+            "is_required": True,
+            "is_active": True,
+            "created_by": current_user.id
+        },
+        {
+            "step_name": "Admission Decision",
+            "step_description": "Admission committee has made a decision on the application",
+            "step_order": 5,
+            "is_required": True,
+            "is_active": True,
+            "created_by": current_user.id
+        },
+        {
+            "step_name": "Fee Payment",
+            "step_description": "Admission fee payment is required to confirm enrollment",
+            "step_order": 6,
+            "is_required": True,
+            "is_active": True,
+            "created_by": current_user.id
+        },
+        {
+            "step_name": "Enrollment Complete",
+            "step_description": "Student is successfully enrolled for the academic year",
+            "step_order": 7,
+            "is_required": True,
+            "is_active": True,
+            "created_by": current_user.id
+        }
+    ]
+
+    # Create new default steps
+    new_steps = []
+    for step_data in default_steps:
+        step = AdmissionWorkflowStep(**step_data)
+        db.add(step)
+        new_steps.append(step)
+
+    db.commit()
+
+    # Refresh all steps to get IDs
+    for step in new_steps:
+        db.refresh(step)
+
+    return new_steps
+
+
 # ============= APPLICATION WORKFLOW TRACKING =============
 
 @router.get("/applications/{application_id}/workflow", response_model=ApplicationWorkflowTracker)

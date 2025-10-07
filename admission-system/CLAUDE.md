@@ -3,27 +3,38 @@
 ## Project Overview
 Standalone Student Admission Management System built with FastAPI (backend) and React + TypeScript (frontend). This is a complete, production-ready application for managing student admissions in educational institutions.
 
-## Current Status: ✅ ADMIN WORKFLOW SYSTEM COMPLETE
+## Current Status: ✅ CONFIGURABLE FORM BUILDER SYSTEM COMPLETE
 
 ### System Running
 - **Backend**: http://localhost:8000 (FastAPI + SQLite)
-- **Frontend**: http://localhost:5178 (React 19 + TypeScript + Vite 7.1.9)
+- **Frontend**: http://localhost:5174 (React 19 + TypeScript + Vite 7.1.9)
 - **API Documentation**: http://localhost:8000/docs (Swagger UI)
-- **Database**: SQLite (`admission-system/backend/admission.db`) - 17 test applications + 7 workflow steps
+- **Database**: SQLite (`admission-system/backend/admission.db`) - 102 form fields + 3 templates + 17 applications
 
 ### Deployment Status
 - ✅ Backend server running successfully
 - ✅ Frontend server running successfully
-- ✅ Database initialized with seed data + 17 dummy applications
+- ✅ **Configurable Form Builder** - Visual WYSIWYG form preview with 102 fields
+- ✅ **3 Comprehensive Templates** - CBSE (94 fields), ICSE (68 fields), Minimal (30 fields)
+- ✅ Database initialized with complete field catalog + templates
 - ✅ All critical bugs fixed (type imports, CORS, authentication, UI layout)
 - ✅ Approve/Reject workflows fully functional
 - ✅ UI optimized for desktop with centered, responsive layout
 - ✅ Document upload feature implemented (Step 5)
 - ✅ **Admin Workflow Settings** - Configurable admission process steps (CRUD operations)
 - ✅ Separate Parent/Admin application detail pages
-- 🔄 **Next Phase**: Parent workflow tracker component
+- 🔄 **Next Phase**: Integrate form builder with parent application form
 
-### Recent Fixes & Improvements (October 6, 2025)
+### Recent Major Features (October 6, 2025)
+1. ✅ **Form Builder System**: Complete WYSIWYG form configuration interface
+2. ✅ **102 Form Fields Seeded**: Comprehensive catalog across 7 categories
+3. ✅ **3 Template System**: CBSE Standard, ICSE Standard, and Minimal templates
+4. ✅ **Visual Form Preview**: Step-by-step preview showing actual field appearance
+5. ✅ **Enable/Disable Controls**: Toggle switches for each field with required/optional settings
+6. ✅ **Field Categories**: student_info, parent_info, address, academic, additional, financial, consent
+7. ✅ **5-Step Configuration**: Student, Parent, Address, Academic, Documents (Review step is parent-only)
+
+### Form Builder Features (October 6, 2025)
 1. ✅ **Admin Workflow Settings Page**: Complete CRUD interface for managing workflow steps
 2. ✅ **Workflow Step Editor Dialog**: Create/edit workflow steps with validation
 3. ✅ **7 Default Workflow Steps Seeded**: Application → Documents → Test → Interview → Decision → Fee → Enrollment
@@ -100,7 +111,7 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 
 ## Architecture
 
-### Database Schema (16 Tables)
+### Database Schema (22 Tables)
 1. **users** - Authentication and basic user info
 2. **user_profiles** - Extended profile data (name, DOB, gender, address)
 3. **academic_years** - School academic year configuration
@@ -115,8 +126,14 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 12. **document_types** - Document type definitions (10 types)
 13. **admission_tests** - Test records
 14. **interviews** - Interview schedules
-15. **admission_workflow_steps** - Configurable workflow template (7 default steps) ✨ NEW
-16. **application_workflow_progress** - Per-application workflow tracking ✨ NEW
+15. **admission_workflow_steps** - Configurable workflow template (7 default steps)
+16. **application_workflow_progress** - Per-application workflow tracking
+17. **schools** - Multi-tenant school/institution records ✨ NEW
+18. **form_fields_master** - Master catalog of 102 configurable form fields ✨ NEW
+19. **school_form_configurations** - Per-school field enable/disable settings ✨ NEW
+20. **form_templates** - Predefined form templates (CBSE, ICSE, Minimal) ✨ NEW
+21. **form_template_fields** - Template-to-field mappings ✨ NEW
+22. **application_field_responses** - Dynamic field responses from applications ✨ NEW
 
 ### API Endpoints (37+)
 
@@ -146,13 +163,27 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 - `GET /years` - List academic years
 - `GET /classes` - List classes
 
-#### Workflow Management (`/api/v1/workflow`) ✨ NEW
+#### Workflow Management (`/api/v1/workflow`)
 - `GET /workflow-steps` - Get all workflow steps (with optional include_inactive)
 - `POST /workflow-steps` - Create new step (admin only)
 - `PUT /workflow-steps/{id}` - Update step (admin only)
 - `DELETE /workflow-steps/{id}` - Delete step (admin only)
+- `POST /workflow-steps/reset-to-default` - Reset to 7 default steps (admin only)
 - `GET /applications/{id}/workflow` - Get workflow tracking for an application
 - `POST /applications/{id}/workflow/{step_id}/complete` - Mark step complete (admin only)
+
+#### Form Configuration (`/api/v1/form-config`) ✨ NEW
+- `GET /fields/master` - Get all 102 master form fields (with filters)
+- `GET /fields/categories` - Get field categories with counts
+- `GET /school/config` - Get school's form configuration
+- `GET /school/config/summary` - Get configuration summary stats
+- `POST /school/config` - Add field to school configuration (admin only)
+- `PUT /school/config/{id}` - Update field settings (admin only)
+- `DELETE /school/config/{id}` - Remove field from configuration (admin only)
+- `POST /school/config/bulk` - Bulk update field configurations (admin only)
+- `GET /templates` - Get all form templates
+- `GET /templates/{id}` - Get template details with fields
+- `POST /templates/apply` - Apply template to school (replaces current config) (admin only)
 
 ## User Journeys
 
@@ -171,11 +202,17 @@ Standalone Student Admission Management System built with FastAPI (backend) and 
 
 ### Admin Journey ✅ TESTED
 1. **Login** → Admin dashboard
-2. **View Applications** → List with filters (status, class, date)
-3. **Review Application** → View complete details
-4. **Approve/Reject** → Update status with reason ✅ **FULLY FUNCTIONAL**
-5. **View Status History** → Complete audit trail with timestamps
-6. **Filter & Search** → Find applications by status, class, or name
+2. **Configure Application Form** → Form Builder with visual preview ✨ NEW
+   - Apply templates (CBSE, ICSE, Minimal)
+   - Enable/disable fields across 5 steps
+   - Mark fields as required/optional
+   - Preview exactly how form will look to parents
+3. **Manage Workflow** → Configure admission process steps
+4. **View Applications** → List with filters (status, class, date)
+5. **Review Application** → View complete details
+6. **Approve/Reject** → Update status with reason ✅ **FULLY FUNCTIONAL**
+7. **View Status History** → Complete audit trail with timestamps
+8. **Filter & Search** → Find applications by status, class, or name
 
 ## File Structure
 
@@ -616,9 +653,127 @@ VITE_SCHOOL_NAME=ABC International School
 
 ### Technical ✅
 - UI layout: Centered, responsive, optimized
-- Database: 17 test applications with full data
+- Database: 17 test applications + 102 form fields + 3 templates
 - API uptime: 100% (local development)
 - Critical bugs: All fixed
+
+---
+
+## Form Builder System ✨ NEW
+
+### Overview
+The Form Builder is a comprehensive WYSIWYG (What You See Is What You Get) interface that allows admins to configure exactly which fields appear in the parent-facing admission application form.
+
+### Key Features
+
+#### 1. **102 Configurable Form Fields**
+Fields organized across 7 categories:
+- **Student Information (18 fields)**: Name, DOB, gender, blood group, nationality, religion, caste, identification, physical details, medical conditions
+- **Parent Information (29 fields)**: Father, mother, guardian complete details including occupation, education, contact, income, ID proofs
+- **Address Information (18 fields)**: Residential and permanent address with all components, emergency contacts, WhatsApp
+- **Academic Information (14 fields)**: Applying for class/year, stream, previous school details, TC number, academic performance
+- **Additional Information (13 fields)**: Transport, health/medical, allergies, disabilities, dietary restrictions, co-curricular interests
+- **Financial Information (4 fields)**: Fee concession, scholarship, income certificates, payment preferences
+- **Consent & Declaration (6 fields)**: Required consents for school rules, medical emergency, photo usage, data privacy, terms acceptance
+
+#### 2. **3 Comprehensive Templates**
+Pre-configured templates for quick setup:
+
+**CBSE Standard (94 fields)**
+- Most comprehensive template
+- Includes all essential CBSE board requirements
+- Student identification, parent details, academic history, consents
+- Suitable for large schools with detailed admission process
+
+**ICSE Standard (68 fields)**
+- Moderate field coverage
+- Focus on academics and extracurricular activities
+- Balanced between comprehensive and minimal
+- Suitable for ICSE board schools
+
+**Minimal (30 fields)**
+- Essential fields only
+- Quick setup for small schools
+- Basic student, parent, address, academic information
+- Streamlined admission process
+
+#### 3. **Visual Form Preview**
+- **5-Step Navigation**: Student Details → Parent Details → Address → Academic Details → Documents
+- **Real Field Rendering**: See exactly how text inputs, dropdowns, date pickers, file uploads will appear
+- **Step Progress Indicator**: Material-UI Stepper showing current step
+- **Previous/Next Navigation**: Move between steps to configure all sections
+
+#### 4. **Enable/Disable Controls**
+Each field card includes:
+- **Enable/Disable Switch** (green): Toggle field visibility in application form
+- **Required/Optional Switch** (warning): Mark enabled fields as mandatory or optional
+- **Visual Feedback**: Enabled fields have blue border, disabled fields are semi-transparent
+- **Field Metadata**: Chips showing field type and category
+
+#### 5. **Real-time Updates**
+- Changes save immediately to database
+- No page refresh required
+- Optimistic UI updates for smooth experience
+- Success/error notifications
+
+### How to Use
+
+#### Step 1: Apply a Template
+1. Login as admin: `admin@school.com / admin123`
+2. Navigate to Dashboard → "Form Builder" card
+3. Click "Apply Template" button
+4. Select CBSE Standard, ICSE Standard, or Minimal
+5. Confirm (warning: replaces current configuration)
+6. All fields for that template are instantly configured
+
+#### Step 2: Customize Fields
+1. Navigate through 5 steps using Previous/Next buttons
+2. For each field:
+   - Toggle "Enabled" switch to show/hide in parent form
+   - Toggle "Required" switch if field should be mandatory
+3. Changes save automatically
+4. Preview shows exactly how parents will see the field
+
+#### Step 3: Verify Configuration
+- Navigate through all 5 steps to review
+- Ensure required fields are enabled
+- Check field ordering and grouping
+- Verify consents are configured in Step 5
+
+### Database Architecture
+
+**form_fields_master** (102 records)
+- Predefined catalog of all available fields
+- Includes field type, validation rules, help text, options
+- Shared across all schools (multi-tenant)
+
+**school_form_configurations** (per-school)
+- Links school to specific fields
+- Stores enable/disable and required/optional settings
+- Controls step number and display order
+
+**form_templates** (3 records)
+- CBSE, ICSE, Minimal template definitions
+- Template name, code, description
+
+**form_template_fields** (192 records)
+- Maps templates to specific fields
+- Pre-configured enable/required settings for quick application
+
+### API Integration
+- `GET /api/v1/form-config/fields/master` - Fetch all 102 fields
+- `GET /api/v1/form-config/school/config` - Get school's current configuration
+- `PUT /api/v1/form-config/school/config/{id}` - Update field settings
+- `POST /api/v1/form-config/templates/apply` - Apply template to school
+
+### Next Steps (Planned)
+- [ ] Integrate form builder configuration with parent application form
+- [ ] Dynamic field rendering based on school configuration
+- [ ] Conditional field logic (show/hide based on other fields)
+- [ ] Custom field labels and help text per school
+- [ ] Field reordering with drag-and-drop
+- [ ] Export/import form configurations
+- [ ] Form preview mode for parents before going live
 
 ---
 

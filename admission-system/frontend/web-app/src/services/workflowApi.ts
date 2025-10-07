@@ -52,6 +52,15 @@ export const deleteWorkflowStep = async (stepId: number): Promise<void> => {
   await api.delete(`/workflow/workflow-steps/${stepId}`);
 };
 
+/**
+ * Reset workflow steps to default configuration (Admin only)
+ * Deletes all existing steps and recreates the 7 default steps
+ */
+export const resetWorkflowToDefault = async (): Promise<WorkflowStep[]> => {
+  const response = await api.post<WorkflowStep[]>('/workflow/workflow-steps/reset-to-default');
+  return response.data;
+};
+
 // ============= Application Workflow Tracking =============
 
 /**
@@ -90,6 +99,7 @@ const workflowApi = {
   createWorkflowStep,
   updateWorkflowStep,
   deleteWorkflowStep,
+  resetWorkflowToDefault,
 
   // Application workflow tracking
   getApplicationWorkflow,

@@ -166,75 +166,98 @@ const AdminDashboard = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+      <Container maxWidth="xl" sx={{ justifyContent: "center",  py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+        
         {/* Welcome Section */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" gutterBottom fontWeight={600}>
             <DashboardIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-            Admin Dashboard
+            Admission Dashboard
           </Typography>
           <Typography variant="body1" color="text.secondary">
             Comprehensive overview of the admission system
           </Typography>
         </Box>
 
-        {/* Key Metrics Cards - Clickable */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Card sx={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", color: "white" }}>
-              <CardActionArea onClick={() => navigate('/applications')}>
-                <CardContent>
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <PeopleIcon sx={{ fontSize: 40 }} />
-                    <Box>
-                      <Typography variant="h3" fontWeight={600}>
-                        {stats.total}
-                      </Typography>
-                      <Typography variant="body2">Total Applications</Typography>
-                      <Typography variant="caption" sx={{ opacity: 0.9 }}>Click to view all</Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Card sx={{ background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)", color: "white" }}>
-              <CardActionArea onClick={() => handleStatusClick('submitted')}>
-                <CardContent>
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <PendingActionsIcon sx={{ fontSize: 40 }} />
-                    <Box>
-                      <Typography variant="h3" fontWeight={600}>
-                        {pendingReviewCount}
-                      </Typography>
-                      <Typography variant="body2">Pending Review</Typography>
-                      <Typography variant="caption" sx={{ opacity: 0.9 }}>Click to review now</Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Card sx={{ background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)", color: "white" }}>
-              <CardActionArea onClick={() => navigate('/applications')}>
-                <CardContent>
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <AssignmentIcon sx={{ fontSize: 40 }} />
-                    <Box>
-                      <Typography variant="h3" fontWeight={600}>
-                        {activeCount}
-                      </Typography>
-                      <Typography variant="body2">Active Process</Typography>
-                      <Typography variant="caption" sx={{ opacity: 0.9 }}>Tests & Interviews</Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        </Grid>
+        {/* Key Metrics Cards - Simple Version */}
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          px: { xs: 2, sm: 4, md: 30 },
+          mb: 6
+        }}>
+          {/* Total Applications */}
+          <Box
+            onClick={() => navigate('/applications?quickFilter=all')}
+            sx={{
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'transform 0.2s, opacity 0.2s',
+              '&:hover': {
+                transform: 'scale(1.05)',
+                opacity: 0.8,
+              }
+            }}
+          >
+            <Typography
+              fontWeight={600}
+              sx={{ color: 'black', mb: 1, fontSize: '6rem', lineHeight: 1 }}
+            >
+              {stats.total}
+            </Typography>
+            <Typography variant="body1" color="black">
+              Total Applications
+            </Typography>
+          </Box>
+
+          {/* Pending Review */}
+          <Box
+            onClick={() => navigate('/applications?quickFilter=pending')}
+            sx={{
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'transform 0.2s, opacity 0.2s',
+              '&:hover': {
+                transform: 'scale(1.05)',
+                opacity: 0.8,
+              }
+            }}
+          >
+            <Typography
+              fontWeight={600}
+              sx={{ color: 'red', mb: 1, fontSize: '6rem', lineHeight: 1 }}
+            >
+              {pendingReviewCount}
+            </Typography>
+            <Typography variant="body1" color="black">
+              Pending Review
+            </Typography>
+          </Box>
+
+          {/* Active Process */}
+          <Box
+            onClick={() => navigate('/applications?quickFilter=active')}
+            sx={{
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'transform 0.2s, opacity 0.2s',
+              '&:hover': {
+                transform: 'scale(1.05)',
+                opacity: 0.8,
+              }
+            }}
+          >
+            <Typography
+              fontWeight={600}
+              sx={{ color: 'orange', mb: 1, fontSize: '6rem', lineHeight: 1 }}
+            >
+              {activeCount}
+            </Typography>
+            <Typography variant="body1" color="black">
+              Active Process
+            </Typography>
+          </Box>
+        </Box>
 
         {/* Application Workflow Pipeline */}
         <Box sx={{ mb: 4 }}>

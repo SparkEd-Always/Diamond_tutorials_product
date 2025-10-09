@@ -2,7 +2,7 @@
  * Admin Application List Page - Sophisticated view with advanced filtering, sorting, bulk actions
  */
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Container,
   Box,
@@ -61,7 +61,11 @@ interface SortConfig {
 
 const AdminApplicationListPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { showNotification, showSuccess, showError } = useNotification();
+
+  // Read quickFilter from URL query parameter
+  const urlQuickFilter = searchParams.get('quickFilter') as 'all' | 'pending' | 'active' | null;
 
   // State
   const [applications, setApplications] = useState<Application[]>([]);
@@ -76,6 +80,7 @@ const AdminApplicationListPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [classFilter, setClassFilter] = useState('');
+  const [quickFilter, setQuickFilter] = useState<'all' | 'pending' | 'active'>(urlQuickFilter || 'all');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [stats, setStats] = useState({
     total: 0,
@@ -90,6 +95,13 @@ const AdminApplicationListPage: React.FC = () => {
     loadApplications();
     loadStats();
   }, [filters]);
+
+  // Apply quick filter from URL on mount
+  useEffect(() => {
+    if (urlQuickFilter && urlQuickFilter !== quickFilter) {
+      handleQuickFilterChange(urlQuickFilter);
+    }
+  }, [urlQuickFilter]);
 
   const loadApplications = async () => {
     setLoading(true);
@@ -136,10 +148,29 @@ const AdminApplicationListPage: React.FC = () => {
     setFilters({ ...filters, class_id: value ? parseInt(value) : undefined, page: 1 });
   };
 
+  const handleQuickFilterChange = (filter: 'all' | 'pending' | 'active') => {
+    setQuickFilter(filter);
+
+    if (filter === 'all') {
+      // Show all applications - clear status filter
+      setStatusFilter('');
+      setFilters({ ...filters, status: undefined, page: 1 });
+    } else if (filter === 'pending') {
+      // Show submitted + under_review
+      setStatusFilter('submitted,under_review');
+      setFilters({ ...filters, status: 'submitted,under_review', page: 1 });
+    } else if (filter === 'active') {
+      // Show under_review + test_scheduled + test_completed + interview_scheduled
+      setStatusFilter('under_review,test_scheduled,test_completed,interview_scheduled');
+      setFilters({ ...filters, status: 'under_review,test_scheduled,test_completed,interview_scheduled', page: 1 });
+    }
+  };
+
   const handleClearFilters = () => {
     setSearchQuery('');
     setStatusFilter('');
     setClassFilter('');
+    setQuickFilter('all');
     setFilters({ page: 1, page_size: 25 });
   };
 
@@ -285,7 +316,7 @@ const AdminApplicationListPage: React.FC = () => {
           </Button>
         </Stack>
 
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
           <FormControl size="small" sx={{ minWidth: 200 }}>
             <InputLabel>Status</InputLabel>
             <Select
@@ -321,6 +352,55 @@ const AdminApplicationListPage: React.FC = () => {
               {/* Add more classes */}
             </Select>
           </FormControl>
+
+          {/* Quick Filter Chips */}
+          <Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
+            <Chip
+              label="All"
+              variant={quickFilter === 'all' ? 'filled' : 'outlined'}
+              onClick={() => handleQuickFilterChange('all')}
+              sx={{
+                borderColor: 'black',
+                color: quickFilter === 'all' ? 'white' : 'black',
+                bgcolor: quickFilter === 'all' ? 'black' : 'transparent',
+                fontWeight: 600,
+                cursor: 'pointer',
+                '&:hover': {
+                  bgcolor: quickFilter === 'all' ? 'black' : 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+            />
+            <Chip
+              label="Pending Review"
+              variant={quickFilter === 'pending' ? 'filled' : 'outlined'}
+              onClick={() => handleQuickFilterChange('pending')}
+              sx={{
+                borderColor: 'red',
+                color: quickFilter === 'pending' ? 'white' : 'red',
+                bgcolor: quickFilter === 'pending' ? 'red' : 'transparent',
+                fontWeight: 600,
+                cursor: 'pointer',
+                '&:hover': {
+                  bgcolor: quickFilter === 'pending' ? 'red' : 'rgba(255, 0, 0, 0.04)',
+                },
+              }}
+            />
+            <Chip
+              label="Active Applications"
+              variant={quickFilter === 'active' ? 'filled' : 'outlined'}
+              onClick={() => handleQuickFilterChange('active')}
+              sx={{
+                borderColor: 'orange',
+                color: quickFilter === 'active' ? 'white' : 'orange',
+                bgcolor: quickFilter === 'active' ? 'orange' : 'transparent',
+                fontWeight: 600,
+                cursor: 'pointer',
+                '&:hover': {
+                  bgcolor: quickFilter === 'active' ? 'orange' : 'rgba(255, 165, 0, 0.04)',
+                },
+              }}
+            />
+          </Stack>
 
           {(searchQuery || statusFilter || classFilter) && (
             <Button

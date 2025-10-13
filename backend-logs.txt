@@ -1,7 +1,1 @@
-INFO:     Will watch for changes in these directories: ['/Users/koustubskulkarni/AVM/product/AVM-code/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [3462] using StatReload
-INFO:     Started server process [3485]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     127.0.0.1:61283 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+(eval):1: command not found: python

@@ -5,6 +5,9 @@ from .core.config import settings
 from .core.database import engine, Base
 from .api.v1 import api_router
 
+# Import all models so they are registered with SQLAlchemy Base
+from .models import user, student, teacher, attendance, communication, notice, activity_log
+
 # Create database tables
 Base.metadata.create_all(bind=engine)
 

@@ -57,16 +57,15 @@ async def download_teachers_template(
     """Download Excel template for bulk teacher import"""
     # Create sample data for template
     template_data = {
-        'first_name': ['Priya', 'Amit'],
-        'last_name': ['Patel', 'Singh'],
-        'email': ['priya.patel@school.com', 'amit.singh@school.com'],
-        'phone_number': ['9876543210', '9876543211'],
-        'subjects': ['Mathematics,Science', 'English,Hindi'],
-        'classes_assigned': ['7,8', '9,10'],
-        'qualification': ['M.Sc Mathematics', 'M.A English'],
-        'experience_years': [5, 8],
-        'address': ['123 Teacher Colony', '456 Staff Quarters'],
-        'emergency_contact': ['9876543212', '9876543213']
+        'first_name': ['Priya', 'Ravi', 'Meena', 'Suresh', 'Kavita'],
+        'last_name': ['Sharma', 'Verma', 'Nair', 'Patel', 'Joshi'],
+        'phone_number': ['9876601001', '9876601002', '9876601003', '9876601004', '9876601005'],
+        'subjects': ['Mathematics,Science', 'English,Hindi', 'Social Studies,History', 'Physics,Chemistry', 'Biology,Mathematics'],
+        'classes_assigned': ['Class 7,Class 8', 'Class 9,Class 10', 'Class 7,Class 9', 'Class 8,Class 10', 'Class 7,Class 8'],
+        'qualification': ['M.Sc Mathematics', 'M.A English Literature', 'M.A History', 'M.Sc Physics', 'M.Sc Zoology'],
+        'experience_years': [8, 5, 12, 6, 10],
+        'address': ['15 Koramangala, Bangalore', '32 Banjara Hills, Hyderabad', '67 Andheri West, Mumbai', '89 Satellite, Ahmedabad', '44 Sadashiv Peth, Pune'],
+        'emergency_contact': ['9876602001', '9876602002', '9876602003', '9876602004', '9876602005']
     }
 
     df = pd.DataFrame(template_data)
@@ -104,6 +103,7 @@ async def import_students(
 
         imported_count = 0
         errors = []
+        imported_students = []  # Track imported students
 
         for idx, row in df.iterrows():
             row_num = idx + 2  # Account for 0-based index and header row
@@ -158,6 +158,13 @@ async def import_students(
 
                 db.add(student)
                 db.flush()  # Flush to get the ID without committing transaction
+
+                # Track imported student
+                imported_students.append({
+                    'name': student.full_name,
+                    'phone': student.parent_phone
+                })
+
                 imported_count += 1
 
             except Exception as e:
@@ -172,6 +179,7 @@ async def import_students(
             "message": f"Successfully imported {imported_count} students",
             "imported_count": imported_count,
             "total_rows": len(df),
+            "imported_students": imported_students,  # Add student list
             "errors": errors if errors else None
         }
 
@@ -231,11 +239,12 @@ async def import_teachers(
         imported_count = 0
         errors = []
         created_users = []  # Track created user accounts with their credentials
+        imported_teachers = []  # Track imported teachers (name + phone only)
 
         for idx, row in df.iterrows():
             row_num = idx + 2  # Account for 0-based index and header row
             try:
-                required_fields = ['first_name', 'last_name', 'email', 'phone_number']
+                required_fields = ['first_name', 'last_name', 'phone_number']
                 missing_fields = [field for field in required_fields if pd.isna(row.get(field))]
 
                 if missing_fields:
@@ -245,31 +254,35 @@ async def import_teachers(
                     })
                     continue
 
-                # Check if teacher already exists by email
-                email = str(row['email']).strip()
-                existing_teacher = db.query(Teacher).filter(Teacher.email == email).first()
+                phone_num = str(row['phone_number']).strip()
+
+                # Check if teacher already exists by phone number
+                existing_teacher = db.query(Teacher).filter(Teacher.phone_number == phone_num).first()
 
                 if existing_teacher:
                     errors.append({
                         'row': row_num,
-                        'error': f"Teacher with email {email} already exists (ID: {existing_teacher.unique_id})"
+                        'error': f"Teacher with phone number {phone_num} already exists (ID: {existing_teacher.unique_id})"
                     })
                     continue
 
                 # Generate unique ID for teacher
                 unique_id = UniqueIdGenerator.generate_teacher_id(db)
 
+                # Auto-generate email from phone number (last 10 digits)
+                phone_digits = ''.join(filter(str.isdigit, phone_num))
+                auto_email = f"teacher_{phone_digits[-10:]}@avm.com"
+
                 # Parse subjects and classes (comma-separated)
                 subjects = [s.strip() for s in str(row.get('subjects', '')).split(',') if s.strip()] if not pd.isna(row.get('subjects')) else []
                 classes_assigned = [c.strip() for c in str(row.get('classes_assigned', '')).split(',') if c.strip()] if not pd.isna(row.get('classes_assigned')) else []
 
-                phone_num = str(row['phone_number']).strip()
                 teacher = Teacher(
                     unique_id=unique_id,
                     first_name=str(row['first_name']).strip(),
                     last_name=str(row['last_name']).strip(),
                     full_name=f"{str(row['first_name']).strip()} {str(row['last_name']).strip()}",
-                    email=str(row['email']).strip(),
+                    email=auto_email,  # Auto-generated email
                     phone_number=phone_num,
                     phone=phone_num,  # Set phone field for mobile login compatibility
                     subjects=subjects,
@@ -285,8 +298,8 @@ async def import_teachers(
                 db.flush()  # Flush to get the ID without committing transaction
 
                 # Create User account for teacher with default password
-                # Check if user already exists
-                existing_user = db.query(User).filter(User.email == teacher.email).first()
+                # Check if user already exists by phone number
+                existing_user = db.query(User).filter(User.phone_number == teacher.phone_number).first()
                 if not existing_user:
                     from app.core.security import get_password_hash
 
@@ -294,8 +307,8 @@ async def import_teachers(
                     phone_digits = ''.join(filter(str.isdigit, teacher.phone_number))
                     default_password = phone_digits[-4:] if len(phone_digits) >= 4 else "1234"
 
-                    # Create username from email (part before @)
-                    username = teacher.email.split('@')[0]
+                    # Create username from phone number
+                    username = f"teacher_{phone_digits[-10:]}"
 
                     user = User(
                         unique_id=unique_id,  # Same as teacher unique_id
@@ -320,6 +333,12 @@ async def import_teachers(
                         'phone_number': teacher.phone_number
                     })
 
+                # Track imported teacher (simple list for display)
+                imported_teachers.append({
+                    'name': teacher.full_name,
+                    'phone': teacher.phone_number
+                })
+
                 imported_count += 1
 
             except Exception as e:
@@ -334,19 +353,13 @@ async def import_teachers(
             "message": f"Successfully imported {imported_count} teachers",
             "imported_count": imported_count,
             "total_rows": len(df),
+            "imported_teachers": imported_teachers,  # Simple list with name + phone only
             "errors": errors if errors else None
         }
 
-        # Add user credentials info if any were created
-        if created_users:
-            response["user_accounts_created"] = len(created_users)
-            response["credentials"] = created_users
-            response["password_info"] = "Default passwords are the last 4 digits of phone numbers. Teachers should change their passwords after first login."
-
-            # Send credentials via WhatsApp in background
-            if background_tasks:
-                background_tasks.add_task(send_credentials_to_teachers, created_users)
-                response["whatsapp_status"] = f"Sending credentials to {len(created_users)} teacher(s) via WhatsApp..."
+        # Send credentials via WhatsApp in background (if needed)
+        if created_users and background_tasks:
+            background_tasks.add_task(send_credentials_to_teachers, created_users)
 
         return response
 

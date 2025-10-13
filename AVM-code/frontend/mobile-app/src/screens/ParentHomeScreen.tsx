@@ -8,13 +8,24 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { clearAuthData } from '../utils/secureStorage';
 
-export default function ParentHomeScreen({ navigation }: any) {
+export default function ParentHomeScreen({ navigation, route }: any) {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     loadUser();
-  }, []);
+
+    // Check if we need to navigate to a specific screen from notification
+    const navigateTo = route?.params?.navigateTo;
+    if (navigateTo) {
+      console.log('📍 Auto-navigating to:', navigateTo);
+      // Small delay to ensure screen is loaded
+      setTimeout(() => {
+        navigation.navigate(navigateTo);
+      }, 300);
+    }
+  }, [route?.params?.navigateTo]);
 
   const loadUser = async () => {
     const userData = await AsyncStorage.getItem('user');
@@ -33,9 +44,10 @@ export default function ParentHomeScreen({ navigation }: any) {
           text: 'Logout',
           style: 'destructive',
           onPress: async () => {
-            // Only clear token and user data, keep PIN/biometric settings
-            await AsyncStorage.multiRemove(['access_token', 'user_type', 'user']);
-            navigation.replace('PINLogin');
+            // Clear all auth data including PIN
+            await clearAuthData();
+            // Navigate back to OTP login screen
+            navigation.replace('Login');
           },
         },
       ]
@@ -52,13 +64,10 @@ export default function ParentHomeScreen({ navigation }: any) {
       <View style={styles.childInfo}>
         <Text style={styles.childName}>{child.full_name}</Text>
         <Text style={styles.childClass}>
-          {child.class_name} {child.section ? `- ${child.section}` : ''}
+          {child.class_name} {child.section && child.section !== 'A' ? `- ${child.section}` : ''}
         </Text>
         <Text style={styles.childId}>ID: {child.unique_id}</Text>
       </View>
-      <TouchableOpacity style={styles.viewButton}>
-        <Text style={styles.viewButtonText}>View</Text>
-      </TouchableOpacity>
     </View>
   );
 
@@ -121,6 +130,11 @@ export default function ParentHomeScreen({ navigation }: any) {
             subtitle="View attendance history"
             onPress={() => navigation.navigate('AttendanceHistory')}
           />
+        </View>
+
+        {/* Coming Soon */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Coming Soon</Text>
 
           <MenuCard
             icon="📚"
@@ -317,7 +331,7 @@ const styles = StyleSheet.create({
     color: '#ccc',
   },
   contactCard: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#34C759',
     borderRadius: 12,
     padding: 20,
     margin: 16,

@@ -67,13 +67,50 @@ export function setupNotificationListeners(
 }
 
 export async function scheduleLocalNotification(title: string, body: string, data?: any) {
+  // Ensure we have the notification channel set up for Android
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'Default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+      sound: 'default',
+      enableVibrate: true,
+      showBadge: true,
+    });
+  }
+
   await Notifications.scheduleNotificationAsync({
     content: {
       title,
       body,
       data,
       sound: true,
+      priority: Notifications.AndroidNotificationPriority.HIGH,
     },
     trigger: null, // Show immediately
   });
+}
+
+// Helper to extract navigation data from notification
+export function getNotificationNavigationData(response: Notifications.NotificationResponse): {
+  type: string | null;
+  action: string | null;
+  targetScreen: string | null;
+} {
+  const data = response.notification.request.content.data;
+
+  let targetScreen: string | null = null;
+
+  if (data.type === 'attendance' && data.action === 'open_attendance') {
+    targetScreen = 'AttendanceHistory';
+  } else if (data.type === 'message' && data.action === 'open_messages') {
+    targetScreen = 'Messages';
+  }
+
+  return {
+    type: (typeof data.type === 'string' ? data.type : null),
+    action: (typeof data.action === 'string' ? data.action : null),
+    targetScreen,
+  };
 }

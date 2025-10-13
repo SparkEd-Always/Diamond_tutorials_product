@@ -35,7 +35,6 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Email as EmailIcon,
   Phone as PhoneIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
@@ -44,7 +43,7 @@ import { fetchTeachers } from '../store/slices/teachersSlice';
 import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
 
-const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
+const API_BASE_URL = '/api/v1';
 
 interface Teacher {
   id?: number;
@@ -52,7 +51,6 @@ interface Teacher {
   first_name: string;
   last_name: string;
   full_name?: string;
-  email: string;
   phone_number: string;
   subjects: string[];
   classes_assigned: string[];
@@ -85,7 +83,6 @@ const TeachersPage: React.FC = () => {
   const [formData, setFormData] = useState<Teacher>({
     first_name: '',
     last_name: '',
-    email: '',
     phone_number: '',
     subjects: [],
     classes_assigned: [],
@@ -181,7 +178,6 @@ const TeachersPage: React.FC = () => {
       setFormData({
         first_name: '',
         last_name: '',
-        email: '',
         phone_number: '',
         subjects: [],
         classes_assigned: [],
@@ -324,7 +320,7 @@ const TeachersPage: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Box display="flex" alignItems="center">
-                      <Avatar sx={{ mr: 2, bgcolor: 'secondary.main' }}>
+                      <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
                         {teacher.full_name.charAt(0)}
                       </Avatar>
                       <Box>
@@ -341,23 +337,15 @@ const TeachersPage: React.FC = () => {
                     <Chip
                       label={teacher.unique_id}
                       variant="outlined"
-                      color="secondary"
+                      color="primary"
                     />
                   </TableCell>
                   <TableCell>
-                    <Box>
-                      <Box display="flex" alignItems="center" mb={0.5}>
-                        <EmailIcon fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />
-                        <Typography variant="caption" color="text.secondary">
-                          {teacher.email}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center">
-                        <PhoneIcon fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />
-                        <Typography variant="caption" color="text.secondary">
-                          {teacher.phone_number}
-                        </Typography>
-                      </Box>
+                    <Box display="flex" alignItems="center">
+                      <PhoneIcon fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />
+                      <Typography variant="caption" color="text.secondary">
+                        {teacher.phone_number}
+                      </Typography>
                     </Box>
                   </TableCell>
                   <TableCell>
@@ -367,7 +355,7 @@ const TeachersPage: React.FC = () => {
                           key={subject}
                           label={subject}
                           size="small"
-                          color="info"
+                          color="secondary"
                         />
                       ))}
                     </Stack>
@@ -379,8 +367,7 @@ const TeachersPage: React.FC = () => {
                           key={className}
                           label={className}
                           size="small"
-                          color="primary"
-                          variant="outlined"
+                          color="secondary"
                         />
                       ))}
                     </Stack>
@@ -453,16 +440,6 @@ const TeachersPage: React.FC = () => {
                 required
                 value={formData.last_name}
                 onChange={(e) => handleInputChange('last_name', e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -568,7 +545,6 @@ const TeachersPage: React.FC = () => {
               submitting ||
               !formData.first_name ||
               !formData.last_name ||
-              !formData.email ||
               !formData.phone_number ||
               formData.subjects.length === 0 ||
               formData.classes_assigned.length === 0

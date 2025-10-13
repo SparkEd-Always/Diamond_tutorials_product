@@ -15,7 +15,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Avatar,
   Menu,
   MenuItem,
   Badge,
@@ -58,6 +57,7 @@ const Layout: React.FC = () => {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
   const [pendingCount, setPendingCount] = useState(0);
   const [activities, setActivities] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -77,8 +77,24 @@ const Layout: React.FC = () => {
     handleProfileMenuClose();
   };
 
-  const handleNotificationClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleNotificationClick = async (event: React.MouseEvent<HTMLElement>) => {
     setNotificationAnchorEl(event.currentTarget);
+
+    // Mark activities as viewed when notification is opened
+    const token = localStorage.getItem('token');
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '/api/v1';
+
+    if (token && user) {
+      try {
+        await axios.post(`${API_BASE_URL}/activities/mark-viewed`, null, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        // Clear the unread count badge
+        setUnreadCount(0);
+      } catch (error) {
+        console.error('Error marking activities as viewed:', error);
+      }
+    }
   };
 
   const handleNotificationClose = () => {
@@ -89,7 +105,7 @@ const Layout: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://192.168.1.4:8000/api/v1';
+      const API_BASE_URL = process.env.REACT_APP_API_URL || '/api/v1';
 
       if (!token || !user) return;
 
@@ -100,11 +116,17 @@ const Layout: React.FC = () => {
         });
         setPendingCount(pendingResponse.data.length || 0);
 
-        // Fetch recent activities
-        const activitiesResponse = await axios.get(`${API_BASE_URL}/activities/recent?limit=5`, {
+        // Fetch all recent activities (for display in popover)
+        const activitiesResponse = await axios.get(`${API_BASE_URL}/activities/recent?limit=10`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setActivities(activitiesResponse.data.activities || []);
+
+        // Fetch unread activities count (for badge)
+        const unreadResponse = await axios.get(`${API_BASE_URL}/activities/recent?unread_only=true&limit=100`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUnreadCount(unreadResponse.data.count || 0);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -177,22 +199,25 @@ const Layout: React.FC = () => {
     <Box>
       {/* Logo and Title */}
       <Box sx={{ p: 2, textAlign: 'center' }}>
-        <Avatar
+        <Box
+          component="img"
+          src={require('../../assets/sparked-logo.png')}
+          alt="Sparky Logo"
           sx={{
-            bgcolor: 'primary.main',
             width: 56,
             height: 56,
             mx: 'auto',
             mb: 1,
+            borderRadius: '50%',
+            objectFit: 'contain',
           }}
+        />
+        <Typography
+          variant="h6"
+          fontWeight="bold"
+          color="primary"
         >
-          <SchoolIcon fontSize="large" />
-        </Avatar>
-        <Typography variant="h6" fontWeight="bold" color="primary">
-          AVM Tutorial
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Management System
+          Sparky
         </Typography>
       </Box>
 
@@ -260,13 +285,10 @@ const Layout: React.FC = () => {
 
       <Divider />
 
-      {/* Papaya Production Branding */}
-      <Box sx={{ p: 2, textAlign: 'center', bgcolor: '#FFF4E6' }}>
+      {/* Sparky Branding */}
+      <Box sx={{ p: 2, textAlign: 'center', bgcolor: '#F3F4F6' }}>
         <Typography variant="caption" color="text.secondary" display="block" sx={{ fontWeight: 500 }}>
-          A Papaya Production
-        </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-          © 2025 All Rights Reserved
+          © 2025 Sparky from SparkEd
         </Typography>
       </Box>
     </Box>
@@ -299,7 +321,7 @@ const Layout: React.FC = () => {
 
           {/* Notifications */}
           <IconButton color="inherit" sx={{ mr: 1 }} onClick={handleNotificationClick}>
-            <Badge badgeContent={activities.length} color="error">
+            <Badge badgeContent={unreadCount} color="error">
               <NotificationsIcon />
             </Badge>
           </IconButton>
@@ -332,9 +354,13 @@ const Layout: React.FC = () => {
           horizontal: 'right',
         }}
       >
-        <Paper sx={{ width: 350, maxHeight: 400, overflow: 'auto' }}>
-          <Box sx={{ p: 2, bgcolor: 'primary.main', color: 'white' }}>
-            <Typography variant="h6">Recent Activity</Typography>
+        <Paper sx={{ width: 350, maxHeight: 400, overflow: 'auto', borderRadius: 0 }}>
+          <Box sx={{
+            p: 2,
+            background: 'linear-gradient(180deg, #3A5A8A 0%, #203C64 70%, #0E1826 100%)',
+            color: '#ffffff',
+          }}>
+            <Typography variant="h6" sx={{ color: '#ffffff' }}>Recent Activity</Typography>
           </Box>
           <List>
             {activities.length === 0 ? (
@@ -384,12 +410,6 @@ const Layout: React.FC = () => {
         open={Boolean(anchorEl)}
         onClose={handleProfileMenuClose}
       >
-        <MenuItem onClick={handleProfileMenuClose}>
-          <ListItemIcon>
-            <AccountCircleIcon fontSize="small" />
-          </ListItemIcon>
-          Profile
-        </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" />

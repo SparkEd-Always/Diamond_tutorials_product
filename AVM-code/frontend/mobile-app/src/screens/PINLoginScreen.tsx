@@ -17,7 +17,6 @@ import {
   isBiometricEnabled,
   updateLastLogin,
   STORAGE_KEYS,
-  getPhoneNumber,
 } from '../utils/secureStorage';
 
 export default function PINLoginScreen({ navigation }: any) {
@@ -39,7 +38,8 @@ export default function PINLoginScreen({ navigation }: any) {
       const userStr = await AsyncStorage.getItem(STORAGE_KEYS.USER);
       if (userStr) {
         const user = JSON.parse(userStr);
-        setUserName(user.name || 'User');
+        // Use full_name for teachers, name for parents
+        setUserName(user.full_name || user.name || 'User');
       }
     } catch (error) {
       console.error('Load user info error:', error);
@@ -73,7 +73,24 @@ export default function PINLoginScreen({ navigation }: any) {
 
       if (result.success) {
         await updateLastLogin();
-        navigateToHome();
+
+        // Check if there's a pending navigation target from notification tap
+        const pendingTarget = await AsyncStorage.getItem('pendingNavigationTarget');
+        if (pendingTarget) {
+          // Clear the pending target
+          await AsyncStorage.removeItem('pendingNavigationTarget');
+          console.log('🎯 Navigating to notification target:', pendingTarget);
+
+          // Navigate to home first, then to the target screen
+          const userType = await AsyncStorage.getItem(STORAGE_KEYS.USER_TYPE);
+          if (userType === 'teacher') {
+            navigation.replace('TeacherHome', { navigateTo: pendingTarget });
+          } else {
+            navigation.replace('ParentHome', { navigateTo: pendingTarget });
+          }
+        } else {
+          navigateToHome();
+        }
       }
     } catch (error) {
       console.error('Biometric auth error:', error);
@@ -103,7 +120,24 @@ export default function PINLoginScreen({ navigation }: any) {
     if (isValid) {
       await resetPINAttempts();
       await updateLastLogin();
-      navigateToHome();
+
+      // Check if there's a pending navigation target from notification tap
+      const pendingTarget = await AsyncStorage.getItem('pendingNavigationTarget');
+      if (pendingTarget) {
+        // Clear the pending target
+        await AsyncStorage.removeItem('pendingNavigationTarget');
+        console.log('🎯 Navigating to notification target:', pendingTarget);
+
+        // Navigate to home first, then to the target screen
+        const userType = await AsyncStorage.getItem(STORAGE_KEYS.USER_TYPE);
+        if (userType === 'teacher') {
+          navigation.replace('TeacherHome', { navigateTo: pendingTarget });
+        } else {
+          navigation.replace('ParentHome', { navigateTo: pendingTarget });
+        }
+      } else {
+        navigateToHome();
+      }
     } else {
       Vibration.vibrate(500);
       const newAttempts = await incrementPINAttempts();
@@ -149,8 +183,8 @@ export default function PINLoginScreen({ navigation }: any) {
         {
           text: 'Continue',
           onPress: async () => {
-            const phone = await getPhoneNumber();
-            navigation.replace('Login', { resetPIN: true, phone });
+            // Don't pass phone number - let user enter it fresh
+            navigation.replace('Login', { resetPIN: true });
           },
         },
       ]

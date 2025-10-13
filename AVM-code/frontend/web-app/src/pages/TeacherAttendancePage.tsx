@@ -65,6 +65,7 @@ const TeacherAttendancePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [teacherStatuses, setTeacherStatuses] = useState<{ [key: number]: string }>({});
+  const [teacherRemarks, setTeacherRemarks] = useState<{ [key: number]: string }>({});
   const [remarksDialog, setRemarksDialog] = useState<{
     open: boolean;
     teacherId: number | null;
@@ -87,7 +88,7 @@ const TeacherAttendancePage: React.FC = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.1.4:8000/api/v1/teacher-attendance/date/${selectedDate}`,
+        `/api/v1/teacher-attendance/date/${selectedDate}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -97,12 +98,15 @@ const TeacherAttendancePage: React.FC = () => {
 
       setAttendanceData(response.data);
 
-      // Initialize teacher statuses
+      // Initialize teacher statuses and remarks
       const statuses: { [key: number]: string } = {};
+      const remarks: { [key: number]: string } = {};
       response.data.teachers.forEach((teacher: Teacher) => {
         statuses[teacher.teacher_id] = teacher.status;
+        remarks[teacher.teacher_id] = teacher.remarks || '';
       });
       setTeacherStatuses(statuses);
+      setTeacherRemarks(remarks);
 
       // Check if any teacher has locked attendance for this date
       const isLocked = response.data.teachers.some((teacher: Teacher) => teacher.is_locked);
@@ -126,7 +130,7 @@ const TeacherAttendancePage: React.FC = () => {
       open: true,
       teacherId: teacher.teacher_id,
       teacherName: teacher.teacher_name,
-      remarks: teacher.remarks || '',
+      remarks: teacherRemarks[teacher.teacher_id] || '',
     });
   };
 
@@ -139,8 +143,36 @@ const TeacherAttendancePage: React.FC = () => {
     });
   };
 
-  const handleRemarksSave = () => {
-    // The remarks will be saved when attendance is submitted
+  const handleRemarksSave = async () => {
+    if (remarksDialog.teacherId === null) return;
+
+    // Update local state immediately
+    setTeacherRemarks({
+      ...teacherRemarks,
+      [remarksDialog.teacherId]: remarksDialog.remarks,
+    });
+
+    // Save remarks to backend immediately
+    try {
+      await axios.post(
+        '/api/v1/teacher-attendance/update-remarks',
+        {
+          teacher_id: remarksDialog.teacherId,
+          date: selectedDate,
+          remarks: remarksDialog.remarks,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setSuccess('Remarks saved successfully');
+      fetchTeacherAttendance();
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to save remarks');
+    }
+
     handleRemarksClose();
   };
 
@@ -157,7 +189,7 @@ const TeacherAttendancePage: React.FC = () => {
         .map((teacher) => ({
           teacher_id: teacher.teacher_id,
           status: teacherStatuses[teacher.teacher_id],
-          remarks: teacher.remarks || '',
+          remarks: teacherRemarks[teacher.teacher_id] || '',
           check_in_time: null,
           check_out_time: null,
         }));
@@ -169,7 +201,7 @@ const TeacherAttendancePage: React.FC = () => {
       }
 
       await axios.post(
-        'http://192.168.1.4:8000/api/v1/teacher-attendance/mark',
+        '/api/v1/teacher-attendance/mark',
         {
           teacher_records: teacherRecords,
           date: selectedDate,
@@ -200,7 +232,7 @@ const TeacherAttendancePage: React.FC = () => {
 
       try {
         await axios.post(
-          `http://192.168.1.4:8000/api/v1/teacher-attendance/lock/${selectedDate}`,
+          `/api/v1/teacher-attendance/lock/${selectedDate}`,
           {},
           {
             headers: {
@@ -327,7 +359,6 @@ const TeacherAttendancePage: React.FC = () => {
                   <TableRow sx={{ backgroundColor: '#F3F4F6' }}>
                     <TableCell sx={{ fontWeight: 600, color: '#1F2937' }}>Teacher ID</TableCell>
                     <TableCell sx={{ fontWeight: 600, color: '#1F2937' }}>Name</TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: '#1F2937' }}>Email</TableCell>
                     <TableCell sx={{ fontWeight: 600, color: '#1F2937' }}>Phone</TableCell>
                     <TableCell sx={{ fontWeight: 600, color: '#1F2937' }}>Status</TableCell>
                     <TableCell sx={{ fontWeight: 600, color: '#1F2937' }}>Remarks</TableCell>
@@ -338,7 +369,6 @@ const TeacherAttendancePage: React.FC = () => {
                     <TableRow key={teacher.teacher_id} hover>
                       <TableCell>{teacher.teacher_unique_id}</TableCell>
                       <TableCell sx={{ fontWeight: 500 }}>{teacher.teacher_name}</TableCell>
-                      <TableCell>{teacher.email}</TableCell>
                       <TableCell>{teacher.phone_number}</TableCell>
                       <TableCell>
                         <FormControl size="small" sx={{ minWidth: 140 }}>
@@ -360,14 +390,23 @@ const TeacherAttendancePage: React.FC = () => {
                         </FormControl>
                       </TableCell>
                       <TableCell>
-                        <Button
-                          size="small"
-                          variant="outlined"
+                        <Box
                           onClick={() => handleRemarksOpen(teacher)}
-                          disabled={teacher.is_locked}
+                          sx={{
+                            cursor: 'pointer',
+                            color: teacherRemarks[teacher.teacher_id] ? 'primary.main' : 'text.secondary',
+                            '&:hover': {
+                              textDecoration: 'underline',
+                              color: 'primary.dark'
+                            },
+                            fontStyle: teacherRemarks[teacher.teacher_id] ? 'normal' : 'italic',
+                            minHeight: '20px',
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}
                         >
-                          {teacher.remarks ? 'Edit Note' : 'Add Note'}
-                        </Button>
+                          {teacherRemarks[teacher.teacher_id] || 'Notes'}
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}

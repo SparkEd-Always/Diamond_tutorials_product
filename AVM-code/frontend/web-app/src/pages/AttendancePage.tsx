@@ -229,7 +229,7 @@ const AttendancePage: React.FC = () => {
           Attendance Approval
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Review and approve daily attendance records before sending WhatsApp notifications to parents
+          Review and approve daily attendance records
         </Typography>
       </Box>
 
@@ -317,7 +317,7 @@ const AttendancePage: React.FC = () => {
             <Button
               variant="contained"
               color="success"
-              startIcon={<WhatsAppIcon />}
+              startIcon={<CheckCircleIcon />}
               onClick={handleApprovalSubmit}
               disabled={selectedRecords.size === 0 || approvalInProgress}
               size="large"
@@ -325,7 +325,7 @@ const AttendancePage: React.FC = () => {
               {approvalInProgress ? (
                 <CircularProgress size={20} color="inherit" />
               ) : (
-                `Approve & Send WhatsApp (${selectedRecords.size})`
+                `Approve Attendance (${selectedRecords.size})`
               )}
             </Button>
           </Stack>

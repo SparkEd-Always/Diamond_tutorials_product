@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons';
+import { clearAuthData } from '../utils/secureStorage';
 
 export default function ProfileScreen({ navigation }: any) {
   const [user, setUser] = useState<any>(null);
@@ -31,8 +32,10 @@ export default function ProfileScreen({ navigation }: any) {
         text: 'Logout',
         style: 'destructive',
         onPress: async () => {
-          await AsyncStorage.multiRemove(['access_token', 'user_type', 'user']);
-          navigation.replace('PINLogin');
+          // Clear all auth data including PIN
+          await clearAuthData();
+          // Navigate back to OTP login screen
+          navigation.replace('Login');
         },
       },
     ]);
@@ -130,18 +133,6 @@ export default function ProfileScreen({ navigation }: any) {
           <Text style={styles.sectionTitle}>Application</Text>
 
           <ProfileItem
-            icon="info"
-            title="About AVM Tutorial"
-            onPress={() => {
-              Alert.alert(
-                'AVM Tutorial Teacher App',
-                'Version 1.0.0\n\nThis app helps teachers mark attendance efficiently and communicate with the administration.',
-                [{ text: 'OK' }]
-              );
-            }}
-          />
-
-          <ProfileItem
             icon="help"
             title="Help & Support"
             onPress={() => {
@@ -152,35 +143,6 @@ export default function ProfileScreen({ navigation }: any) {
               );
             }}
           />
-
-          <ProfileItem
-            icon="security"
-            title="Privacy Policy"
-            onPress={() => {
-              Alert.alert(
-                'Privacy Policy',
-                'Your data is secure and only used for educational purposes within AVM Tutorial.',
-                [{ text: 'OK' }]
-              );
-            }}
-          />
-        </View>
-
-        {/* System Status */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>System Status</Text>
-
-          <View style={styles.statusCard}>
-            <View style={styles.statusItem}>
-              <View style={[styles.statusDot, { backgroundColor: '#10B981' }]} />
-              <Text style={styles.statusText}>API Connected</Text>
-            </View>
-
-            <View style={styles.statusItem}>
-              <View style={[styles.statusDot, { backgroundColor: '#10B981' }]} />
-              <Text style={styles.statusText}>Data Synced</Text>
-            </View>
-          </View>
         </View>
 
         {/* Logout Section */}

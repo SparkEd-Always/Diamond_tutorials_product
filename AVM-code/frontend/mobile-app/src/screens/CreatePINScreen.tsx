@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Alert,
   Vibration,
+  BackHandler,
 } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { savePIN, setBiometricEnabled, updateLastLogin } from '../utils/secureStorage';
@@ -112,10 +113,17 @@ export default function CreatePINScreen({ navigation, route }: any) {
 
   const navigateNext = () => {
     if (isReset) {
-      // If resetting PIN, go back to home
-      Alert.alert('Success', 'PIN updated successfully', [
-        { text: 'OK', onPress: () => navigation.navigate('Login') }
-      ]);
+      // If resetting PIN, close the app after user clicks OK
+      Alert.alert(
+        'PIN Updated Successfully',
+        'The app will now close. Please reopen it to login with your new PIN.',
+        [
+          {
+            text: 'OK',
+            onPress: () => BackHandler.exitApp(),
+          },
+        ]
+      );
     } else {
       // Navigate to home based on user type
       navigation.replace('NavigateHome');

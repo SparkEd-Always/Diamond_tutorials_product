@@ -18,7 +18,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Platform } from 'react-native';
 
-const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
+// Use localhost with adb reverse for Android emulator, 192.168.1.4 for physical devices
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 interface AttendanceRecord {
   id: number;

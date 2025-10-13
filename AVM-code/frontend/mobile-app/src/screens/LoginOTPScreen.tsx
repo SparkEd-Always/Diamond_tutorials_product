@@ -11,13 +11,15 @@ import {
   ActivityIndicator,
   TouchableWithoutFeedback,
   Keyboard,
+  Image,
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { registerForPushNotificationsAsync, setupNotificationListeners } from '../services/notificationService';
 import { savePhoneNumber, updateLastLogin, hasCompletedSetup } from '../utils/secureStorage';
 
-const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
+// Use localhost with adb reverse for Android emulator, 192.168.1.4 for physical devices
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 export default function LoginOTPScreen({ navigation, route }: any) {
   const { resetPIN, phone: prefilledPhone } = route?.params || {};
@@ -57,7 +59,9 @@ export default function LoginOTPScreen({ navigation, route }: any) {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/mobile-auth/send-otp`, {
+      console.log('[LoginOTPScreen] API_BASE_URL:', API_BASE_URL);
+      console.log('[LoginOTPScreen] Full URL:', `${API_BASE_URL}/mobile/auth/send-otp`);
+      const response = await axios.post(`${API_BASE_URL}/mobile/auth/send-otp`, {
         phone_number: phone.startsWith('+') ? phone : `+91${phone}`,
       });
 
@@ -70,7 +74,12 @@ export default function LoginOTPScreen({ navigation, route }: any) {
         );
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || 'Failed to send OTP';
+      console.log('[LoginOTPScreen] Error occurred:', error);
+      console.log('[LoginOTPScreen] Error message:', error.message);
+      console.log('[LoginOTPScreen] Error code:', error.code);
+      console.log('[LoginOTPScreen] Error response:', error.response);
+
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to send OTP';
       const isNotRegistered = errorMessage.includes('not registered');
 
       Alert.alert(
@@ -90,7 +99,7 @@ export default function LoginOTPScreen({ navigation, route }: any) {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/mobile-auth/verify-otp`, {
+      const response = await axios.post(`${API_BASE_URL}/mobile/auth/verify-otp`, {
         phone_number: phone.startsWith('+') ? phone : `+91${phone}`,
         otp_code: otp,
         push_token: pushToken,
@@ -145,11 +154,12 @@ export default function LoginOTPScreen({ navigation, route }: any) {
         <View style={styles.content}>
         {/* Logo/Header */}
         <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logo}>🎓</Text>
-          </View>
-          <Text style={styles.title}>AVM Tutorial</Text>
-          <Text style={styles.subtitle}>Management System</Text>
+          <Image
+            source={require('../../assets/icon.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Sparky</Text>
         </View>
 
         {/* Card Container */}
@@ -167,19 +177,16 @@ export default function LoginOTPScreen({ navigation, route }: any) {
           {/* Phone Input */}
           {!otpSent ? (
             <View style={styles.inputContainer}>
-              <View style={styles.phoneInputWrapper}>
-                <Text style={styles.prefix}>+91</Text>
-                <TextInput
-                  style={styles.phoneInput}
-                  placeholder="Phone number"
-                  placeholderTextColor="#D1D5DB"
-                  value={phone}
-                  onChangeText={setPhone}
-                  keyboardType="phone-pad"
-                  maxLength={10}
-                  editable={!loading}
-                />
-              </View>
+              <TextInput
+                style={styles.phoneInput}
+                placeholder="Phone number"
+                placeholderTextColor="#D1D5DB"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                maxLength={10}
+                editable={!loading}
+              />
             </View>
           ) : (
             <View style={styles.inputContainer}>
@@ -228,7 +235,7 @@ export default function LoginOTPScreen({ navigation, route }: any) {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerBrand}>A Papaya Production</Text>
+          <Text style={styles.footerBrand}>© 2025 Sparky from SparkEd</Text>
         </View>
       </View>
       </TouchableWithoutFeedback>
@@ -250,22 +257,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 40,
   },
-  logoContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#4F46E5',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
   logo: {
-    fontSize: 32,
+    width: 80,
+    height: 80,
+    marginBottom: 16,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#4F46E5',
+    color: '#2C4E6B',
     marginBottom: 4,
   },
   subtitle: {
@@ -299,25 +299,14 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 20,
   },
-  phoneInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  phoneInput: {
     backgroundColor: '#fff',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#D1D5DB',
     paddingHorizontal: 16,
-  },
-  prefix: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1F2937',
-    marginRight: 8,
-  },
-  phoneInput: {
-    flex: 1,
-    fontSize: 16,
     paddingVertical: 14,
+    fontSize: 16,
     color: '#1F2937',
   },
   otpInput: {
@@ -333,15 +322,15 @@ const styles = StyleSheet.create({
     color: '#1F2937',
   },
   button: {
-    backgroundColor: '#4F46E5',
-    borderRadius: 8,
+    backgroundColor: '#2C4E6B',
+    borderRadius: 12,
     padding: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowColor: '#2C4E6B',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -357,7 +346,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   linkText: {
-    color: '#4F46E5',
+    color: '#2C4E6B',
     fontSize: 14,
     fontWeight: '500',
   },
@@ -365,7 +354,10 @@ const styles = StyleSheet.create({
     marginTop: 32,
     paddingTop: 24,
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#FFF4E6',
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
   },
   footerBrand: {
     fontSize: 14,

@@ -82,3 +82,13 @@ def require_role(allowed_roles: list):
             )
         return current_user
     return role_checker
+
+async def require_admin(current_user = Depends(get_current_user)):
+    """Require admin role"""
+    from ..models.user import UserRole
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied. Admin role required."
+        )
+    return current_user

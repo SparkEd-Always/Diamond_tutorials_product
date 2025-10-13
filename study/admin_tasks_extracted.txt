@@ -1,0 +1,2429 @@
+Admins coordinate with almost every stakeholder: parents, teachers, vendors, auditors, management.
+Principals/Management mainly approve (budgets, payroll, major expenses).
+ERP/IT role is critical → ensures automation, record-keeping, transparency.
+Parents & Vendors are external actors but heavily influence financial workflows.
+
+
+Catetgory of tasks that Admins handle
+Financials
+Academics (student lifecycle tasks)
+Operations (infrastructure, logistics)
+HR (staff/teachers)
+Communication & community
+Compliance & governance
+Technology & data management
+Events & Co-curricular Management 🎭
+
+1. Financials
+Fee collection & reconciliation
+Payroll & staff salaries
+Vendor payments (books, uniforms, transport, canteen)
+Budgeting & financial planning
+Audits & compliance with regulations
+Fundraising, donations, endowments
+
+2. Academics (Student Lifecycle)
+Admissions & enrollment
+Student records management (attendance, grades, certificates)
+Timetable & scheduling
+Exam & assessment management
+Report card generation
+Parent-teacher communication for academics
+
+3. Operations (School Infrastructure & Logistics)
+Transport & route management
+Hostel, canteen, library management
+Classroom & lab scheduling
+Facility maintenance (electricity, furniture, water, IT labs)
+Safety, health, and security (fire drills, first aid, CCTV)
+
+4. Human Resources (Staff & Teacher Management)
+Recruitment & onboarding of teachers/staff
+Leave management
+Payroll integration (ties to financials)
+Professional development & training
+Teacher appraisal & performance management
+
+5. Communication & Community Engagement
+Notices & announcements
+Parent communication (ERP app, SMS, calls, meetings)
+Alumni engagement
+Community outreach & CSR programs
+Emergency communication (transport delays, holidays)
+
+6. Compliance & Governance
+Education board compliance (CBSE, IB, state board reports)
+Government reporting (attendance, safety, RTE, fees regulation)
+Policy enforcement (safety, discipline, ethics)
+Accreditation & quality audits
+
+7. Technology & Data Management
+ERP/SIS/LMS administration
+Data security & privacy (student/parent/staff data)
+Vendor management (tech, software, hardware)
+Analytics dashboards for decision-making
+
+8. Event Management Tasks (Admin Journey)
+Planning: Fixing dates, budgets, venues, permissions.
+Coordination: Teachers, student clubs, vendors (stage, sound, uniforms, sports gear).
+Logistics: Seating, transport, refreshments, security, IT setup.
+Communication: Invitations (parents, guests), notices, reminders.
+Execution: On-the-day coordination.
+Post-event: Feedback, financial settlement, media coverage, reporting.
+Financials
+
+User journeys of each tasks
+
+Fee collection and Reconciliation
+
+🏫 Fee Collection & Reconciliation — Detailed Breakdown
+1. User Story
+As a finance admin, I want to digitally collect and reconcile student fees so that I can reduce manual work, avoid errors, and provide transparency to parents and management.
+
+2. Actors
+Primary:
+Finance/Admin staff → sets fee structure, tracks payments, reconciles.
+Parents/Guardians → make fee payments.
+Secondary:
+Principal/Management → approves fee structures, monitors reports.
+IT/ERP system → processes transactions, updates records, generates reports.
+Payment Gateway/Bank → executes online transactions.
+
+3. Journey (Steps)
+Admin defines fee structure (base fee, installments, due dates, discounts, penalties).
+System generates invoices → sends notifications to parents.
+Parents pay via portal/app (UPI, card, net banking, offline at counter).
+Payment gateway confirms → system updates student ledger.
+Receipt auto-generated → sent to parent.
+Admin dashboard shows paid vs pending dues.
+System reconciles payments with bank statements.
+Admin generates fee collection report for management.
+
+4. Pain Points
+Manual data entry and reconciliation errors.
+Late payments → difficult to track.
+Limited payment methods → inconvenience for parents.
+Disputes when payments fail but not updated in records.
+Time-consuming report generation.
+
+5. Opportunities
+Multi-channel digital payments (UPI, wallets, cards, EMI).
+Automated reminders & penalty calculations.
+Real-time reconciliation with bank/payment gateway.
+Dashboards for parents (payment history, dues) and admins (collection overview).
+One-click financial reports for audits.
+
+6. Inputs (Data Required)
+Student information (ID, class, section).
+Fee structure (tuition, transport, hostel, lab, extracurricular).
+Discounts/scholarships/waivers.
+Payment details (amount, method, date, transaction ID).
+Bank/payment gateway data for reconciliation.
+
+7. Outputs (System Generates)
+Invoice/fee challan.
+Digital receipt (PDF/email/SMS/WhatsApp).
+Updated student ledger.
+Outstanding dues list (per student, per class, overall).
+Fee collection reports (daily, monthly, term-wise).
+Reconciliation report (payments received vs bank settlement).
+
+8. Acceptance Criteria
+✅ Parents can pay fees through multiple modes (UPI, card, net banking, offline cash).
+✅ Payment receipt generated instantly and shared with parent.
+✅ Admin dashboard shows real-time collection status.
+✅ Late fees/penalties applied automatically after due date.
+✅ System supports partial payments and adjusts outstanding dues.
+✅ Reconciliation report matches payment gateway settlements.
+✅ Data exportable for audits (CSV, Excel, PDF).
+
+9. System Interactions
+ERP Finance Module ↔ Fee setup, ledger, reports.
+SIS ↔ Student data (to link payments with student profile).
+Parent Portal/App ↔ Invoices, payment, receipt.
+Payment Gateway/Bank API ↔ Transaction processing.
+Notification System ↔ Payment reminders, confirmations (email, SMS, WhatsApp).
+
+10. Edge Cases
+Parent pays after due date → penalty auto-applied.
+Payment fails (money deducted but not updated in system) → reconciliation queue.
+Parent pays partial fees → system splits paid/unpaid portion.
+Duplicate payments → refund workflow required.
+Cash payment at counter → manual entry, but must sync with ERP.
+Parent has multiple children → one consolidated payment option.
+
+11. Priority/Frequency
+Priority: Critical (core financial function of school).
+Frequency: Daily (payments occur every day, reconciliation often done weekly/monthly).
+
+
+
+Payroll & Staff Salaries — Detailed Breakdown
+
+1. User Story
+
+As a finance/admin officer, I want to calculate and disburse staff salaries accurately and on time, so that teachers and staff are paid fairly, records are compliant, and management can track salary expenses easily.
+
+2. Actors
+Primary:
+Finance/Admin staff → manages payroll calculations, tax, deductions.
+Teachers & Non-teaching staff → receive salaries.
+Secondary:
+Principal/Management → approves payroll budget & changes.
+HR → provides attendance, leave, and contract details.
+Bank/Payment gateway → processes disbursement.
+ERP/IT system → integrates payroll rules & generates payslips.
+
+3. Journey (Steps)
+HR/Admin sets up employee records (salary structure, allowances, deductions, tax rules).
+Attendance & leave data collected (from ERP or biometric system).
+Payroll module calculates gross salary → applies deductions (tax, loans, PF, insurance).
+Finance admin reviews payroll draft.
+Management approves payroll run.
+Disbursement → Bank API triggers salary transfer to staff accounts.
+Payslips generated (digital copy emailed/app access).
+Records stored for reporting, audits, and future reference.
+
+4. Pain Points
+Manual calculation errors (tax, deductions).
+Delays due to missing attendance/leave data.
+High admin workload for large staff numbers.
+Salary disputes (wrong deductions, late payments).
+Compliance burden (PF, ESI, tax filings).
+
+5. Opportunities
+Auto-integration of attendance/leave system with payroll.
+Preconfigured salary templates & tax rules.
+One-click salary disbursement via bank APIs.
+Self-service portal for staff to download payslips & tax forms.
+Analytics dashboards for salary expense forecasting.
+
+6. Inputs (Data Required)
+Employee records (name, ID, designation, department).
+Salary structure (basic, allowances, deductions).
+Attendance & leave data.
+Tax rules (TDS, PF, ESI, insurance, loans).
+Bank account details of employees.
+
+7. Outputs (System Generates)
+Salary register (who gets how much, net/gross).
+Bank transfer file/API trigger.
+Payslips (digital, printable).
+Deduction reports (PF, insurance, tax filings).
+Salary expense summary (per month, per department).
+
+8. Acceptance Criteria
+✅ Payroll auto-calculates gross, deductions, net salary based on pre-set rules.
+✅ Attendance/leave data automatically syncs into payroll.
+✅ One-click salary transfer via bank API or downloadable transfer file.
+✅ Payslips generated instantly (employee portal + email).
+✅ System tracks and reports statutory deductions (PF, ESI, tax).
+✅ Payroll reports exportable (Excel, CSV, PDF).
+✅ Audit trail maintained for every change in payroll.
+
+9. System Interactions
+ERP Finance Module ↔ Payroll calculations, accounting entries.
+HR Module ↔ Employee records, contracts, salary structures.
+Attendance/Leave System ↔ Inputs for deductions.
+Bank API/Payment Gateway ↔ Salary disbursement.
+Staff Portal/App ↔ Payslip download, salary queries.
+
+10. Edge Cases
+Staff joins/leaves mid-month → prorated salary calculation.
+Wrong bank details → failed transactions → retry/refund workflow.
+Salary advances/loans → deductions over time.
+Salary disputes → manual adjustments.
+Contract/part-time staff → different calculation rules.
+Government compliance changes (PF, tax rates) → system must adapt quickly.
+
+11. Priority/Frequency
+Priority: Critical (staff salaries are one of the biggest expenses & morale drivers).
+Frequency: Monthly (standard payroll cycle) → plus ad-hoc cases (new hires, final settlements).
+
+Vendor Payments — Detailed Breakdown
+1. User Story
+As a finance/admin officer, I want to manage vendor contracts, approve invoices, and process timely payments, so that vendors are paid correctly, resources are delivered on time, and the school avoids disputes or service disruptions.
+
+2. Actors
+Primary:
+Finance/Admin staff → handles procurement, verifies invoices, processes payments.
+Vendors/Suppliers → deliver goods/services (books, uniforms, canteen, IT, transport).
+Secondary:
+Principal/Management → approves large purchases or contracts.
+Department heads (academics, operations, IT) → raise purchase requests.
+ERP/Procurement system → tracks contracts, invoices, payments.
+Bank/Payment gateway → executes vendor payments.
+
+3. Journey (Steps)
+Department head raises a purchase request (e.g., books for library).
+Admin requests quotations from multiple vendors.
+Vendors submit quotations → Admin compares and shortlists.
+Management approves vendor selection (if high-value).
+Admin issues Purchase Order (PO).
+Vendor delivers goods/services → Admin verifies quality & quantity.
+Vendor submits invoice → Admin checks against PO & delivery.
+Finance team processes invoice → payment released via bank.
+System records transaction → expense categorized for reports.
+
+4. Pain Points
+Manual tracking of multiple vendors and invoices.
+Delays in approvals → late deliveries.
+Invoice mismatches (wrong quantity, incorrect pricing).
+Vendor disputes on delayed payments.
+Poor visibility into vendor performance & spending trends.
+
+5. Opportunities
+Centralized Vendor Management System (contracts, ratings, payment history).
+Automated approval workflows with role-based permissions.
+Invoice matching (PO ↔ delivery note ↔ invoice).
+Alerts for pending/overdue payments.
+Vendor performance analytics (on-time delivery %, cost trends).
+
+6. Inputs (Data Required)
+Vendor details (name, contact, bank account).
+Purchase request (item, quantity, urgency).
+Quotations and negotiated terms.
+Purchase order details (PO number, amount, delivery terms).
+Delivery confirmation/GRN (goods received note).
+Vendor invoice.
+Bank/payment details.
+
+7. Outputs (System Generates)
+Approved Purchase Order (PO).
+Goods/Service verification report.
+Vendor invoice record.
+Payment confirmation receipt.
+Vendor ledger (history of payments, dues).
+Expense report (category-wise, vendor-wise, department-wise).
+
+8. Acceptance Criteria
+✅ Admin can create & manage vendor profiles with contracts.
+✅ Purchase requests can be raised and approved digitally.
+✅ System matches invoice with PO & delivery confirmation.
+✅ Payments can be processed digitally (bank API integration).
+✅ Vendor ledger auto-updated after each payment.
+✅ Alerts generated for overdue invoices.
+✅ Expense reports downloadable (Excel, PDF).
+
+9. System Interactions
+ERP Procurement Module ↔ Vendor management, PO, invoice approval.
+Finance Module ↔ Payment processing, expense reporting.
+Department Request System ↔ Inputs purchase requests.
+Bank API/Payment Gateway ↔ Payment disbursement.
+Notification System ↔ Alerts for approvals, overdue payments.
+
+10. Edge Cases
+Vendor delivers less/more than ordered → partial invoice handling.
+Price mismatch between PO and invoice → dispute resolution workflow.
+Payment failure at bank end → retry or refund process.
+Duplicate invoices submitted → system flags for admin review.
+Blacklisted/poor performance vendor → restrict future requests.
+Emergency procurement (e.g., urgent repair) → fast-track approval bypass.
+
+11. Priority/Frequency
+Priority: High (school operations depend on vendors for essentials like books, uniforms, food, transport).
+Frequency: Monthly to quarterly (regular purchases), but ad-hoc/emergency purchases may happen any time.
+
+✅ With this, you now have three complete financial tasks (Fee Collection, Payroll, Vendor Payments) detailed in a developer-friendly format.
+
+Would you like me to continue detailing Budgeting & Financial Planning next, or would you prefer I create a consolidated matrix of all financial tasks side by side for quick comparison?
+
+
+Budgeting & Financial Planning — Detailed Breakdown
+1. User Story
+As a finance/admin officer, I want to create, monitor, and adjust the school’s annual budget, so that resources are allocated efficiently, spending stays within limits, and management has visibility into financial health.
+
+2. Actors
+Primary:
+Finance/Admin staff → drafts budget, tracks actuals vs planned.
+Principal/Management → reviews, approves, adjusts budgets.
+Secondary:
+Department heads (academics, sports, operations, IT, library, events) → submit budget requirements.
+Teachers/Staff → indirectly submit requests via departments.
+ERP/Finance system → consolidates data, tracks expenses, generates reports.
+
+3. Journey (Steps)
+Finance admin collects budget requests from departments.
+Draft budget created (projected income: fees, donations; projected expenses: salaries, infra, academics, operations).
+Draft submitted to principal/management for review.
+Revisions made after discussions.
+Final budget approved → allocations set per department.
+Throughout the year → actual spending tracked against budget.
+Mid-year review → adjustments made if revenue/expenses differ from plan.
+End-of-year → reports prepared, insights rolled into next year’s budget.
+
+4. Pain Points
+Manual consolidation of multiple department requests.
+Inaccurate forecasts (admissions drop, unexpected expenses).
+Poor visibility → overspending only noticed late.
+No real-time link between budget plan and actual expenses.
+Mid-year revisions are slow, bureaucratic.
+
+5. Opportunities
+Centralized budget request submission from departments (workflow approvals).
+Predictive analytics based on historical revenue/expense trends.
+Real-time dashboards showing budget vs actuals.
+Alerts for overspending/low revenue collection.
+Scenario modeling → “What if admissions fall by 10%?”
+
+6. Inputs (Data Required)
+Historical financial data (last year’s income, expenses).
+Forecasted income (admissions, fees, donations, grants).
+Department-wise requests (academic, events, infra, HR).
+Salary projections (largest expense).
+Upcoming projects/investments (labs, IT upgrades, transport).
+
+7. Outputs (System Generates)
+Draft budget report (per department + consolidated).
+Final approved budget.
+Allocation tracker per department.
+Budget vs actuals dashboard (real-time).
+Mid-year review reports (variance analysis).
+End-of-year summary (for planning + compliance).
+
+8. Acceptance Criteria
+✅ Departments can submit budget requests digitally.
+✅ Finance admin can consolidate requests automatically.
+✅ System supports editing/revision cycles.
+✅ Management can approve/reject allocations with comments.
+✅ Real-time “budget vs actuals” reports available.
+✅ Alerts generated when spending > allocated budget.
+✅ End-of-year financial reports exportable in standard formats.
+
+9. System Interactions
+ERP Finance Module ↔ Budget creation, expense tracking, reporting.
+Department Modules ↔ Submit requests, track allocations.
+Payroll Module ↔ Salary projections feed into budget.
+Vendor/Procurement Module ↔ Forecasts operational expenses.
+SIS/Admissions Module ↔ Provides revenue forecasts (student enrollment, fee structure).
+
+10. Edge Cases
+Admissions lower than expected → revenue shortfall → system triggers adjustment workflow.
+Emergency expenses (repairs, new staff hire) → exceeds allocation → special approval needed.
+Donations/fundraising higher than expected → reallocation opportunities.
+Department overspending without approval → must trigger alerts and block further requests.
+New compliance requirements → unplanned budget items (safety, digital infra).
+
+11. Priority/Frequency
+Priority: High (budget planning drives all financial stability decisions).
+Frequency:
+Annual (full budget planning before school year).
+Quarterly/Mid-year (reviews and adjustments).
+Monthly (tracking reports).
+
+✅ With this structure, Budgeting & Financial Planning becomes a clear, developer-ready feature set: workflows, data inputs, outputs, edge cases, and system dependencies are all visible.
+
+Would you like me to tackle Audits & Compliance next in this same structured format, or pause here and create a summary matrix of all financial tasks completed so far for easier comparison?
+
+
+
+🏫 Audits & Compliance with Regulations — Detailed Breakdown
+1. User Story
+As a finance/admin officer, I want to prepare and submit accurate financial and regulatory reports, so that the school remains compliant with government/board regulations, avoids penalties, and maintains transparency.
+
+2. Actors
+Primary:
+Finance/Admin staff → collects records, prepares reports.
+External Auditors → review accounts, certify compliance.
+Secondary:
+Principal/Management → approves submissions, ensures policy compliance.
+Government/Education Board officials → receive reports, verify compliance.
+ERP/Finance system → provides data & audit trails.
+HR module → provides payroll records.
+SIS module → provides student attendance, enrollment data (for compliance).
+
+3. Journey (Steps)
+Finance admin compiles financial records (fees collected, payroll, vendor payments, budget vs actuals).
+SIS provides student-related compliance data (attendance, enrollment, results).
+ERP generates preliminary compliance reports.
+Admin reviews & organizes documents (receipts, ledgers, contracts).
+External auditor reviews reports & source data.
+Queries raised → admin responds with clarifications or corrections.
+Auditor certifies → final compliance report generated.
+Reports submitted to govt./education boards.
+Records archived for future audits.
+
+4. Pain Points
+Data scattered across different systems (finance, HR, SIS).
+Manual collation of records → high chance of errors.
+Time-consuming verification & corrections.
+Stress during audit deadlines.
+Risk of penalties for missing/incorrect filings.
+
+5. Opportunities
+Unified compliance dashboard with pre-built report templates (govt./board formats).
+Automated audit trail → every transaction traceable.
+Real-time data validation → flag inconsistencies early.
+Document repository for quick retrieval (scanned contracts, invoices, receipts).
+Role-based access → auditors can directly view required reports securely.
+
+6. Inputs (Data Required)
+Fee collection & reconciliation records.
+Payroll data (salary registers, deductions, tax filings).
+Vendor invoices & payment records.
+Budget vs actual reports.
+Student data (enrollment, attendance, results for compliance).
+Regulatory frameworks (govt. forms, board requirements).
+
+7. Outputs (System Generates)
+Draft compliance reports (customizable to govt./board format).
+Audit logs (who did what, when).
+Certified audit report (signed by auditor).
+Error/variance reports.
+Archived compliance documents (digital storage).
+
+8. Acceptance Criteria
+✅ System generates standard audit-ready financial statements (income, expense, payroll).
+✅ Data from ERP, HR, SIS automatically consolidated.
+✅ Reports exportable in required govt. formats (Excel, CSV, PDF).
+✅ All transactions traceable with audit logs.
+✅ External auditors can access read-only reports securely.
+✅ System flags inconsistencies (e.g., mismatch between fees collected & bank deposits).
+✅ Historical records archived and searchable.
+
+9. System Interactions
+ERP Finance Module ↔ Financial ledgers, expense records.
+HR/Payroll Module ↔ Salary, deductions, compliance with PF/ESI.
+SIS Module ↔ Student attendance, enrollment, exam results.
+Document Management System ↔ Contracts, receipts, scanned docs.
+External Auditor Portal ↔ Limited secure access to compliance reports.
+
+10. Edge Cases
+Missing/incomplete financial records → flagged in reconciliation.
+Auditor identifies discrepancies → correction workflow needed.
+Last-minute govt. format changes → system must adapt.
+Accidental deletion of documents → backup/restore mechanism.
+Auditor requires sampling of transactions → quick data filtering.
+
+11. Priority/Frequency
+Priority: High (non-compliance risks fines, reputational damage, even school license issues).
+Frequency:
+Annual (major audits, compliance filings).
+Quarterly/Monthly (internal checks, tax filings, board reports).
+
+✅ With this structure, Audits & Compliance becomes very clear: it’s about consolidating scattered records, ensuring traceability, and automating reporting to ease a traditionally stressful process.
+
+
+“For Fundraising, Donations & Endowments, let’s use the following structure:
+User Story
+Actors
+Journey (Steps)
+Pain Points
+Opportunities
+Inputs
+Outputs
+Acceptance Criteria
+System Interactions
+Edge Cases
+Priority/Frequency
+Detail the task using this structure.”
+
+
+🏫 Admissions & Enrollment — Detailed Breakdown
+1. User Story
+As a school admin, I want to manage the entire admissions and enrollment process digitally, so that parents have a smooth experience, student records are accurate from day one, and the school can track admissions against capacity efficiently.
+
+2. Actors
+Primary:
+Admin staff → manages applications, verifies documents, enters data.
+Parents/Guardians → inquire, apply, submit documents, pay admission fees.
+Students → undergo assessments/interviews (if applicable).
+Secondary:
+Principal/Management → defines admission policy, approves final admissions.
+IT/ERP system → manages applications, workflows, and records.
+Finance team → handles admission fee collection.
+
+3. Journey (Steps)
+Inquiry stage → Parent contacts school (website, walk-in, phone, social media).
+Application stage → Parent fills application form (online/offline).
+Document submission → Birth certificate, prior school records, ID proofs.
+Assessment/Interview (if required) → Student attends test/interview.
+Shortlisting & Approval → Admin compiles list → Principal/management approves.
+Fee Payment → Parent pays admission/registration fee.
+Enrollment → Student data entered into ERP/SIS, assigned class/section.
+Onboarding → Parents receive orientation schedule, student ID card, starter kit.
+
+4. Pain Points
+Manual form filling → prone to errors, time-consuming for parents.
+Long queues for admissions during peak season.
+Lost/misplaced documents.
+Lack of transparency in shortlisting/approval process.
+Delays in updating ERP/SIS → student records incomplete at school opening.
+
+5. Opportunities
+Online inquiry & application portal with status tracking.
+Digital document upload & verification (OCR, e-signatures).
+Automated communication (SMS/email reminders, status updates).
+Admission dashboard → shows number of applications vs available seats.
+Integration with payment gateway for seamless admission fee collection.
+Auto-creation of student profile in SIS after enrollment.
+
+6. Inputs (Data Required)
+Student details (name, DOB, prior education, address).
+Parent/guardian details (contact info, occupation, ID proofs).
+Documents (birth certificate, transfer certificate, ID, photos).
+Admission policy (age limits, quotas, reservation categories).
+Class/seat availability.
+Admission/registration fee details.
+
+7. Outputs (System Generates)
+Application acknowledgment (ID number).
+Admission status notifications (shortlisted, waitlisted, rejected, accepted).
+Digital receipts for admission fee.
+Student profile auto-created in SIS.
+Class/section allocation report.
+Admission analytics (applications per grade, conversion rates, source of inquiries).
+
+8. Acceptance Criteria
+✅ Parents can inquire and apply digitally (web & mobile).
+✅ System supports digital document submission & verification.
+✅ Admin can track applications against seat availability.
+✅ Principal/management can approve/reject applications digitally.
+✅ Parents receive real-time status updates.
+✅ Admission fee payment integrated with ERP finance module.
+✅ Student profile created automatically upon enrollment.
+✅ Reports downloadable (Excel/PDF).
+
+9. System Interactions
+ERP Admissions Module ↔ Application management, approvals, payments.
+SIS ↔ Auto-creation of student profiles.
+Finance Module ↔ Admission/registration fee collection.
+Notification System ↔ Status updates to parents.
+Document Management System ↔ Storage of uploaded documents.
+
+10. Edge Cases
+Parent applies for multiple children → consolidated application handling.
+Missing or invalid documents → request resubmission workflow.
+Application beyond seat capacity → waitlist management.
+Admission canceled after payment → refund workflow.
+Student assigned wrong class/section → reallocation workflow.
+Offline walk-in applications → must be digitized into ERP.
+
+11. Priority/Frequency
+Priority: Very High (admissions drive school revenue and enrollment health).
+Frequency:
+Annual (main admission season).
+Ongoing (mid-year transfers, special cases).
+
+
+
+
+
+🏫 Student Records Management — Detailed Breakdown
+1. User Story
+As a school admin/teacher, I want to record, update, and maintain accurate student records (attendance, grades, certificates) so that the school has a reliable history of each student’s academic journey and can generate official documents when needed.
+
+2. Actors
+Primary:
+Teachers → mark attendance, submit grades.
+Admin staff → maintain centralized records, issue certificates.
+Students → source of performance/attendance data.
+Secondary:
+Parents → view attendance and grade reports.
+Principal/Management → monitor academic performance trends.
+ERP/SIS system → stores and manages records.
+Education Boards/Government → receive official reports when required.
+
+3. Journey (Steps)
+Attendance:
+Teachers record daily attendance (manual register or SIS).
+Data synced to central system.
+Admin compiles monthly/term reports.
+Parents notified (absence alerts, monthly summaries).
+Grades:
+Teachers enter grades after exams/assignments.
+System calculates totals, averages, GPA.
+Admin verifies and generates report cards.
+Reports shared with parents/students.
+Certificates:
+Admin generates official documents (transfer certificate, bonafide, character, completion).
+Data auto-pulled from student profile (attendance %, grades, enrollment history).
+Certificate issued digitally or in print.
+
+4. Pain Points
+Manual attendance entry → errors and delays.
+Teachers overburdened with grade entry across multiple classes.
+Report cards often delayed due to data consolidation.
+Lost or misplaced student records (esp. for alumni).
+Certificates require repeated manual data entry.
+
+5. Opportunities
+Mobile app for teachers → quick attendance marking.
+Automated grade calculation and GPA generation.
+Parent portal → real-time access to attendance & grades.
+Digital certificate templates auto-populated from student profile.
+Centralized database → alumni records stored permanently.
+Analytics dashboards → identify at-risk students (low attendance, poor grades).
+
+6. Inputs (Data Required)
+Student profile (ID, class, section, enrollment year).
+Daily attendance (present/absent/late/leave).
+Exam/assignment results.
+Grade scales, weightages, GPA/percentage rules.
+Certificate request details (type, purpose).
+
+7. Outputs (System Generates)
+Attendance reports (daily, monthly, term-wise).
+Absentee alerts for parents.
+Report cards (individual and class-wise).
+Academic transcripts.
+Digital/print certificates (bonafide, transfer, completion).
+Analytics reports (attendance trends, grade distribution, top/bottom performers).
+
+8. Acceptance Criteria
+✅ Teachers can mark attendance digitally (web or mobile) within minutes.
+✅ Parents receive absence notifications instantly.
+✅ Grades entered once → automatically reflected in report cards.
+✅ Report cards generated in standard school/board formats.
+✅ Certificates auto-generated using stored student data.
+✅ System supports multiple grading schemes (marks, GPA, grades).
+✅ Records are secure, searchable, and exportable.
+
+9. System Interactions
+SIS Module ↔ Stores student attendance, grades, certificates.
+Teacher Portal/App ↔ Attendance marking, grade entry.
+Parent Portal/App ↔ Access to attendance & reports.
+ERP Finance Module ↔ Cross-links for fee clearance before certificate issuance (common in some schools).
+Notification System ↔ Alerts to parents (absences, grade release).
+Document Management Module ↔ Storage of generated certificates.
+
+10. Edge Cases
+Teacher forgets to mark attendance → late updates allowed with justification.
+Student attends late → half-day attendance logic.
+Exam re-evaluation → updated grade must overwrite old record with audit trail.
+Certificate requested for alumni → record retrieval from archive.
+Student transfer → export student record to another school format.
+Parent disputes grade/attendance → correction workflow needed.
+
+11. Priority/Frequency
+Priority: Very High (core to academics, compliance, and parent satisfaction).
+Frequency:
+Attendance → Daily.
+Grades → Periodic (after exams/assignments, term-end).
+Certificates → Ad-hoc (on parent/student request).
+
+
+
+
+🏫 Timetable & Scheduling — Detailed Breakdown
+1. User Story
+As a school admin/teacher, I want to create and manage class timetables digitally, so that teachers, students, and parents have clear schedules, conflicts are avoided, and last-minute changes are handled efficiently.
+
+2. Actors
+Primary:
+Admin staff → creates and manages the master timetable.
+Teachers → provide availability, view schedules, handle substitutions.
+Students → follow assigned timetables.
+Secondary:
+Principal/Management → approves timetable policies (period length, subject allocation).
+Parents → access student timetable via portal/app.
+ERP/SIS system → generates and distributes timetables.
+
+3. Journey (Steps)
+Admin defines rules (period length, school hours, subject hours per week, teacher workload).
+Teachers provide availability and subject preferences.
+Admin (or system) generates draft timetable (auto-generation or manual drag-and-drop).
+Admin reviews timetable → resolves conflicts (teacher clash, room double-booking).
+Timetable published → shared with teachers, students, parents.
+Substitution management: when a teacher is absent, admin assigns replacement or cancels class.
+Mid-term changes: new subjects, staff reshuffling, room allocation updates.
+End of term/year: archive old timetables, prepare new cycle.
+
+4. Pain Points
+Manual timetable creation → time-consuming, prone to errors.
+Teacher unavailability → frequent rescheduling.
+Overlapping class/room allocations → confusion.
+Communication gaps → students/parents unaware of last-minute changes.
+No easy way to measure teacher workload balance.
+
+5. Opportunities
+Auto-generation of timetables using optimization algorithms.
+Conflict detection (room/teacher clashes flagged instantly).
+Mobile app notifications for substitutions/last-minute changes.
+Workload analytics → ensure fair distribution of periods.
+Printable + digital timetable views.
+Integration with LMS → direct link to digital class sessions.
+
+6. Inputs (Data Required)
+Teacher list (subjects taught, availability, workload limits).
+Student groups (class, section, electives).
+Rooms/resources (labs, classrooms, computer labs).
+School rules (period length, max hours per day, subject allocation per week).
+Academic calendar (holidays, exam periods, events).
+
+7. Outputs (System Generates)
+Master timetable (class-wise, teacher-wise, room-wise).
+Individual timetables for students and teachers.
+Notifications of updates/changes.
+Substitution logs.
+Analytics (teacher workload, subject distribution).
+
+8. Acceptance Criteria
+✅ Admin can generate timetable automatically or adjust manually.
+✅ System prevents clashes (same teacher or room double-booked).
+✅ Teachers/students/parents can access updated timetable anytime.
+✅ Substitutions can be assigned and notified in real time.
+✅ Timetables can be exported/printed.
+✅ System integrates timetable with LMS sessions.
+✅ Historical timetables stored for audit/reference.
+
+9. System Interactions
+SIS Module ↔ Student & teacher profiles, class groups.
+HR Module ↔ Teacher availability, workload constraints.
+Operations Module ↔ Room/lab allocations.
+LMS ↔ Maps timetable to online classes/assignments.
+Notification System ↔ Sends updates (SMS, app push, email).
+
+10. Edge Cases
+Teacher absent → system suggests best available substitute automatically.
+New student joins mid-term → timetable auto-updated.
+Elective subjects chosen late → timetable must dynamically adjust.
+Emergency closure (holiday declared suddenly) → all stakeholders notified.
+Teacher workload imbalance → flagged for admin review.
+
+11. Priority/Frequency
+Priority: High (directly impacts daily learning operations).
+Frequency:
+Major creation → Once per academic year (with revisions mid-year).
+Minor changes → Weekly/daily (substitutions, emergencies).
+
+
+
+
+🏫 Timetable & Scheduling — Detailed Breakdown
+1. User Story
+As a school admin/teacher, I want to create and manage class timetables digitally, so that teachers, students, and parents have clear schedules, conflicts are avoided, and last-minute changes are handled efficiently.
+
+2. Actors
+Primary:
+Admin staff → creates and manages the master timetable.
+Teachers → provide availability, view schedules, handle substitutions.
+Students → follow assigned timetables.
+Secondary:
+Principal/Management → approves timetable policies (period length, subject allocation).
+Parents → access student timetable via portal/app.
+ERP/SIS system → generates and distributes timetables.
+
+3. Journey (Steps)
+Admin defines rules (period length, school hours, subject hours per week, teacher workload).
+Teachers provide availability and subject preferences.
+Admin (or system) generates draft timetable (auto-generation or manual drag-and-drop).
+Admin reviews timetable → resolves conflicts (teacher clash, room double-booking).
+Timetable published → shared with teachers, students, parents.
+Substitution management: when a teacher is absent, admin assigns replacement or cancels class.
+Mid-term changes: new subjects, staff reshuffling, room allocation updates.
+End of term/year: archive old timetables, prepare new cycle.
+
+4. Pain Points
+Manual timetable creation → time-consuming, prone to errors.
+Teacher unavailability → frequent rescheduling.
+Overlapping class/room allocations → confusion.
+Communication gaps → students/parents unaware of last-minute changes.
+No easy way to measure teacher workload balance.
+
+5. Opportunities
+Auto-generation of timetables using optimization algorithms.
+Conflict detection (room/teacher clashes flagged instantly).
+Mobile app notifications for substitutions/last-minute changes.
+Workload analytics → ensure fair distribution of periods.
+Printable + digital timetable views.
+Integration with LMS → direct link to digital class sessions.
+
+6. Inputs (Data Required)
+Teacher list (subjects taught, availability, workload limits).
+Student groups (class, section, electives).
+Rooms/resources (labs, classrooms, computer labs).
+School rules (period length, max hours per day, subject allocation per week).
+Academic calendar (holidays, exam periods, events).
+
+7. Outputs (System Generates)
+Master timetable (class-wise, teacher-wise, room-wise).
+Individual timetables for students and teachers.
+Notifications of updates/changes.
+Substitution logs.
+Analytics (teacher workload, subject distribution).
+
+8. Acceptance Criteria
+✅ Admin can generate timetable automatically or adjust manually.
+✅ System prevents clashes (same teacher or room double-booked).
+✅ Teachers/students/parents can access updated timetable anytime.
+✅ Substitutions can be assigned and notified in real time.
+✅ Timetables can be exported/printed.
+✅ System integrates timetable with LMS sessions.
+✅ Historical timetables stored for audit/reference.
+
+9. System Interactions
+SIS Module ↔ Student & teacher profiles, class groups.
+HR Module ↔ Teacher availability, workload constraints.
+Operations Module ↔ Room/lab allocations.
+LMS ↔ Maps timetable to online classes/assignments.
+Notification System ↔ Sends updates (SMS, app push, email).
+
+10. Edge Cases
+Teacher absent → system suggests best available substitute automatically.
+New student joins mid-term → timetable auto-updated.
+Elective subjects chosen late → timetable must dynamically adjust.
+Emergency closure (holiday declared suddenly) → all stakeholders notified.
+Teacher workload imbalance → flagged for admin review.
+
+11. Priority/Frequency
+Priority: High (directly impacts daily learning operations).
+Frequency:
+Major creation → Once per academic year (with revisions mid-year).
+Minor changes → Weekly/daily (substitutions, emergencies).
+
+
+
+
+🏫 Report Card Generation — Detailed Breakdown
+1. User Story
+As a school admin/teacher, I want to generate report cards digitally from stored student performance data, so that parents and students get accurate, timely, and standardized performance summaries in both digital and printable formats.
+
+2. Actors
+Primary:
+Teachers → enter grades, remarks, and subject performance.
+Admin staff → consolidate grades, finalize report cards, distribute them.
+Students → receive report cards as performance feedback.
+Secondary:
+Parents → access report cards digitally or in print.
+Principal/Management → reviews & signs off reports.
+ERP/SIS system → compiles and generates report cards.
+Education boards (if required) → review/report formats for compliance.
+
+3. Journey (Steps)
+Teachers enter marks/grades for exams and assessments.
+Admin reviews entries → verifies data completeness.
+System calculates totals, averages, GPA, rank, grade distribution.
+Teachers/Principal add remarks (academic/behavioral).
+System generates report cards in board/school format.
+Principal/management approves digitally (signature/stamp).
+Report cards distributed (parent portal, email, printed copy).
+Records archived for future transcripts.
+
+4. Pain Points
+Manual grade compilation → errors and delays.
+Formatting inconsistencies → report cards look unprofessional.
+Late distribution due to multiple approval layers.
+Parents dissatisfied with delays or missing information.
+Data re-entry required when grades are corrected.
+
+5. Opportunities
+Automated calculation (totals, GPA, weighted averages).
+Predefined templates (customizable per school/board).
+Digital signatures and seals for quick approval.
+Parent portal access (download anytime).
+Analytics layer → show subject strengths/weaknesses.
+Option to add attendance, extracurriculars, teacher remarks.
+
+6. Inputs (Data Required)
+Student profile (ID, name, class, section).
+Marks/grades from all subjects.
+Weightages (per subject, per exam).
+Attendance records (if shown on report card).
+Teacher/principal remarks.
+Board/school-specific report card template.
+
+7. Outputs (System Generates)
+Individual student report cards (digital + printable).
+Consolidated class/section reports.
+Grade distribution analytics (class averages, toppers, weak areas).
+Archived records for transcripts.
+Notifications to parents when report card is published.
+
+8. Acceptance Criteria
+✅ Teachers can enter marks digitally with minimal effort.
+✅ System auto-calculates grades, GPA, and ranks.
+✅ Report cards generated in board/school-approved formats.
+✅ Digital signatures supported for quick approvals.
+✅ Parents/students can access report cards online.
+✅ Report cards can be printed in bulk (per class/section).
+✅ Records archived and exportable in standard formats.
+✅ Corrections to grades auto-update report cards with audit log.
+
+9. System Interactions
+SIS Module ↔ Pulls student data and exam grades.
+Teacher Portal ↔ Grade entry, remarks submission.
+Parent Portal/App ↔ Report card viewing/downloading.
+Notification System ↔ Alerts when report cards are ready.
+Compliance Module ↔ Board-format reports, if required.
+Document Management System ↔ Archiving digital copies.
+
+10. Edge Cases
+Missing grade entries → system must flag before generating.
+Grade correction after publishing → updated report card with version control.
+Student absent for exam → mark as “NA” or apply rules.
+Multiple grading systems → (marks vs GPA vs letter grades).
+Connectivity issues → parents unable to access → offline print fallback.
+Parent disputes → workflow for rechecking/remark editing.
+
+11. Priority/Frequency
+Priority: Very High (high-visibility task, directly impacts parent satisfaction).
+Frequency:
+Term-end (quarterly, half-yearly, final).
+Occasionally after mid-term assessments.
+
+
+
+
+🏫 Parent–Teacher Communication for Academics — Detailed Breakdown
+1. User Story
+As a teacher/admin, I want to communicate with parents about student academic progress, attendance, and concerns so that parents are informed, engaged, and can support their child’s learning effectively.
+
+2. Actors
+Primary:
+Teachers → share academic updates, feedback, concerns.
+Parents/Guardians → receive updates, raise queries, attend meetings.
+Admin staff → coordinate PTMs, manage communication channels.
+Secondary:
+Principal/Management → oversees communication quality, resolves escalations.
+ERP/SIS system → provides communication platform, logs interactions.
+Notification system → delivers reminders/alerts.
+
+3. Journey (Steps)
+Routine updates: Teachers share attendance, grades, or remarks via portal/app.
+Notifications: Parents receive updates (exam schedule, homework, results).
+One-to-one queries: Parent raises concern (academic performance, homework, behavior). Teacher/admin responds.
+Parent–Teacher Meeting (PTM): Admin schedules PTM, notifies parents, collects confirmations.
+Meeting/Interaction: Teacher meets parent (physical or virtual), discusses progress.
+Follow-up: Action plan or feedback shared with parents; updates logged in system.
+Archival: Communication history stored for future reference.
+
+4. Pain Points
+Multiple, scattered channels (WhatsApp, SMS, calls, paper notes).
+Missed updates → parents unaware of academic progress.
+Last-minute PTM scheduling → poor attendance.
+Time-consuming for teachers to update multiple parents.
+No structured record of communication → disputes arise later.
+
+5. Opportunities
+Unified communication platform (inside ERP/SIS).
+Automated academic updates (attendance, grades, exam schedules).
+Parent portal with chat, notifications, and meeting scheduling.
+Video-conference integration for virtual PTMs.
+Communication history log for transparency.
+AI-enabled insights → flag at-risk students for early parent-teacher interventions.
+
+6. Inputs (Data Required)
+Student records (attendance, grades, performance).
+Teacher feedback/remarks.
+Exam schedules, assignments, homework updates.
+Parent contact details & preferences (SMS, email, app notifications).
+PTM schedules (dates, time slots).
+
+7. Outputs (System Generates)
+Routine academic updates (attendance, results, reminders).
+Parent notifications (exam schedules, PTM invites).
+One-to-one communication logs.
+PTM schedule confirmations and attendance records.
+Communication analytics (which parents engage, response rates).
+
+8. Acceptance Criteria
+✅ Teachers can send academic updates to parents via one unified system.
+✅ Parents receive timely notifications on preferred channels (app, email, SMS).
+✅ PTMs can be scheduled digitally, with reminders and confirmations.
+✅ Parents can raise queries and receive responses logged in the system.
+✅ Communication history stored securely and searchable.
+✅ System supports both bulk (class-wide) and individual messages.
+✅ Virtual meeting links generated automatically (if online PTM).
+
+9. System Interactions
+SIS Module ↔ Provides student records (attendance, grades).
+Teacher Portal/App ↔ For sending updates, scheduling PTMs.
+Parent Portal/App ↔ For receiving updates, raising queries.
+Notification System ↔ For alerts, reminders, PTM invites.
+LMS Module ↔ For assignment/homework updates.
+Document Management ↔ For storing communication logs.
+
+10. Edge Cases
+Parent does not receive notification (wrong contact info) → fallback SMS/email.
+Parent misses PTM → system prompts reschedule option.
+Teacher overload (too many queries) → escalation to admin/principal.
+Sensitive communication (disciplinary issue) → requires restricted access.
+Parent disputes “no update given” → communication history must serve as proof.
+Different time zones (for NRI parents) → flexible scheduling.
+
+11. Priority/Frequency
+Priority: Very High (parent satisfaction & trust hinge on communication).
+Frequency:
+Daily → homework, attendance, routine updates.
+Periodic → PTMs, exam schedules, report cards.
+Ad-hoc → urgent issues, performance concerns, escalations.
+
+
+
+
+🏫 Transport & Route Management — Detailed Breakdown
+1. User Story
+As a school admin/transport manager, I want to plan and manage school transport routes, vehicles, and student allocations, so that students travel safely, parents are informed, and operations run efficiently with minimal delays or risks.
+
+2. Actors
+Primary:
+Transport manager/admin staff → manages routes, vehicles, drivers.
+Drivers & transport staff → execute routes daily.
+Students → passengers.
+Secondary:
+Parents → receive updates on transport status.
+Principal/Management → reviews safety, costs, and compliance.
+ERP/Transport module → manages data and routes.
+GPS/Tracking system → monitors buses in real time.
+
+3. Journey (Steps)
+Setup: Admin enters vehicle details (bus number, capacity, driver details, maintenance schedule).
+Route Planning: Routes created based on student addresses → stops and timings assigned.
+Allocation: Students assigned to specific bus/stop.
+Daily Operations: Driver follows route → attendance marked as students board.
+Real-time Tracking: Parents/admin track bus location (GPS integration).
+Notifications: Parents notified of arrival, delays, or emergencies.
+Compliance: Vehicle documents (insurance, permits) tracked for validity.
+Review: Admin monitors usage, costs, and optimizes routes periodically.
+
+4. Pain Points
+Manual route planning → inefficient and time-consuming.
+Communication gaps → parents unaware of delays.
+Poor tracking → admin cannot verify safety or timeliness.
+Capacity issues → overcrowded or underutilized buses.
+Compliance lapses → expired licenses/insurance cause legal risks.
+
+5. Opportunities
+GPS integration → live tracking for admin & parents.
+Automated route optimization → balance distance, time, and capacity.
+Student attendance synced with bus boarding (RFID/ID card scan).
+Parent notifications → bus arrival, delays, emergencies.
+Maintenance reminders → automated alerts for insurance/permit renewals.
+Analytics → optimize costs per route, fuel consumption, utilization.
+
+6. Inputs (Data Required)
+Student addresses & transport preferences.
+Vehicle details (capacity, fuel type, registration, insurance, permits).
+Driver details (license, ID, contact, shift timings).
+Route data (pickup points, timings, distances).
+GPS tracking feed (real-time bus locations).
+
+7. Outputs (System Generates)
+Route maps with student allocations.
+Daily transport attendance (who boarded which bus).
+Notifications to parents (bus arrival, delay, emergencies).
+Admin dashboards (vehicle utilization, route efficiency).
+Compliance reports (vehicle/driver documentation status).
+Expense reports (fuel, maintenance, driver salaries).
+
+8. Acceptance Criteria
+✅ Admin can create/manage bus routes with student allocations.
+✅ System ensures no bus exceeds capacity.
+✅ Parents can track bus location in real time via app.
+✅ Notifications sent automatically for delays, breakdowns, or emergencies.
+✅ Student transport attendance recorded daily.
+✅ Vehicle compliance alerts triggered before expiry.
+✅ Route and cost efficiency reports available to management.
+
+9. System Interactions
+ERP Transport Module ↔ Route planning, vehicle/driver records.
+SIS Module ↔ Student addresses for allocation.
+Notification System ↔ Parent alerts for arrivals/delays.
+GPS/Tracking System ↔ Real-time location data.
+Finance Module ↔ Transport fee collection, expense tracking.
+Document Management ↔ Storage of insurance, permits, licenses.
+
+10. Edge Cases
+Bus breakdown → system must reassign students to alternate vehicle + notify parents.
+Student changes address → route auto-updated.
+Overcapacity → system should block allocations and suggest alternatives.
+GPS failure → fallback manual updates by driver/admin.
+Parent not at pickup/drop point → escalation workflow.
+New student mid-year → must be added to nearest feasible route.
+
+11. Priority/Frequency
+Priority: High (directly tied to student safety and parent trust).
+Frequency:
+Daily → route operations, attendance, parent notifications.
+Monthly/Quarterly → route optimization, compliance checks.
+Annual → vehicle renewals, budgeting.
+
+
+
+
+🏫 Hostel, Canteen & Library Management — Detailed Breakdown
+
+1. User Story
+As a school admin/staff, I want to manage hostel allocations, canteen services, and library resources digitally, so that students have safe accommodation, healthy meals, and easy access to study materials while the school runs operations efficiently.
+
+2. Actors
+Primary:
+Admin staff → manage hostel rooms, canteen operations, library inventory.
+Students → request/consume services, borrow books.
+Canteen staff → prepare & distribute meals.
+Hostel wardens → supervise hostel operations.
+Librarians → issue/return books, manage collections.
+Secondary:
+Parents → view hostel/canteen charges, library fines.
+Principal/Management → reviews policies, ensures compliance.
+ERP/Operations module → centralizes all service management.
+Finance team → tracks billing, payments, expenses.
+
+3. Journey (Steps)
+Hostel Management:
+Admin defines hostel capacity (rooms, beds, facilities).
+Students apply for hostel accommodation.
+Admin allocates rooms → generates hostel fee invoice.
+Hostel warden maintains attendance, discipline, complaints.
+Maintenance requests raised and resolved.
+Canteen Management:
+Admin sets meal plans (daily/weekly menu, cost).
+Students subscribe to meal plans (monthly, per semester).
+Canteen staff prepares and serves meals.
+Feedback collected from students.
+Billing & expenses reconciled (meal charges, vendor supply costs).
+Library Management:
+Admin enters catalog (books, journals, digital resources).
+Students/teachers request or borrow books.
+Librarian issues books (barcode/RFID).
+Due date reminders sent automatically.
+Books returned → system updates status.
+Fines calculated for late returns.
+
+4. Pain Points
+Hostel: Manual room allocation → errors, overcrowding, complaints.
+Canteen: Limited visibility into meal preferences, wastage issues.
+Library: Paper-based records → lost books, untracked fines.
+Parents not updated on hostel/meal charges or library dues.
+No integration between finance and operations → billing mismatches.
+
+5. Opportunities
+Online hostel application & allocation dashboard.
+Digital complaints/maintenance tracking for hostel.
+Prepaid meal cards or digital canteen billing.
+Nutrition tracking & student feedback integration.
+RFID/barcode-based book issuance system.
+Automated due date reminders & fine calculation.
+Parent portal → real-time hostel, canteen, and library updates.
+Analytics → occupancy rates, food waste, book circulation stats.
+
+6. Inputs (Data Required)
+Hostel: Student applications, room details, warden records, fee structure.
+Canteen: Menu, student subscriptions, vendor supply costs.
+Library: Book catalog, student/teacher borrowing history, due dates.
+
+7. Outputs (System Generates)
+Hostel allocation lists, fee invoices, maintenance reports.
+Canteen meal plans, billing records, feedback reports.
+Library issue/return logs, fine reports, usage analytics.
+Parent notifications (dues, reminders, updates).
+
+8. Acceptance Criteria
+✅ Hostel rooms allocated digitally with seat availability checks.
+✅ Parents can see hostel fee, dues, and student stay details.
+✅ Canteen system supports prepaid cards/digital billing.
+✅ Meal subscription & consumption tracked.
+✅ Library supports barcode/RFID-based issue & return.
+✅ Automated reminders for hostel dues, meal renewals, library fines.
+✅ Reports available for hostel occupancy, canteen usage, library circulation.
+✅ All modules integrate with finance for billing & reconciliation.
+
+9. System Interactions
+ERP Operations Module ↔ Central management of hostel, canteen, library.
+SIS Module ↔ Student profiles for service allocation.
+Finance Module ↔ Hostel/canteen fees, library fines.
+Parent Portal/App ↔ Access to updates, dues, notifications.
+Notification System ↔ Alerts for dues, reminders, updates.
+Document Management ↔ Hostel rules, canteen menus, library catalogs.
+
+10. Edge Cases
+Hostel: Student leaves mid-term → partial refund or reallocation.
+Hostel: Emergency (fire, health issue) → warden triggers alerts.
+Canteen: Student absent long-term → pause/resume meal plan.
+Canteen: Food shortage/vendor delay → alternate meal plan triggered.
+Library: Book lost/damaged → fine & replacement workflow.
+Library: Alumni/outsiders request access → restricted permissions.
+
+11. Priority/Frequency
+Priority: Medium–High (important for student life & parent trust, though secondary to academics/finance).
+Frequency:
+Hostel: Annual allocation + daily operations.
+Canteen: Daily (meal distribution, billing).
+Library: Daily (issue/return), term-end peaks (exam preparation).
+
+
+
+
+🏫 Classroom & Lab Scheduling — Detailed Breakdown
+1. User Story
+As a school admin/timetable coordinator, I want to allocate classrooms and labs efficiently for daily teaching and special sessions, so that students and teachers have the right spaces without conflicts, and resources are utilized optimally.
+
+2. Actors
+Primary:
+Admin staff/timetable coordinator → manages classroom and lab allocations.
+Teachers → request specific rooms/labs for classes or special activities.
+Students → attend scheduled classes in assigned spaces.
+Secondary:
+Principal/Management → sets policies for room usage (priority, lab access).
+ERP/SIS system → manages schedules, conflicts, and updates.
+Operations staff → ensures classroom/lab readiness (equipment, cleanliness).
+
+3. Journey (Steps)
+Admin defines available classrooms/labs (capacity, equipment, restrictions).
+Timetable created (periods, subjects, teacher assignments).
+System allocates classrooms/labs automatically or admin assigns manually.
+Teachers request labs/resources for specific sessions.
+Admin reviews conflicts → resolves overlapping requests.
+Schedule published → visible to teachers, students, parents.
+Daily usage tracked → room availability updated.
+Adjustments made for substitutions, events, or emergency relocations.
+
+4. Pain Points
+Manual allocation → frequent clashes (same room double-booked).
+Limited lab capacity → scheduling bottlenecks.
+Lack of visibility → teachers unaware of available free rooms/labs.
+Last-minute changes not communicated → confusion for students.
+Poor resource utilization → some rooms overused, others underused.
+
+5. Opportunities
+Auto-scheduling engine → optimizes room and lab allocation.
+Conflict detection → alerts for double-bookings.
+Real-time room availability dashboard.
+Teacher self-service portal → request and book rooms/labs.
+Mobile notifications → updates for last-minute changes.
+Analytics → utilization rates of classrooms and labs.
+
+6. Inputs (Data Required)
+Classroom details (capacity, type, equipment availability).
+Lab details (subject-specific, equipment, max capacity).
+Timetable (classes, subjects, periods).
+Teacher and student group assignments.
+Requests for special sessions (extra classes, experiments, events).
+
+7. Outputs (System Generates)
+Master classroom/lab schedule (per day/week/term).
+Individual schedules (per teacher, per class, per room).
+Conflict alerts and resolution logs.
+Notifications for schedule changes.
+Reports on classroom/lab utilization.
+
+8. Acceptance Criteria
+✅ System can auto-assign classrooms/labs without conflicts.
+✅ Teachers can request specific rooms/labs digitally.
+✅ Admin can override allocations manually if required.
+✅ Students and teachers can view schedules in real time.
+✅ Notifications sent instantly for changes/cancellations.
+✅ Reports show utilization metrics (overused/underused rooms).
+✅ Historical schedules archived for audit/reference.
+
+9. System Interactions
+SIS Module ↔ Student and teacher data for class allocation.
+Timetable Module ↔ Periods and subject scheduling.
+Operations Module ↔ Room/lab readiness (equipment, maintenance).
+Parent/Student Portal ↔ View schedules.
+Notification System ↔ Updates for changes.
+
+10. Edge Cases
+Teacher absent → class moved to study hall.
+Lab equipment under maintenance → reassign to another lab or reschedule.
+Room over-capacity → system suggests alternate larger room.
+Emergency closure of classroom/lab → auto-notify stakeholders and reassign.
+Special events (science fair, guest lecture) → override standard allocation.
+
+11. Priority/Frequency
+Priority: High (daily academic operations depend on efficient scheduling).
+Frequency:
+Timetable creation → Start of academic year/term.
+Adjustments → Daily/weekly (substitutions, special requests).
+
+
+
+
+🏫 Safety, Health & Security — Detailed Breakdown
+1. User Story
+As a school admin/safety officer, I want to plan, monitor, and document safety, health, and security measures (fire drills, first aid, CCTV monitoring) so that students and staff are protected, emergencies are handled quickly, and the school stays compliant with safety regulations.
+
+2. Actors
+Primary:
+Admin staff/safety officer → oversees drills, health protocols, CCTV monitoring.
+Teachers → participate in drills, ensure student safety.
+Students → follow safety instructions, participate in drills.
+Secondary:
+Principal/Management → approves safety policies, ensures compliance.
+Security staff → operate CCTV, check entries/exits, assist in emergencies.
+Medical staff/first aiders → provide immediate health support.
+ERP/Safety module → tracks compliance, logs incidents.
+Parents → notified in case of emergencies.
+Government/regulatory authorities → require compliance reports.
+
+3. Journey (Steps)
+Fire Drills:
+Admin schedules fire drill → notifications sent to staff & students.
+Drill conducted → teachers guide students to safe zones.
+Attendance taken to ensure all evacuated.
+Report generated → compliance documented.
+First Aid & Health:
+Student/staff injury/illness reported.
+First aid administered by trained staff/medical room.
+Incident logged (student name, cause, treatment).
+Parent notified if serious → escalation to hospital if needed.
+Records updated for compliance and health tracking.
+CCTV & Security:
+CCTV cameras record daily activity.
+Security staff monitor feeds → raise alerts for suspicious behavior.
+Admin reviews footage in case of incidents.
+Logs stored securely for reference.
+Visitor entry/exit tracked digitally.
+
+4. Pain Points
+Fire drills often unstructured → no proper attendance tracking.
+Manual health/incident logs → incomplete records.
+CCTV footage not integrated → hard to retrieve when needed.
+Parents not notified quickly during emergencies.
+Compliance reporting for safety audits → time-consuming.
+
+5. Opportunities
+Digital scheduling & attendance for drills.
+Mobile app alerts for staff during drills/emergencies.
+Centralized incident reporting system (health & safety logs).
+CCTV integration with ERP → searchable video logs.
+Automated parent notifications for emergencies.
+Compliance dashboards with ready-to-submit reports.
+
+6. Inputs (Data Required)
+Student and staff rosters (for drill attendance & incident logs).
+Health records (allergies, medical conditions).
+CCTV camera feeds and storage logs.
+Visitor entry/exit logs.
+Safety protocols (fire exits, evacuation plans).
+Regulatory requirements (fire safety certificates, first aid compliance).
+
+7. Outputs (System Generates)
+Fire drill schedules & attendance reports.
+Incident/first aid logs (student, cause, treatment).
+Parent notifications (injury, emergency updates).
+CCTV logs (searchable by date/time/event).
+Compliance reports (safety audits, govt. submissions).
+Visitor management reports.
+
+8. Acceptance Criteria
+✅ Fire drills can be scheduled and logged digitally.
+✅ Attendance during drills verified against student roster.
+✅ First aid incidents recorded with timestamp, student details, action taken.
+✅ Parents notified automatically for serious health/safety issues.
+✅ CCTV footage retrievable from ERP by date/time/event.
+✅ Visitor entries/exits tracked digitally.
+✅ Compliance reports exportable in standard formats (Excel/PDF).
+✅ Audit trail maintained for all safety/health/security events.
+
+9. System Interactions
+SIS Module ↔ Student roster & parent contacts.
+ERP Safety Module ↔ Logs drills, health incidents, compliance.
+Notification System ↔ Emergency alerts to staff & parents.
+CCTV Integration ↔ Feeds and storage linked to ERP.
+Visitor Management System ↔ Digital check-in/check-out logs.
+Compliance Module ↔ Safety/health regulatory reports.
+
+10. Edge Cases
+Fire drill during bad weather → reschedule workflow.
+Medical emergency beyond first aid → escalation workflow to hospital.
+Student with disability → special evacuation plan needed.
+CCTV downtime → fallback manual incident reporting.
+Visitor refuses digital check-in → manual override entry.
+False alarms (fire/smoke) → must be logged distinctly from real incidents.
+
+11. Priority/Frequency
+Priority: Very High (student safety = trust + compliance critical).
+Frequency:
+Fire drills → Once per term or as mandated by regulations.
+First aid/health logs → Ad-hoc (whenever incidents occur).
+CCTV monitoring → Continuous (daily).
+Visitor logs → Daily.
+Compliance reporting → Annual/quarterly.
+
+
+
+
+🏫 Recruitment & Onboarding of Teachers/Staff — Detailed Breakdown
+1. User Story
+As a school admin/HR manager, I want to manage the recruitment and onboarding of teachers and staff digitally, so that the school hires qualified candidates efficiently, ensures compliance, and integrates new staff smoothly into the academic/administrative system.
+
+2. Actors
+Primary:
+HR/Admin staff → manages job postings, applications, shortlisting, onboarding.
+Candidates (teachers/staff) → apply, interview, submit documents.
+Secondary:
+Principal/Management → approves hiring decisions, conducts final interviews.
+Department heads → review candidates for subject/role fit.
+ERP/HR module → tracks recruitment and onboarding workflows.
+Finance team → sets payroll after hiring.
+
+3. Journey (Steps)
+Recruitment Initiation: Department raises staffing request → HR approves.
+Job Posting: Vacancy published (school website, portals, ERP career page).
+Application Management: Candidates submit applications → system stores profiles.
+Shortlisting: HR screens applications → forwards to department/principal.
+Assessment/Interview: Candidate completes written test/demo class → interview scheduled.
+Selection & Approval: Department + principal approve final candidate.
+Offer & Documentation: HR issues offer letter → candidate submits joining docs.
+Onboarding: Candidate entered into ERP → assigned to department, timetable, and payroll.
+Orientation: Candidate attends induction/training → accesses staff portal.
+
+4. Pain Points
+Manual screening → time-consuming.
+Paper-based documentation → lost or delayed.
+Poor visibility of hiring pipeline.
+Candidate experience → no clear status updates.
+Onboarding delays → teacher unavailable for class start.
+
+5. Opportunities
+Online job portal linked with ERP → direct applications.
+Automated resume parsing & shortlisting filters.
+Interview scheduling with calendar integration.
+Candidate tracking dashboard → pipeline visibility.
+Digital onboarding → e-signatures, online submission of documents.
+Auto-creation of employee profile → sync with payroll, timetable.
+
+6. Inputs (Data Required)
+Job requisition (role, department, requirements).
+Candidate applications (resume, qualifications, certifications).
+Interview panel availability.
+Offer details (salary, benefits, role).
+Candidate documents (ID, degrees, police verification, medical fitness).
+
+7. Outputs (System Generates)
+Job posting (school website/portal).
+Candidate profiles database.
+Shortlist reports.
+Interview schedules & feedback forms.
+Offer letters & digital acceptance.
+Employee profile created in ERP.
+Onboarding checklist status.
+
+8. Acceptance Criteria
+✅ HR can create/manage job postings digitally.
+✅ Candidates can apply online → profiles stored automatically.
+✅ System supports resume parsing and shortlist filters.
+✅ Interview scheduling with notifications to candidates/panel.
+✅ Offer letters generated digitally with e-signatures.
+✅ Employee profile auto-created after acceptance → linked to payroll/timetable.
+✅ Onboarding checklist (documents, training, induction) tracked digitally.
+✅ Reports on hiring pipeline & timelines available.
+
+9. System Interactions
+HR Module ↔ Recruitment workflows, candidate database, onboarding.
+ERP Website/Career Portal ↔ Job postings, application intake.
+Document Management System ↔ Candidate resumes, joining docs.
+Payroll Module ↔ Salary setup post-onboarding.
+Timetable Module ↔ Assign teacher schedules once onboarded.
+Notification System ↔ Application updates, interview reminders.
+
+10. Edge Cases
+Candidate accepts but doesn’t join → system flags vacancy as open again.
+Candidate fails background verification → onboarding canceled.
+Multiple candidates for same position → conflict resolution workflow.
+Urgent hire needed mid-year → fast-track approval and onboarding.
+Candidate withdraws midway → auto-remove from pipeline.
+Teacher joins late → timetable adjustments required.
+
+11. Priority/Frequency
+Priority: High (directly impacts teaching quality and school operations).
+Frequency:
+Annual (bulk hiring before academic year).
+Mid-year (to replace staff exits or expand capacity).
+
+
+
+
+🏫 Leave Management — Detailed Breakdown
+1. User Story
+As a teacher/staff member, I want to apply for and track my leaves digitally, and as an admin/HR officer, I want to review, approve, and record leaves, so that staff availability is clear, payroll deductions are accurate, and academic/operational continuity is maintained.
+
+2. Actors
+Primary:
+Teachers/Staff → apply for leave, track balances.
+Admin/HR staff → manage leave policies, process approvals.
+Secondary:
+Principal/Management → approve long/critical leaves.
+Students (indirectly affected by teacher absence).
+ERP/HR system → maintains leave balances, workflows, records.
+Payroll module → adjusts salary if applicable.
+
+3. Journey (Steps)
+Teacher/staff logs into portal → checks available leave balance.
+Submits leave application (dates, type, reason, supporting document if needed).
+ERP routes request to reporting manager/principal for approval.
+Manager reviews → approves/rejects/asks for clarification.
+ERP updates leave balance and calendar (teacher timetable, substitute arrangement if required).
+Payroll system syncs deductions (if unpaid leave).
+Teacher/staff notified of status → record stored for compliance.
+
+4. Pain Points
+Paper-based applications → delays, lost records.
+No visibility into leave balances → confusion for staff.
+Last-minute leave → no substitute teacher assignment.
+Errors in payroll deductions for unpaid leave.
+Limited transparency → disputes between staff and admin.
+
+5. Opportunities
+Self-service leave portal (web & mobile).
+Real-time leave balance tracking for staff.
+Automated approval workflows with escalation.
+Integration with timetable → auto-assign substitute teachers.
+Integration with payroll → accurate deductions.
+Leave analytics (patterns, absenteeism trends).
+
+6. Inputs (Data Required)
+Employee profile (ID, role, department).
+Leave types (sick, casual, earned, unpaid, maternity, special).
+Leave balance (per policy).
+Leave request details (date range, reason, attachments).
+Approval authority matrix (who approves what type of leave).
+
+7. Outputs (System Generates)
+Leave request acknowledgment.
+Approval/rejection notifications.
+Updated leave balance.
+Adjusted staff timetable (substitute allocation if required).
+Payroll adjustments (if unpaid leave).
+Leave reports (per staff, department, overall trends).
+
+8. Acceptance Criteria
+✅ Staff can view real-time leave balances.
+✅ Leave requests submitted digitally with reasons/attachments.
+✅ Automated routing to appropriate approver.
+✅ Approved leaves reflected in timetable (teacher substitution triggered).
+✅ Payroll automatically adjusts for unpaid leaves.
+✅ Notifications sent to applicant and manager on status change.
+✅ Leave reports downloadable in standard formats.
+
+9. System Interactions
+HR Module ↔ Manages leave balances and workflows.
+Payroll Module ↔ Syncs unpaid leave deductions.
+Timetable Module ↔ Adjusts schedules, assigns substitutes.
+Notification System ↔ Alerts staff on approvals/rejections.
+Compliance/Document Management ↔ Stores medical certificates or attachments.
+
+10. Edge Cases
+Teacher applies for leave on exam day → escalation to principal.
+Staff applies retroactively (after leave taken) → requires justification.
+Multiple key staff on leave simultaneously → conflict resolution.
+Half-day leave → system must support partial allocation.
+Staff applies for extended leave → HR must trigger contract review.
+Emergency leave (no prior notice) → logged later by admin.
+
+11. Priority/Frequency
+Priority: High (affects payroll, timetable, and operations).
+Frequency:
+Daily (leave applications submitted).
+Monthly (leave reports).
+Annual (leave balance reset/carryover).
+
+
+
+🏫 Payroll Integration (Ties to Financials) — Detailed Breakdown
+1. User Story
+As a school admin/finance officer, I want to integrate payroll with HR and financial systems, so that salary disbursement, deductions, and compliance reporting happen automatically and accurately without manual reconciliation.
+
+2. Actors
+Primary:
+Finance/Admin staff → monitors payroll processing, reconciles expenses.
+HR staff → inputs employee data (contracts, leave, attendance, benefits).
+Teachers & Non-teaching staff → receive salaries, access payslips.
+Secondary:
+Principal/Management → approves payroll budgets.
+Bank/Payment gateway → executes salary disbursements.
+ERP/HR & Finance modules → automate workflows.
+Government/Regulatory authorities → receive compliance filings (PF, TDS, ESI).
+
+3. Journey (Steps)
+HR updates employee records (new hires, exits, promotions).
+Attendance & leave data synced from HR module.
+Payroll engine calculates gross salary → applies deductions (PF, TDS, ESI, unpaid leave).
+Finance system cross-checks payroll totals against budget.
+Principal/management approves final payroll run.
+Bank API/payment gateway disburses salaries.
+Payslips generated → employees access via portal/app.
+Compliance filings auto-generated (PF returns, tax filings).
+Payroll expense synced to financial ledger for audits.
+
+4. Pain Points
+Manual reconciliation between HR and Finance → time-consuming.
+Errors in deductions/tax → employee dissatisfaction.
+Delayed salary disbursements due to approval bottlenecks.
+Compliance filings often missed or incorrect.
+No integration → duplicate data entry across HR and Finance.
+
+5. Opportunities
+Seamless HR ↔ Payroll ↔ Finance integration.
+Auto-calculation of salary, tax, PF, and leave deductions.
+One-click approval and salary disbursement.
+Auto-generated compliance reports for regulators.
+Expense forecasting dashboards (salary cost trends).
+Employee self-service portal for payslips, tax forms.
+
+6. Inputs (Data Required)
+Employee master data (designation, salary structure, bank details).
+Attendance and leave data.
+Deduction policies (PF, ESI, TDS, insurance, loans).
+Payroll approval workflows.
+Bank/payment gateway integration credentials.
+Compliance rules (local labor/tax regulations).
+
+7. Outputs (System Generates)
+Salary disbursement reports.
+Employee payslips (digital/print).
+Compliance filings (PF, ESI, TDS reports).
+Payroll expense entry in financial ledger.
+Analytics (salary costs by department, overtime costs, leave deductions).
+
+8. Acceptance Criteria
+✅ Employee data synced automatically from HR to payroll.
+✅ Attendance/leave deductions auto-applied.
+✅ Payroll disbursement integrated with bank API.
+✅ Payslips generated and accessible via portal/app.
+✅ Compliance reports auto-prepared in required formats.
+✅ Finance ledger updated automatically after payroll run.
+✅ Audit trail maintained for all changes/approvals.
+
+9. System Interactions
+HR Module ↔ Employee data, attendance, leave records.
+Payroll Engine ↔ Salary calculations and deductions.
+Finance Module ↔ Payroll expenses, budget checks, ledger updates.
+Bank/Payment Gateway API ↔ Salary transfers.
+Notification System ↔ Salary credit alerts, payslip availability.
+Compliance Module ↔ Statutory reports (PF, TDS, ESI).
+
+10. Edge Cases
+Incorrect bank details → failed transfers, retry/refund process.
+Employee exits mid-cycle → prorated salary & final settlement workflow.
+Government changes tax/PF rules → system must auto-update.
+Salary advances/loans → tracked as deductions over multiple months.
+Employees on contract/daily wage → different calculation logic.
+Payroll run overlap with financial year-end → reconciliation issues.
+
+11. Priority/Frequency
+Priority: Very High (ties staff satisfaction with financial compliance).
+Frequency:
+Monthly (regular payroll cycle).
+Quarterly (compliance filings).
+Annually (tax reporting, budget planning).
+
+
+
+🏫 Teacher Appraisal & Performance Management — Detailed Breakdown
+1. User Story
+As a principal/HR manager, I want to evaluate teacher performance fairly and transparently, so that high-performing teachers are recognized, areas of improvement are addressed, and school quality standards are maintained.
+
+2. Actors
+Primary:
+Teachers → subject of evaluation, self-assessment.
+Principal/Management → conducts appraisals, sets evaluation policies.
+HR staff → manage appraisal cycles, document outcomes.
+Secondary:
+Students → provide feedback on teaching quality.
+Parents (optional) → provide feedback on engagement.
+ERP/HR module → manages evaluation workflows, reports.
+Finance module → links performance outcomes to increments/bonuses.
+
+3. Journey (Steps)
+Setup: HR/principal defines evaluation cycle (mid-year, annual) and criteria (attendance, teaching quality, results, engagement).
+Self-Assessment: Teachers fill in self-evaluation forms.
+Feedback Collection: Students/parents submit feedback surveys (confidential).
+Performance Data Gathering: System compiles attendance, results, participation in co-curriculars, training hours.
+Evaluation: Principal/management + department heads review data & feedback.
+Appraisal Meeting: One-on-one discussion with teacher → strengths, areas for improvement.
+Scoring & Documentation: Final performance rating recorded in ERP.
+Outcome: Increments/bonuses/promotions/mentoring plans assigned.
+Follow-Up: Improvement plans tracked (training, peer observations, mentoring).
+
+4. Pain Points
+Subjectivity in evaluation → bias, favoritism.
+Lack of consolidated performance data → evaluations delayed.
+Teachers often unaware of evaluation criteria upfront.
+Feedback collection manual → poor participation, missing insights.
+No link between performance and professional development.
+
+5. Opportunities
+Transparent appraisal system with predefined criteria.
+Digital feedback surveys for students/parents.
+Analytics dashboards (student results vs teacher performance).
+Integration with LMS → teaching activity logs considered in appraisal.
+Automated links between appraisal outcomes → salary increments and training plans.
+Historical performance records for career growth tracking.
+
+6. Inputs (Data Required)
+Teacher attendance and punctuality.
+Student academic results.
+Classroom observations/peer reviews.
+Student/parent feedback surveys.
+Teacher participation in co-curriculars, training programs.
+Self-assessment reports.
+Appraisal policy (criteria, weightages).
+
+7. Outputs (System Generates)
+Teacher performance scorecards.
+Appraisal reports (individual and consolidated).
+Feedback summaries (student/parent/peer).
+Recommendations (increment, promotion, training).
+HR/management reports for decision-making.
+Records archived for future appraisal cycles.
+
+8. Acceptance Criteria
+✅ Appraisal criteria visible to all staff at start of cycle.
+✅ Teachers can complete self-assessments digitally.
+✅ Students/parents can submit confidential feedback surveys.
+✅ System compiles academic, attendance, and engagement data automatically.
+✅ Appraisal reports generated with clear ratings and justifications.
+✅ Links to Finance module for increments/bonuses.
+✅ Improvement/action plans assigned and tracked.
+✅ Reports exportable (Excel/PDF).
+
+9. System Interactions
+HR Module ↔ Manages appraisal cycles, evaluation forms, reports.
+SIS Module ↔ Provides student results, attendance, engagement data.
+LMS Module ↔ Teaching activity logs (assignments, classes conducted).
+Finance Module ↔ Connects appraisal outcomes to payroll adjustments.
+Parent/Student Portal ↔ Feedback surveys.
+Notification System ↔ Appraisal reminders, meeting schedules.
+
+10. Edge Cases
+Teacher on long leave during evaluation cycle → prorated appraisal.
+Conflict between teacher and evaluator → escalation to higher authority.
+Poor participation in feedback surveys → incomplete evaluation.
+Data mismatch (wrong student results linked) → correction workflow.
+Multiple roles (teacher also handling admin duties) → dual evaluation logic.
+
+11. Priority/Frequency
+Priority: High (impacts teacher motivation, retention, and school performance).
+Frequency:
+Annual (main appraisal cycle).
+Mid-year (progress reviews, feedback).
+
+
+
+
+🏫 Notices & Announcements — Detailed Breakdown
+1. User Story
+As a school admin/teacher, I want to publish and distribute notices & announcements digitally, so that students, parents, and staff receive timely, consistent, and reliable communication.
+
+2. Actors
+Primary:
+Admin staff → drafts and publishes notices.
+Teachers → share classroom/subject-specific announcements.
+Students → receive and act on notices.
+Parents → receive updates related to academics, events, or operations.
+Secondary:
+Principal/Management → approves important notices.
+ERP/Communication module → distributes notices via multiple channels.
+Notification system → pushes alerts to end users.
+
+3. Journey (Steps)
+Admin/teacher drafts a notice (exam schedule, holiday, event, fee reminder).
+Notice reviewed/approved by management (if required).
+Notice published → via ERP system (portal, app, email, SMS, WhatsApp).
+Target groups selected (all students, specific classes, teachers, parents).
+Recipients receive notifications and view the notice.
+System tracks acknowledgment/read receipts (if enabled).
+Notice archived for future reference.
+
+4. Pain Points
+Paper-based notices → lost or delayed.
+Multiple channels (WhatsApp, SMS, paper) → inconsistent communication.
+Parents miss updates due to poor visibility.
+No acknowledgment system → school unaware if parents read notices.
+Manual duplication of announcements → wastes admin time.
+
+5. Opportunities
+Centralized digital notice board (web & mobile).
+Multi-channel distribution (app, SMS, email, WhatsApp).
+Read receipts and acknowledgment tracking.
+Role-based targeting (specific grades, staff, parents).
+Scheduled announcements (auto-publish at set times).
+Analytics → measure engagement & reach of announcements.
+
+6. Inputs (Data Required)
+Notice content (title, message, attachments).
+Target audience (class, section, staff group, parents).
+Approval metadata (who approved, timestamp).
+Distribution method (app, SMS, email, printed).
+Scheduling details (immediate or future publish).
+
+7. Outputs (System Generates)
+Published notices (digital notice board, parent portal, staff app).
+Notifications sent to targeted audience.
+Read receipts/acknowledgment logs.
+Archived notice repository.
+Reports on notice engagement (views, confirmations).
+
+8. Acceptance Criteria
+✅ Admin/teachers can draft notices with attachments.
+✅ Notices can be targeted to specific groups (classes, staff, parents).
+✅ Multi-channel distribution supported.
+✅ Parents/students notified instantly on app/email/SMS.
+✅ Acknowledgment tracking available for critical notices.
+✅ Notices archived with search/filter options.
+✅ Scheduled publishing supported.
+✅ Reports on engagement/readership generated.
+
+9. System Interactions
+ERP Communication Module ↔ Creates & manages notices.
+SIS Module ↔ Provides student/parent data for targeting.
+Teacher Portal ↔ Teachers publish class-specific updates.
+Parent/Student App ↔ Notice access, read confirmation.
+Notification System ↔ SMS, push, email alerts.
+Document Management ↔ Stores archived notices.
+
+10. Edge Cases
+Wrong target group selected → notice goes to unintended audience.
+Parent changes contact info → fails to receive notice.
+Internet/app downtime → fallback to SMS/email.
+Urgent/emergency notice → bypass approval workflow.
+Duplicate notices → system should flag repetition.
+Critical notices (exam schedule change) → must enforce acknowledgment.
+
+11. Priority/Frequency
+Priority: Very High (directly impacts communication & parent trust).
+Frequency:
+Daily (routine updates, classroom notices).
+Weekly/Monthly (exam schedules, fee reminders, events).
+Ad-hoc (emergencies, sudden holidays).
+
+
+
+
+🏫 Parent Communication (ERP app, SMS, calls, meetings) — Detailed Breakdown
+1. User Story
+As a school admin/teacher, I want to communicate with parents across multiple channels (app, SMS, calls, meetings) so that parents stay informed, engaged, and can collaborate effectively in supporting their child’s education.
+
+2. Actors
+Primary:
+Teachers → send academic updates, feedback, reminders.
+Admin staff → send operational/fee-related communication.
+Parents → receive updates, request clarifications, attend meetings.
+Secondary:
+Principal/Management → monitors quality of communication, escalates sensitive issues.
+ERP/Communication module → manages communication flows.
+Notification system → delivers SMS, push, email alerts.
+
+3. Journey (Steps)
+Teacher/admin drafts communication (academic, fees, events, urgent updates).
+Message approved (if required) by management for critical notices.
+ERP system selects delivery channel(s): app, SMS, email, calls.
+Parents receive updates (via app notifications, SMS, or call alerts).
+Parents respond with queries (chat, email, or call back).
+For PTMs/meetings, admin schedules session → parents confirm attendance.
+Meeting conducted (in-person/virtual) → action items documented.
+All communications logged in ERP for future reference.
+
+4. Pain Points
+Fragmented channels (WhatsApp, calls, notes) → inconsistent communication.
+Parents miss SMS/email due to outdated contact info.
+No record of phone calls → disputes about “not informed.”
+Meetings often unstructured → no follow-up actions tracked.
+Overload of communication → important messages get lost.
+
+5. Opportunities
+Unified ERP parent communication hub.
+Multi-channel delivery (push, SMS, email, automated calls).
+Communication history log → transparency and dispute resolution.
+Scheduled messages for events, reminders.
+Smart prioritization (urgent vs routine updates).
+PTM scheduling + auto-reminders with digital attendance logs.
+Translation features for multi-language parent bases.
+
+6. Inputs (Data Required)
+Student & parent profiles (contact info, preferred channel).
+Message content (type, urgency, attachments).
+Event/PTM details (date, time, agenda).
+Approval metadata (who approved, timestamp).
+Communication history (logs for reference).
+
+7. Outputs (System Generates)
+Sent messages (via app, SMS, email, automated calls).
+Delivery status (sent, failed, pending).
+Parent read receipts/acknowledgments.
+PTM attendance reports.
+Communication history archive.
+Analytics on engagement (open rates, response rates).
+
+8. Acceptance Criteria
+✅ Teachers/admins can send messages via multiple channels.
+✅ Parents receive updates on their preferred channel.
+✅ Urgent communication flagged with priority delivery.
+✅ PTMs can be scheduled with reminders and confirmations.
+✅ Communication logs searchable and stored securely.
+✅ Parents can reply/raise queries via app or ERP.
+✅ Delivery reports available (who received/read).
+✅ Multi-language support available for diverse parent bases.
+
+9. System Interactions
+ERP Communication Module ↔ Draft, send, and log communication.
+SIS Module ↔ Parent contact info and student mapping.
+Parent App/Portal ↔ Messages, PTM scheduling, feedback.
+Notification System ↔ SMS, push, email alerts.
+Calendar Module ↔ PTM scheduling and reminders.
+Document Management ↔ Stores meeting notes, attachments.
+
+10. Edge Cases
+Parent contact outdated → message not delivered.
+Parent doesn’t use app → fallback to SMS/call.
+Emergency (sudden closure) → system must override normal approval process.
+Over-communication → parents mute notifications → solution = priority tagging.
+Parent misses PTM → reschedule workflow triggered.
+Multiple guardians for one student → communication should reach all linked contacts.
+
+11. Priority/Frequency
+Priority: Very High (directly tied to trust and satisfaction).
+Frequency:
+Daily (academic/attendance updates).
+Weekly/Monthly (reminders, events, fees).
+Ad-hoc (emergencies, urgent announcements).
+
+
+
+
+🏫 Emergency Communication (Transport Delays, Holidays) — Detailed Breakdown
+1. User Story
+As a school admin/transport manager, I want to send emergency notifications (e.g., transport delays, sudden holidays, safety alerts) instantly across multiple channels, so that parents, students, and staff are immediately informed and confusion or safety risks are minimized.
+
+2. Actors
+Primary:
+Admin staff/transport manager → drafts & sends emergency alerts.
+Parents → receive emergency notifications (bus delays, closures).
+Students → indirectly affected, informed through parents/teachers.
+Teachers → notified about school closure, schedule changes.
+Secondary:
+Principal/Management → approves critical emergency messages.
+ERP/Communication module → handles multi-channel message distribution.
+Notification system → executes push, SMS, calls, emails.
+
+3. Journey (Steps)
+Emergency identified (bus delay, sudden holiday, safety issue).
+Admin/transport manager drafts emergency notice.
+System tags communication as high priority/emergency.
+Message distributed via multiple channels (app push, SMS, auto-calls, email).
+Parents/teachers receive instant notification → confirm acknowledgment (optional).
+Admin monitors delivery status and responses.
+Emergency resolved → follow-up update sent (bus resumed, school reopen date).
+System archives communication for compliance.
+
+4. Pain Points
+Manual calls/SMS → delays in reaching all parents.
+Parents miss updates → cause panic or confusion.
+No acknowledgment → school unsure if message was received.
+Poor integration → transport delays not auto-communicated.
+Multiple guardians not always informed → miscommunication at home.
+
+5. Opportunities
+One-click emergency broadcast via ERP.
+Multi-channel redundancy → push + SMS + auto-calls.
+Parent acknowledgment tracking (read receipt or confirmation).
+GPS integration → auto-triggered delay messages when bus is stuck.
+Templates for quick emergency alerts (e.g., “School closed today due to heavy rain”).
+Real-time dashboards → monitor who received & acknowledged.
+
+6. Inputs (Data Required)
+Event details (type of emergency: delay, closure, safety alert).
+Target audience (class, route, entire school).
+Message content (short, urgent, approved).
+Parent/guardian contact info.
+GPS/transport data (for automated delay updates).
+
+7. Outputs (System Generates)
+Emergency notifications (push, SMS, auto-calls, email).
+Delivery reports (sent, failed, pending).
+Acknowledgment logs (who read/confirmed).
+Follow-up communications (resolution updates).
+Archived emergency logs for compliance/audit.
+
+8. Acceptance Criteria
+✅ Emergency message can be sent within 1–2 minutes of drafting.
+✅ Messages reach 100% of targeted parents/teachers across multiple channels.
+✅ Urgent alerts bypass normal approval workflow if configured.
+✅ Parents receive instant push/SMS/auto-call notifications.
+✅ Delivery & acknowledgment reports visible in admin dashboard.
+✅ System can auto-trigger transport delay messages from GPS.
+✅ All communications archived with timestamp for audit.
+
+9. System Interactions
+ERP Communication Module ↔ Emergency message drafting & distribution.
+SIS Module ↔ Student-parent mapping for targeted messaging.
+Transport Module ↔ GPS integration for bus delays.
+Notification System ↔ Push, SMS, calls, email alerts.
+Compliance/Document Management ↔ Stores emergency communication logs.
+
+10. Edge Cases
+Network outage → SMS/call fallback if push notification fails.
+Parent contact details outdated → fails to deliver, flagged for update.
+Multiple guardians → system must notify all linked contacts.
+Emergency coincides with exam → follow-up instructions must be included.
+False alarm → system must allow for correction/cancellation notice.
+Parents without smartphones → ensure SMS/auto-calls cover them.
+
+11. Priority/Frequency
+Priority: Critical (directly impacts safety & trust).
+Frequency:
+Ad-hoc (transport delays, sudden holidays, safety issues).
+Rare but high-impact → must always be functional when needed.
+
+
+
+🏫 Education Board Compliance (CBSE, IB, State Board Reports) — Detailed Breakdown
+1. User Story
+As a school admin/principal, I want to generate and submit compliance reports required by education boards (CBSE, IB, State Board, etc.), so that the school remains compliant, avoids penalties, and maintains its accreditation status.
+
+2. Actors
+Primary:
+Admin/Compliance Officer → prepares and submits reports.
+Principal/Management → reviews and approves before submission.
+Secondary:
+Teachers → provide supporting academic/attendance data.
+Finance team → provides fee and financial compliance records.
+ERP/Compliance module → consolidates and formats reports.
+Education boards (CBSE, IB, State Board) → receive and validate reports.
+
+3. Journey (Steps)
+Education board issues compliance/reporting guidelines (format, timeline).
+Admin gathers required data from ERP (attendance, exam results, staff records, finances).
+Teachers/finance staff input missing data (if any).
+ERP compiles data → generates draft reports as per board-specific formats.
+Principal/management reviews and approves reports.
+Reports submitted digitally (portal upload/email) or physically.
+Acknowledgment received from the board.
+Records archived for audits and renewals.
+
+4. Pain Points
+Each board has different reporting formats → time-consuming.
+Manual compilation → high risk of errors.
+Delays in collecting data from multiple departments.
+Changes in regulations often missed.
+No central archive → hard to retrieve historical compliance reports.
+
+5. Opportunities
+Pre-built templates for CBSE, IB, State Board compliance reports.
+Auto-generation of reports from SIS, HR, and Finance modules.
+Real-time compliance dashboard → track upcoming deadlines.
+Automated notifications for new board guidelines.
+Digital archive of past submissions with quick search.
+One-click export in required formats (Excel, PDF, XML).
+
+6. Inputs (Data Required)
+Student enrollment data (class-wise, gender, category).
+Attendance records.
+Academic results (exam scores, pass percentages).
+Teacher/staff qualifications and records.
+Finance data (fee collections, audited statements).
+Infrastructure details (labs, library, transport).
+Safety & governance compliance logs.
+Education board templates and rules.
+
+7. Outputs (System Generates)
+Pre-formatted compliance reports (CBSE, IB, State Board formats).
+Dashboards showing compliance status & pending items.
+Submission-ready files (Excel/PDF/XML as required).
+Notifications of submission deadlines.
+Archived compliance history for audits.
+
+8. Acceptance Criteria
+✅ ERP auto-compiles compliance data from all modules.
+✅ Reports generated in correct board-specific formats.
+✅ Admin can review and edit before submission.
+✅ Submission deadlines tracked with reminders.
+✅ Reports exportable in multiple formats (Excel/PDF/XML).
+✅ Compliance archive maintained with search & retrieval.
+✅ Audit trail of who prepared, reviewed, and submitted.
+✅ System updates instantly if regulations/templates change.
+
+9. System Interactions
+SIS Module ↔ Student enrollment, attendance, results.
+HR Module ↔ Teacher/staff qualifications, service records.
+Finance Module ↔ Fee and audited statements.
+Operations Module ↔ Infrastructure and safety logs.
+Compliance Module ↔ Templates, rules, submission tracking.
+Notification System ↔ Alerts for deadlines, missing data.
+
+10. Edge Cases
+Board changes template mid-year → system must adapt quickly.
+Missing/incorrect data → flagged before report generation.
+Internet outage → offline export for manual submission.
+Multiple boards (CBSE + IB + State) → different compliance calendars.
+Non-submission on time → escalation workflow to principal.
+Confidential data (teacher salaries, student categories) → requires restricted access.
+
+11. Priority/Frequency
+Priority: Very High (legal compliance, accreditation risk).
+Frequency:
+Annual (most compliance reports).
+Quarterly/Semester (exam & results reports).
+Ad-hoc (special requests from boards, inspections).
+
+
+🏫 Government Reporting (attendance, safety, RTE, fees regulation) — Detailed Breakdown
+1. User Story
+As a school admin/principal, I want to generate and submit government-mandated reports (attendance, safety audits, RTE compliance, fee regulation) so that the school meets legal requirements, avoids penalties, and ensures transparency in operations.
+
+2. Actors
+Primary:
+Admin/Compliance officer → prepares reports and submits them.
+Principal/Management → reviews and approves reports.
+Secondary:
+Teachers → provide attendance/academic data.
+Finance staff → provide fee structure and collection details.
+ERP/Compliance module → consolidates and formats data.
+Government authorities (local education department, RTE regulators, fee committees) → review and validate reports.
+
+3. Journey (Steps)
+Government issues reporting guidelines (attendance %, RTE student quota, safety protocols, fee regulation).
+Admin collects required data (student rosters, attendance logs, safety certificates, fee structures).
+ERP compiles reports in the mandated format.
+Principal reviews and approves the draft.
+Reports submitted to government portals (digital upload) or offline.
+Acknowledgment/receipt generated by the system.
+Compliance archive maintained for inspections and audits.
+
+4. Pain Points
+Different states have different reporting formats → duplication of effort.
+Manual compilation → errors, inconsistencies, delays.
+Attendance and RTE quota verification → time-consuming.
+Frequent regulatory changes → hard to keep up.
+No centralized archive → scramble during audits/inspections.
+
+5. Opportunities
+ERP with pre-built templates for government-mandated reports.
+Auto-compilation of attendance, RTE, and fee data from SIS/Finance.
+Safety certificate and inspection logs stored digitally.
+Automated deadline reminders for submissions.
+One-click export in government-required formats (Excel, XML, PDF).
+Centralized compliance dashboard with status tracking.
+
+6. Inputs (Data Required)
+Student roster (age, gender, caste/category for RTE compliance).
+Attendance records (daily, monthly, annual summaries).
+RTE quota admission records (25% reservation data).
+Fee structure & collection records (as per regulation).
+Safety compliance certificates (fire safety, CCTV, health checks).
+Staff qualifications & verification documents.
+Government-mandated report templates & rules.
+
+7. Outputs (System Generates)
+Attendance compliance reports.
+RTE quota compliance reports.
+Fee regulation submissions (fee structure approval, annual returns).
+Safety & health compliance reports.
+Consolidated government-ready files (Excel/PDF/XML).
+Compliance history archive for inspections.
+
+8. Acceptance Criteria
+✅ ERP auto-generates reports in government-approved formats.
+✅ Reports cover all mandatory fields (attendance %, RTE %, safety, fees).
+✅ Admin can review/edit before submission.
+✅ Submission deadlines tracked with automated reminders.
+✅ Reports exportable in multiple formats (Excel/PDF/XML).
+✅ Compliance archive searchable and auditable.
+✅ Restricted access for sensitive student/finance data.
+✅ Version control maintained for corrected/updated reports.
+
+9. System Interactions
+SIS Module ↔ Student roster, attendance, RTE compliance data.
+HR Module ↔ Teacher/staff qualification and verification data.
+Finance Module ↔ Fee structure and collections.
+Operations Module ↔ Safety compliance certificates, inspections.
+Compliance Module ↔ Templates, deadlines, submission tracking.
+Notification System ↔ Alerts for submission deadlines.
+
+10. Edge Cases
+Government changes reporting format mid-cycle → ERP must adapt.
+Missing/incorrect student category data → system should flag before submission.
+Late submission → escalation alerts to principal.
+Fee disputes with regulators → requires reconciliation reports.
+Emergency inspections → quick retrieval of archived compliance reports.
+Sensitive data leak risks → must enforce role-based access.
+
+11. Priority/Frequency
+Priority: Critical (directly tied to legal compliance and school reputation).
+Frequency:
+Daily → Attendance logs (auto-collected, but submitted monthly).
+Annual → RTE compliance, fee regulation submissions, safety audits.
+Ad-hoc → Government inspections, surprise audits.
+
+
+
+
+📊 Analytics Dashboards for Decision-Making — Detailed Breakdown
+1. User Story
+As a principal/management/admin, I want to view consolidated analytics dashboards across academics, finance, HR, and operations, so that I can make data-driven decisions, identify problem areas, and plan improvements effectively.
+
+2. Actors
+Primary:
+Principal/Management → uses dashboards for strategic decision-making.
+Admin staff → monitors day-to-day operational metrics.
+Secondary:
+Teachers → track class/student performance trends.
+Finance team → monitor budget, collections, expenses.
+HR team → monitor staff performance, attendance, attrition.
+ERP/Analytics module → aggregates and visualizes data.
+
+3. Journey (Steps)
+ERP pulls raw data from SIS, Finance, HR, Operations modules.
+Data cleaned, standardized, and stored in analytics warehouse.
+Dashboards auto-generate key metrics (KPIs) → academics, finance, HR, operations.
+Users log into ERP → select dashboard (e.g., Student Performance, Fee Collections).
+Users filter by time, class, department, or other dimensions.
+Insights presented visually (charts, heatmaps, trend lines).
+Users export dashboards or reports for meetings/decisions.
+Decisions made → corrective actions fed back into ERP workflows.
+
+4. Pain Points
+Data scattered across modules → no single source of truth.
+Manual reporting → time-consuming, error-prone.
+Static reports → no interactivity or drill-down.
+Delayed insights → decisions made too late.
+No predictive analytics → only backward-looking reports.
+
+5. Opportunities
+Unified real-time dashboard for all school functions.
+Drill-down capability (school → department → student level).
+Predictive analytics (student dropout risk, fee default likelihood).
+Visualizations for performance trends (attendance vs results, expenses vs revenue).
+Role-based dashboards (teachers, principal, finance, HR).
+Alerts on anomalies (e.g., sudden drop in attendance, fee collection lag).
+
+6. Inputs (Data Required)
+SIS: Attendance, grades, student demographics.
+HR: Teacher performance, attendance, recruitment, leave data.
+Finance: Fee collections, expenses, budgeting data.
+Operations: Transport, hostel, canteen, library usage.
+Compliance: Regulatory submissions, audit results.
+Events/Engagement: Parent communication logs, PTM attendance.
+
+7. Outputs (System Generates)
+Interactive dashboards (academic, financial, HR, operational).
+KPI summaries (attendance %, pass %, fee collection %, attrition rate, utilization rates).
+Predictive insights (student at-risk alerts, financial forecasting).
+Exportable reports (PDF, Excel, PPT-ready).
+Scheduled email reports to stakeholders.
+
+8. Acceptance Criteria
+✅ Dashboards auto-update in near real-time (daily or hourly sync).
+✅ Data accuracy ensured via cross-module sync.
+✅ Users can filter and drill down by role, class, department, or time period.
+✅ Dashboards exportable in multiple formats.
+✅ Predictive analytics supported (trends, risk alerts).
+✅ Dashboards are role-based (principal sees all, teacher sees only class).
+✅ Alerts/notifications triggered for anomalies.
+✅ Historical data retained for trend analysis.
+
+9. System Interactions
+SIS Module ↔ Attendance, grades, student lifecycle data.
+Finance Module ↔ Fee collections, expenses, budgets.
+HR Module ↔ Teacher performance, recruitment, payroll.
+Operations Module ↔ Transport, hostel, canteen usage.
+Compliance Module ↔ Audit/compliance tracking.
+Notification System ↔ Alerts for anomalies.
+Data Warehouse/BI Engine ↔ Centralized analytics processing.
+
+10. Edge Cases
+Missing/incomplete data → dashboard shows inaccurate insights.
+Data sync delays → outdated reports shown.
+User without permission accesses sensitive dashboards → breach.
+Wrong KPI configuration → misleading analytics.
+High data volume (large school groups) → performance bottlenecks.
+Internet outage → offline export fallback.
+
+11. Priority/Frequency
+Priority: Very High (supports strategic and daily decisions).
+Frequency:
+Daily (attendance, collections, operations).
+Weekly/Monthly (performance reviews, HR metrics).
+Annual (budgeting, board review meetings).
+
+
+
+
+🎭 Event Management — Detailed Breakdown
+1. User Story
+As a school admin/teacher, I want to plan, organize, and manage school events (annual day, sports day, cultural programs, academic fairs) so that students, parents, and staff can participate smoothly, and the school builds community engagement and reputation.
+
+2. Actors
+Primary:
+Admin staff/event coordinators → plan and organize logistics.
+Teachers → assigned duties (coordination, judging, mentoring students).
+Students → participants and audience.
+Parents → invited as audience, sometimes volunteers.
+Secondary:
+Principal/Management → approves event budgets and plans.
+Vendors (stage, sound, uniforms, refreshments, sports equipment).
+Finance team → manages budgets and vendor payments.
+ERP/Event module → centralizes planning, communication, and tracking.
+
+3. Journey (Steps)
+Event Planning: Admin creates event proposal (type, date, budget, goals).
+Approval: Principal/management reviews and approves.
+Scheduling: Date set → venue/classroom/lab bookings updated.
+Coordination: Teachers assigned roles, students registered as participants.
+Logistics: Vendors booked (sound, lighting, sports gear, food, transport).
+Communication: Notices/announcements sent to students/parents.
+Execution: Event conducted with live monitoring (attendance, participation).
+Post-Event: Feedback collected, finances reconciled, reports generated.
+
+4. Pain Points
+Manual coordination → high risk of errors or missed tasks.
+Communication gaps → parents/students miss updates.
+Budget overruns due to lack of tracking.
+Scheduling clashes with academic activities.
+Vendor delays or unreliability.
+No structured feedback → hard to measure success.
+
+5. Opportunities
+Centralized event management module in ERP.
+Task assignment and progress tracking for teachers/staff.
+Automated communication to parents (invites, reminders, updates).
+Online student registration for participation.
+Budget & expense tracking linked to finance.
+Feedback collection via parent/student portals.
+Post-event analytics (attendance, costs, engagement levels).
+
+6. Inputs (Data Required)
+Event details (name, type, goals, date, time, venue).
+Student & staff rosters (participants, volunteers, duty allocations).
+Budget (planned vs. approved).
+Vendor contracts and service details.
+Communication templates (invites, reminders).
+Academic calendar (to avoid clashes).
+
+7. Outputs (System Generates)
+Event plan (schedule, assigned roles, logistics checklist).
+Notifications/invites to parents, students, staff.
+Participant and duty rosters.
+Vendor booking confirmations.
+Budget vs. actual expense reports.
+Post-event feedback surveys and reports.
+
+8. Acceptance Criteria
+✅ Admin can create and track events digitally.
+✅ System prevents scheduling clashes with classes/exams.
+✅ Roles/duties assigned to teachers and students.
+✅ Parents receive timely communication (invites, reminders).
+✅ Budget and vendor expenses tracked against plan.
+✅ Attendance/participation logs recorded.
+✅ Feedback surveys generated and analyzed post-event.
+✅ Event reports archived for reference.
+
+9. System Interactions
+ERP Event Module ↔ Manages event workflows.
+SIS Module ↔ Provides student/parent data for invites & participation.
+HR Module ↔ Teacher duty assignments.
+Finance Module ↔ Budget planning and vendor payments.
+Operations Module ↔ Venue/classroom/lab bookings.
+Communication System ↔ Notices, reminders, alerts.
+Feedback System ↔ Surveys for parents, students, staff.
+
+10. Edge Cases
+Event postponed/canceled → auto-notify all stakeholders.
+Venue/lab unavailable last minute → reallocation needed.
+Vendor no-show → fallback vendor workflow.
+Student/teacher absence on event day → reassignment of roles.
+Budget overshoot → system alerts admin for approval.
+Event clash with emergency (holiday, strike) → automatic rescheduling.
+
+11. Priority/Frequency
+Priority: Medium–High (important for school reputation & engagement, but secondary to academics/finance).
+Frequency:
+Termly (cultural, sports, exhibitions).
+Annual (annual day, graduation, major events).
+Ad-hoc (competitions, awareness programs).
+
+
+

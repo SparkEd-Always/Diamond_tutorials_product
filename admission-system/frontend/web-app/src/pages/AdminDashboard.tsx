@@ -15,15 +15,9 @@ import {
   MenuItem,
   Chip,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  LinearProgress,
   Divider,
   Stack,
+  CardActionArea,
 } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { admissionApi } from "../services/api";
@@ -35,9 +29,10 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import ErrorIcon from "@mui/icons-material/Error";
 import PeopleIcon from "@mui/icons-material/People";
+import SettingsIcon from "@mui/icons-material/Settings";
+import EditNoteIcon from "@mui/icons-material/EditNote";
 import config from "../config";
 
 interface DashboardStats {
@@ -80,7 +75,7 @@ const AdminDashboard = () => {
     try {
       const response = await admissionApi.listApplications({
         page: 1,
-        page_size: 50, // Load more for admin
+        page_size: 100, // Load all for accurate stats
       });
       setApplications(response.applications);
 
@@ -115,6 +110,10 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleStatusClick = (status: string) => {
+    navigate(`/applications?status=${status}`);
+  };
+
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -145,10 +144,9 @@ const AdminDashboard = () => {
 
   const pendingReviewCount = stats.submitted + stats.underReview;
   const activeCount = stats.testScheduled + stats.testCompleted + stats.interviewScheduled;
-  const completionRate = stats.total > 0 ? ((stats.decisionMade + stats.enrolled) / stats.total * 100).toFixed(1) : 0;
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+    <Box sx={{ width: "100vw",minHeight: "100vh", bgcolor: "background.default" }}>
       {/* Header */}
       <AppBar position="static" elevation={1}>
         <Toolbar>
@@ -168,244 +166,365 @@ const AdminDashboard = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+      <Container maxWidth="xl" sx={{ justifyContent: "center",  py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+        
         {/* Welcome Section */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" gutterBottom fontWeight={600}>
             <DashboardIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-            Admin Dashboard
+            Admission Dashboard
           </Typography>
           <Typography variant="body1" color="text.secondary">
             Comprehensive overview of the admission system
           </Typography>
         </Box>
 
-        {/* Key Metrics Cards */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", color: "white" }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <PeopleIcon sx={{ fontSize: 40 }} />
-                  <Box>
-                    <Typography variant="h3" fontWeight={600}>
-                      {stats.total}
-                    </Typography>
-                    <Typography variant="body2">Total Applications</Typography>
-                  </Box>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)", color: "white" }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <PendingActionsIcon sx={{ fontSize: 40 }} />
-                  <Box>
-                    <Typography variant="h3" fontWeight={600}>
-                      {pendingReviewCount}
-                    </Typography>
-                    <Typography variant="body2">Pending Review</Typography>
-                  </Box>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)", color: "white" }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <AssignmentIcon sx={{ fontSize: 40 }} />
-                  <Box>
-                    <Typography variant="h3" fontWeight={600}>
-                      {activeCount}
-                    </Typography>
-                    <Typography variant="body2">Active Process</Typography>
-                  </Box>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)", color: "white" }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <TrendingUpIcon sx={{ fontSize: 40 }} />
-                  <Box>
-                    <Typography variant="h3" fontWeight={600}>
-                      {completionRate}%
-                    </Typography>
-                    <Typography variant="body2">Completion Rate</Typography>
-                  </Box>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Status Breakdown */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom fontWeight={600}>
-                Application Status Distribution
-              </Typography>
-              <Divider sx={{ mb: 3 }} />
-              <Grid container spacing={2}>
-                {[
-                  { label: "Submitted", value: stats.submitted, color: "info.main" },
-                  { label: "Under Review", value: stats.underReview, color: "warning.main" },
-                  { label: "Test Scheduled", value: stats.testScheduled, color: "primary.main" },
-                  { label: "Test Completed", value: stats.testCompleted, color: "secondary.main" },
-                  { label: "Interview Scheduled", value: stats.interviewScheduled, color: "primary.main" },
-                  { label: "Decision Made", value: stats.decisionMade, color: "success.main" },
-                  { label: "Enrolled", value: stats.enrolled, color: "success.dark" },
-                  { label: "Rejected", value: stats.rejected, color: "error.main" },
-                ].map((stat) => (
-                  <Grid item xs={6} sm={3} key={stat.label}>
-                    <Box sx={{ textAlign: "center", p: 2 }}>
-                      <Typography variant="h4" fontWeight={600} sx={{ color: stat.color }}>
-                        {stat.value}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {stat.label}
-                      </Typography>
-                      <LinearProgress
-                        variant="determinate"
-                        value={stats.total > 0 ? (stat.value / stats.total) * 100 : 0}
-                        sx={{ mt: 1, height: 6, borderRadius: 1 }}
-                        color={stat.color.split(".")[0] as any}
-                      />
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 3, height: "100%" }}>
-              <Typography variant="h6" gutterBottom fontWeight={600}>
-                Quick Actions
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <Stack spacing={2}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  startIcon={<ListIcon />}
-                  onClick={() => navigate("/applications")}
-                >
-                  View All Applications
-                </Button>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  size="large"
-                  startIcon={<PendingActionsIcon />}
-                  onClick={() => navigate("/applications?status=submitted")}
-                >
-                  Review Pending ({pendingReviewCount})
-                </Button>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  size="large"
-                  startIcon={<CheckCircleIcon />}
-                  color="success"
-                >
-                  Schedule Tests
-                </Button>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  size="large"
-                  startIcon={<PeopleIcon />}
-                  color="info"
-                >
-                  Schedule Interviews
-                </Button>
-              </Stack>
-            </Paper>
-          </Grid>
-        </Grid>
-
-        {/* Recent Applications Table */}
-        <Paper sx={{ p: 3 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-            <Typography variant="h6" fontWeight={600}>
-              Recent Applications
-            </Typography>
-            <Button
-              variant="text"
-              endIcon={<ListIcon />}
-              onClick={() => navigate("/applications")}
+        {/* Key Metrics Cards - Simple Version */}
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          px: { xs: 2, sm: 4, md: 30 },
+          mb: 6
+        }}>
+          {/* Total Applications */}
+          <Box
+            onClick={() => navigate('/applications?quickFilter=all')}
+            sx={{
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'transform 0.2s, opacity 0.2s',
+              '&:hover': {
+                transform: 'scale(1.05)',
+                opacity: 0.8,
+              }
+            }}
+          >
+            <Typography
+              fontWeight={600}
+              sx={{ color: 'black', mb: 1, fontSize: '6rem', lineHeight: 1 }}
             >
-              View All
-            </Button>
+              {stats.total}
+            </Typography>
+            <Typography variant="body1" color="black">
+              Total Applications
+            </Typography>
           </Box>
-          <Divider sx={{ mb: 2 }} />
-          {loading ? (
-            <Typography>Loading...</Typography>
-          ) : applications.length === 0 ? (
-            <Box sx={{ textAlign: "center", py: 4 }}>
-              <AssignmentIcon sx={{ fontSize: 60, color: "text.secondary", mb: 2 }} />
-              <Typography color="text.secondary">No applications found</Typography>
-            </Box>
-          ) : (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell><strong>Application #</strong></TableCell>
-                    <TableCell><strong>Student Name</strong></TableCell>
-                    <TableCell><strong>Class</strong></TableCell>
-                    <TableCell><strong>Status</strong></TableCell>
-                    <TableCell><strong>Date</strong></TableCell>
-                    <TableCell align="right"><strong>Actions</strong></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {applications.slice(0, 10).map((app) => (
-                    <TableRow
-                      key={app.id}
-                      hover
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => navigate(`/applications/${app.id}`)}
-                    >
-                      <TableCell>{app.application_number}</TableCell>
-                      <TableCell>{app.student_name}</TableCell>
-                      <TableCell>{app.class_name}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={app.application_status?.replace("_", " ").toUpperCase() || "DRAFT"}
-                          color={getStatusColor(app.application_status)}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {new Date(app.submitted_at || app.created_at).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell align="right">
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/applications/${app.id}`);
-                          }}
-                        >
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </Paper>
+
+          {/* Pending Review */}
+          <Box
+            onClick={() => navigate('/applications?quickFilter=pending')}
+            sx={{
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'transform 0.2s, opacity 0.2s',
+              '&:hover': {
+                transform: 'scale(1.05)',
+                opacity: 0.8,
+              }
+            }}
+          >
+            <Typography
+              fontWeight={600}
+              sx={{ color: 'red', mb: 1, fontSize: '6rem', lineHeight: 1 }}
+            >
+              {pendingReviewCount}
+            </Typography>
+            <Typography variant="body1" color="black">
+              Pending Review
+            </Typography>
+          </Box>
+
+          {/* Active Process */}
+          <Box
+            onClick={() => navigate('/applications?quickFilter=active')}
+            sx={{
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'transform 0.2s, opacity 0.2s',
+              '&:hover': {
+                transform: 'scale(1.05)',
+                opacity: 0.8,
+              }
+            }}
+          >
+            <Typography
+              fontWeight={600}
+              sx={{ color: 'orange', mb: 1, fontSize: '6rem', lineHeight: 1 }}
+            >
+              {activeCount}
+            </Typography>
+            <Typography variant="body1" color="black">
+              Active Process
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Application Workflow Pipeline */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" gutterBottom fontWeight={600}>
+            Application Workflow Pipeline
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Click on any stage to view applications
+          </Typography>
+
+          <Paper sx={{ p: 3 }}>
+            <Stack direction="row" spacing={0} alignItems="center" sx={{ overflowX: 'auto' }}>
+              {/* Submitted */}
+              <Box
+                onClick={() => handleStatusClick('submitted')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <AssignmentIcon sx={{ fontSize: 32, mb: 1, color: 'info.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.submitted > 0 ? 'info.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.submitted}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Submitted
+                </Typography>
+              </Box>
+
+              <Box sx={{ px: 1, color: 'text.secondary', fontSize: 24 }}>→</Box>
+
+              {/* Under Review */}
+              <Box
+                onClick={() => handleStatusClick('under_review')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <PendingActionsIcon sx={{ fontSize: 32, mb: 1, color: 'warning.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.underReview > 0 ? 'warning.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.underReview}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Under Review
+                </Typography>
+              </Box>
+
+              <Box sx={{ px: 1, color: 'text.secondary', fontSize: 24 }}>→</Box>
+
+              {/* Tests */}
+              <Box
+                onClick={() => handleStatusClick('test_scheduled')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <AssignmentIcon sx={{ fontSize: 32, mb: 1, color: 'primary.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.testScheduled > 0 ? 'primary.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.testScheduled}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Tests
+                </Typography>
+              </Box>
+
+              <Box sx={{ px: 1, color: 'text.secondary', fontSize: 24 }}>→</Box>
+
+              {/* Interviews */}
+              <Box
+                onClick={() => handleStatusClick('interview_scheduled')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <PeopleIcon sx={{ fontSize: 32, mb: 1, color: 'secondary.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.interviewScheduled > 0 ? 'secondary.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.interviewScheduled}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Interviews
+                </Typography>
+              </Box>
+
+              <Box sx={{ px: 1, color: 'text.secondary', fontSize: 24 }}>→</Box>
+
+              {/* Decision */}
+              <Box
+                onClick={() => handleStatusClick('decision_made')}
+                sx={{
+                  flex: 1,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  py: 2,
+                  px: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                <CheckCircleIcon sx={{ fontSize: 32, mb: 1, color: 'success.main' }} />
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: stats.decisionMade > 0 ? 'success.main' : 'grey.300',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="h4" fontWeight={700}>
+                    {stats.decisionMade}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" fontWeight={600} display="block">
+                  Decision
+                </Typography>
+              </Box>
+            </Stack>
+
+        
+          </Paper>
+        </Box>
+
+        {/* Management Tools */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" gutterBottom fontWeight={600}>
+            Management Tools
+          </Typography>
+          <Grid container spacing={2}>
+
+            {/* Applications Management */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card>
+                <CardActionArea onClick={() => navigate('/applications')}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <ListIcon color="action" />
+                      <Typography color="text.secondary" fontWeight={500}>Applications</Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={600} sx={{ mt: 1 }}>
+                      View All Applications
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">Click to review and manage all applications</Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+
+            {/* Workflow Settings */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card>
+                <CardActionArea onClick={() => navigate('/admin/workflow-settings')}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <SettingsIcon color="action" />
+                      <Typography color="text.secondary" fontWeight={500}>Workflow Settings</Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={600} sx={{ mt: 1 }}>
+                      Configure Steps
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">Click to manage admission workflow</Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+
+            {/* Form Builder */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card>
+                <CardActionArea onClick={() => navigate('/admin/forms')}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <EditNoteIcon color="action" />
+                      <Typography color="text.secondary" fontWeight={500}>Form Builder</Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={600} sx={{ mt: 1 }}>
+                      Manage Forms
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">Click to view and configure application forms</Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
       </Container>
     </Box>
   );

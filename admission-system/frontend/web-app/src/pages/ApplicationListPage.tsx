@@ -103,7 +103,7 @@ const ApplicationListPage = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ width: '100vw',minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Header */}
       <AppBar position="static" elevation={1}>
         <Toolbar sx={{ minHeight: { xs: 48, sm: 56 } }}>

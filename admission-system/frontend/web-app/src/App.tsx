@@ -11,8 +11,14 @@ import RegisterPage from './pages/RegisterPage';
 import ParentDashboard from './pages/ParentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ApplicationFormPage from './pages/ApplicationFormPage';
-import ApplicationListPage from './pages/ApplicationListPage';
-import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
+import ParentApplicationListPage from './pages/ParentApplicationListPage';
+import AdminApplicationListPage from './pages/AdminApplicationListPage';
+import ParentApplicationDetailsPage from './pages/ParentApplicationDetailsPage';
+import AdminApplicationDetailsPage from './pages/AdminApplicationDetailsPage';
+import AdminApplicationReviewPage from './pages/AdminApplicationReviewPage';
+import AdminWorkflowSettingsPage from './pages/AdminWorkflowSettingsPage';
+import FormBuilderPage from './pages/FormBuilderPage';
+import FormListPage from './pages/FormListPage';
 import HomePage from './pages/HomePage';
 
 // Protected Route Component
@@ -38,6 +44,18 @@ const ProtectedRoute = ({ children, adminOnly = false }: { children: React.React
 const DashboardRoute = () => {
   const { isAdmin } = useAuth();
   return isAdmin ? <AdminDashboard /> : <ParentDashboard />;
+};
+
+// Application List Route - Routes to correct list page based on role
+const ApplicationListRoute = () => {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <AdminApplicationListPage /> : <ParentApplicationListPage />;
+};
+
+// Application Details Route - Routes to correct details page based on role
+const ApplicationDetailsRoute = () => {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <AdminApplicationDetailsPage /> : <ParentApplicationDetailsPage />;
 };
 
 function AppRoutes() {
@@ -77,7 +95,7 @@ function AppRoutes() {
         path="/applications"
         element={
           <ProtectedRoute>
-            <ApplicationListPage />
+            <ApplicationListRoute />
           </ProtectedRoute>
         }
       />
@@ -85,7 +103,49 @@ function AppRoutes() {
         path="/applications/:id"
         element={
           <ProtectedRoute>
-            <ApplicationDetailsPage />
+            <ApplicationDetailsRoute />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin Only Routes */}
+      <Route
+        path="/admin/applications/:id/review"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminApplicationReviewPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/workflow-settings"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminWorkflowSettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/forms"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <FormListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/forms/:id/edit"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <FormBuilderPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/form-builder"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <FormBuilderPage />
           </ProtectedRoute>
         }
       />

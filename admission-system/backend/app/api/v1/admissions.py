@@ -273,6 +273,9 @@ async def list_applications(
             query = query.filter(AdmissionApplication.parent_id == parent.id)
         else:
             return ApplicationListResponse(total=0, page=page, page_size=page_size, applications=[])
+    else:
+        # Admin users should NOT see draft applications (drafts are private to parents)
+        query = query.filter(AdmissionApplication.application_status != ApplicationStatus.DRAFT)
 
     # Apply filters
     if status:
@@ -293,7 +296,7 @@ async def list_applications(
         )
 
     # Get total count
-    total = query.count()
+    total = query.filter(AdmissionApplication.application_status != ApplicationStatus.DRAFT).count()
 
     # Pagination
     applications = query.order_by(AdmissionApplication.created_at.desc()).offset(
@@ -371,7 +374,7 @@ async def get_application(
         "application": {
             "id": application.id,
             "application_number": application.application_number,
-            "status": application.application_status.value,
+            "application_status": application.application_status.value,
             "submission_date": application.submission_date,
             "review_date": application.review_date,
             "decision_date": application.decision_date,

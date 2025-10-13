@@ -13,7 +13,14 @@
       "Bash(pip install:*)",
       "Bash(curl:*)",
       "Bash(npm run dev:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(cat:*)",
+      "Bash(tasklist)",
+      "Bash(cp:*)",
+      "Bash(sed:*)",
+      "Bash(git checkout:*)",
+      "Bash(dir:*)",
+      "Bash(iconv:*)"
     ],
     "deny": [],
     "ask": []

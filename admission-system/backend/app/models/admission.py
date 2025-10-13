@@ -8,6 +8,7 @@ class ApplicationStatus(str, enum.Enum):
     DRAFT = "draft"
     SUBMITTED = "submitted"
     UNDER_REVIEW = "under_review"
+    CHANGES_REQUESTED = "changes_requested"  # NEW: Admin requested changes
     DOCUMENTS_PENDING = "documents_pending"
     TEST_SCHEDULED = "test_scheduled"
     TEST_COMPLETED = "test_completed"
@@ -46,6 +47,8 @@ class AdmissionApplication(Base):
     academic_year = relationship("AcademicYear")
     class_applying = relationship("Class")
     assigned_section = relationship("Section")
+    field_reviews = relationship("ApplicationFieldReview", back_populates="application", cascade="all, delete-orphan")
+    reviews = relationship("ApplicationReview", back_populates="application", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<AdmissionApplication {self.application_number} - {self.application_status}>"

@@ -11,6 +11,15 @@ from ..models.user_profile import UserProfile, Gender
 from ..models.academic import AcademicYear, Class, Section
 from ..models.admission import DocumentType
 from ..models.student import Student, Parent, StudentParent
+from ..models.workflow import AdmissionWorkflowStep
+from ..models.form_configuration import (
+    FormFieldMaster,
+    SchoolFormConfiguration,
+    FormTemplate,
+    FormTemplateField,
+    School
+)
+from ..models.application_review import ApplicationFieldReview, ApplicationReview
 
 def create_admin_user(db: Session):
     """Create default admin user"""
@@ -150,6 +159,28 @@ def create_document_types(db: Session):
     db.commit()
     print(f"Created {len(document_types)} document types")
 
+def create_default_school(db: Session):
+    """Create default school record"""
+    # Check if exists
+    school = db.query(School).filter(School.id == 1).first()
+    if school:
+        print("Default school already exists")
+        return school
+
+    school = School(
+        school_name="ABC International School",
+        school_code="ABC001",
+        address="123 Main Street, City",
+        phone="+919876543210",
+        email="contact@abcschool.com",
+        subdomain="abc"
+    )
+    db.add(school)
+    db.commit()
+    db.refresh(school)
+    print(f"Created default school: {school.school_name}")
+    return school
+
 def initialize_database():
     """Main initialization function"""
     print("Initializing database...")
@@ -165,6 +196,20 @@ def initialize_database():
         create_admin_user(db)
         create_academic_year(db)
         create_document_types(db)
+
+        # Seed workflow steps
+        from .seed_workflow import seed_default_workflow_steps
+        seed_default_workflow_steps(db)
+
+        # Create default school
+        create_default_school(db)
+
+        # Seed form configuration data (complete with all fields)
+        from .seed_form_fields_complete import seed_all_form_fields
+        from .seed_templates_complete import seed_comprehensive_templates
+
+        seed_all_form_fields(db)
+        seed_comprehensive_templates(db)
 
         print("\nDatabase initialization complete!")
         print("\nLogin credentials:")

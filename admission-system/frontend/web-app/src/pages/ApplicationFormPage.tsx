@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -31,7 +31,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Chip,
 } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import SchoolIcon from '@mui/icons-material/School';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -39,7 +44,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import SaveIcon from '@mui/icons-material/Save';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { admissionApi, documentApi } from '../services/api';
+import { admissionApi, documentApi, academicApi } from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
 import LoadingButton from '../components/common/LoadingButton';
 import {
@@ -48,7 +53,7 @@ import {
   addressSchema,
   academicDetailsSchema,
 } from '../utils/validationSchemas';
-import type { ApplicationFormData } from '../types';
+import type { ApplicationFormData, AcademicYear, Class } from '../types';
 
 const steps = ['Student Details', 'Parent Details', 'Address', 'Academic Details', 'Upload Documents', 'Review'];
 
@@ -63,6 +68,11 @@ const ApplicationFormPage = () => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [draftApplicationId, setDraftApplicationId] = useState<number | null>(null);
   const [showDraftDialog, setShowDraftDialog] = useState(false);
+
+  // Academic data state
+  const [academicYears, setAcademicYears] = useState<AcademicYear[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [loadingAcademicData, setLoadingAcademicData] = useState(false);
 
   // Document upload state
   const [uploadedDocuments, setUploadedDocuments] = useState<Record<string, { file: File | null; uploaded: boolean; fileName?: string }>>({
@@ -110,6 +120,34 @@ const ApplicationFormPage = () => {
     emergency_contact_name: '',
     emergency_contact_phone: '',
   });
+
+  // Fetch academic years and classes on component mount
+  useEffect(() => {
+    const fetchAcademicData = async () => {
+      setLoadingAcademicData(true);
+      try {
+        const [yearsData, classesData] = await Promise.all([
+          academicApi.getAcademicYears(),
+          academicApi.getClasses(),
+        ]);
+        setAcademicYears(yearsData);
+        setClasses(classesData);
+
+        // Set default values to current academic year if available
+        const currentYear = yearsData.find((year: AcademicYear) => year.is_current);
+        if (currentYear) {
+          setFormData(prev => ({ ...prev, academic_year_id: currentYear.id }));
+        }
+      } catch (err: any) {
+        console.error('Failed to fetch academic data:', err);
+        showError('Failed to load academic data');
+      } finally {
+        setLoadingAcademicData(false);
+      }
+    };
+
+    fetchAcademicData();
+  }, []);
 
   const handleNext = async () => {
     // Validate current step before proceeding
@@ -329,17 +367,24 @@ const ApplicationFormPage = () => {
               error={!!validationErrors.last_name}
               helperText={validationErrors.last_name}
             />
-            <TextField
-              fullWidth
-              label="Date of Birth"
-              type="date"
-              value={formData.student_details.date_of_birth}
-              onChange={(e) => updateStudentDetails('date_of_birth', e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              required
-              error={!!validationErrors.date_of_birth}
-              helperText={validationErrors.date_of_birth}
-            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date of Birth *"
+                value={formData.student_details.date_of_birth ? dayjs(formData.student_details.date_of_birth) : null}
+                onChange={(newValue: Dayjs | null) => {
+                  updateStudentDetails('date_of_birth', newValue ? newValue.format('YYYY-MM-DD') : '');
+                }}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: !!validationErrors.date_of_birth,
+                    helperText: validationErrors.date_of_birth,
+                  },
+                }}
+                maxDate={dayjs()}
+                minDate={dayjs().subtract(25, 'year')}
+              />
+            </LocalizationProvider>
             <FormControl fullWidth error={!!validationErrors.gender}>
               <InputLabel>Gender</InputLabel>
               <Select
@@ -355,14 +400,28 @@ const ApplicationFormPage = () => {
                 <FormHelperText>{validationErrors.gender}</FormHelperText>
               )}
             </FormControl>
-            <TextField
-              fullWidth
-              label="Blood Group"
-              value={formData.student_details.blood_group}
-              onChange={(e) => updateStudentDetails('blood_group', e.target.value)}
-              error={!!validationErrors.blood_group}
-              helperText={validationErrors.blood_group}
-            />
+            <FormControl fullWidth error={!!validationErrors.blood_group}>
+              <InputLabel>Blood Group</InputLabel>
+              <Select
+                value={formData.student_details.blood_group}
+                label="Blood Group"
+                onChange={(e) => updateStudentDetails('blood_group', e.target.value)}
+              >
+                <MenuItem value="">Not Specified</MenuItem>
+                <MenuItem value="A+">A+</MenuItem>
+                <MenuItem value="A-">A-</MenuItem>
+                <MenuItem value="B+">B+</MenuItem>
+                <MenuItem value="B-">B-</MenuItem>
+                <MenuItem value="AB+">AB+</MenuItem>
+                <MenuItem value="AB-">AB-</MenuItem>
+                <MenuItem value="O+">O+</MenuItem>
+                <MenuItem value="O-">O-</MenuItem>
+                <MenuItem value="Unknown">Unknown</MenuItem>
+              </Select>
+              {validationErrors.blood_group && (
+                <FormHelperText>{validationErrors.blood_group}</FormHelperText>
+              )}
+            </FormControl>
             <TextField
               fullWidth
               label="Previous School"
@@ -540,29 +599,44 @@ const ApplicationFormPage = () => {
       case 3: // Academic Details
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <Typography variant="body2" color="text.secondary">
-              Note: Class and Academic Year selection will be enhanced with actual API data
-            </Typography>
-            <TextField
-              fullWidth
-              label="Class Applying For (ID)"
-              type="number"
-              value={formData.class_applying_id}
-              onChange={(e) => setFormData({ ...formData, class_applying_id: parseInt(e.target.value) })}
-              helperText={validationErrors.class_applying_id || "Enter class ID (e.g., 1 for Class 1)"}
-              required
-              error={!!validationErrors.class_applying_id}
-            />
-            <TextField
-              fullWidth
-              label="Academic Year (ID)"
-              type="number"
-              value={formData.academic_year_id}
-              onChange={(e) => setFormData({ ...formData, academic_year_id: parseInt(e.target.value) })}
-              helperText={validationErrors.academic_year_id || "Enter academic year ID (e.g., 1 for 2024-25)"}
-              required
-              error={!!validationErrors.academic_year_id}
-            />
+            <FormControl fullWidth error={!!validationErrors.academic_year_id} required>
+              <InputLabel>Academic Year</InputLabel>
+              <Select
+                value={formData.academic_year_id}
+                label="Academic Year"
+                onChange={(e) => setFormData({ ...formData, academic_year_id: e.target.value as number })}
+                disabled={loadingAcademicData}
+              >
+                {academicYears.map((year) => (
+                  <MenuItem key={year.id} value={year.id}>
+                    {year.year_name} {year.is_current && '(Current)'}
+                  </MenuItem>
+                ))}
+              </Select>
+              {validationErrors.academic_year_id && (
+                <FormHelperText>{validationErrors.academic_year_id}</FormHelperText>
+              )}
+            </FormControl>
+
+            <FormControl fullWidth error={!!validationErrors.class_applying_id} required>
+              <InputLabel>Class Applying For</InputLabel>
+              <Select
+                value={formData.class_applying_id}
+                label="Class Applying For"
+                onChange={(e) => setFormData({ ...formData, class_applying_id: e.target.value as number })}
+                disabled={loadingAcademicData}
+              >
+                {classes.map((cls) => (
+                  <MenuItem key={cls.id} value={cls.id}>
+                    {cls.class_name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {validationErrors.class_applying_id && (
+                <FormHelperText>{validationErrors.class_applying_id}</FormHelperText>
+              )}
+            </FormControl>
+
             <TextField
               fullWidth
               label="Emergency Contact Name"

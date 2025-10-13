@@ -1,0 +1,8 @@
+[build]
+  buildCommand = "cd AVM-code/backend && pip install -r requirements.txt"
+
+[start]
+  cmd = "cd AVM-code/backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+
+[variables]
+  PYTHONPATH = "/app/AVM-code/backend"

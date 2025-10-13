@@ -165,7 +165,7 @@ A comprehensive digital fee management system that automates the entire fee life
 - Review collection reports every Monday morning
 - Approve fee waivers and discounts (5-10 cases/month)
 - Address parent escalations on fees (2-3 cases/week)
-- Present financial health to school board quarterly
+- Present financial health to school board quarterly (not needed, these goes into prncipal dasboard)
 
 **Pain Points**:
 - Receives collection reports late (3-4 days delay)

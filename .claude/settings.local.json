@@ -19,7 +19,8 @@
       "Bash(cp:*)",
       "Bash(sed:*)",
       "Bash(git checkout:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(iconv:*)"
     ],
     "deny": [],
     "ask": []

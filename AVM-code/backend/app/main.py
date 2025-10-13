@@ -11,8 +11,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description=settings.DESCRIPTION,
-    openapi_url="/api/v1/openapi.json"
+    description=settings.DESCRIPTION
 )
 
 # CORS middleware

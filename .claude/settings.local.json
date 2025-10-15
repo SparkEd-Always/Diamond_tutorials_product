@@ -20,7 +20,11 @@
       "Bash(sed:*)",
       "Bash(git checkout:*)",
       "Bash(dir:*)",
-      "Bash(iconv:*)"
+      "Bash(iconv:*)",
+      "Bash(test -f \"d:\\Projects\\sparked\\admission-system\\backend\\alembic.ini\")",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(sqlite3:*)"
     ],
     "deny": [],
     "ask": []

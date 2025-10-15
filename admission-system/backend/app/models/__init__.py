@@ -15,18 +15,41 @@ from .admission import (
     ApplicationStatusHistory
 )
 
+# Fee Management Models
+from .fees import (
+    FeeType,
+    FeeFrequency,
+    FeeStructure,
+    StudentFeeAssignment,
+    Invoice,
+    InvoiceItem,
+    InvoiceStatus,
+    Payment,
+    PaymentMethod,
+    PaymentStatus,
+    PaymentReceipt,
+    StudentFeeLedger,
+)
+
 __all__ = [
+    # User & Profile
     "User",
     "UserRole",
     "UserProfile",
     "Gender",
+
+    # Academic
     "AcademicYear",
     "Class",
     "Section",
+
+    # Students & Parents
     "Student",
     "Parent",
     "StudentParent",
     "StudentStatus",
+
+    # Admission Module
     "AdmissionApplication",
     "ApplicationStatus",
     "DocumentType",
@@ -37,4 +60,18 @@ __all__ = [
     "Interview",
     "InterviewStatus",
     "ApplicationStatusHistory",
+
+    # Fee Management Module
+    "FeeType",
+    "FeeFrequency",
+    "FeeStructure",
+    "StudentFeeAssignment",
+    "Invoice",
+    "InvoiceItem",
+    "InvoiceStatus",
+    "Payment",
+    "PaymentMethod",
+    "PaymentStatus",
+    "PaymentReceipt",
+    "StudentFeeLedger",
 ]

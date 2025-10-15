@@ -24,6 +24,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import AddIcon from "@mui/icons-material/Add";
 import ListIcon from "@mui/icons-material/List";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import config from "../config";
 
 const ParentDashboard = () => {
@@ -169,6 +170,21 @@ const ParentDashboard = () => {
               }}
             >
               View All Applications
+            </Button>
+            <Button
+              variant="outlined"
+              fullWidth
+              size="large"
+              startIcon={<AccountBalanceWalletIcon />}
+              onClick={() => navigate("/parent/fees")}
+              sx={{
+                maxWidth: 400,
+                borderColor: "white",
+                color: "white",
+                "&:hover": { borderColor: "grey.100", bgcolor: "rgba(255,255,255,0.1)" }
+              }}
+            >
+              Fee Management
             </Button>
           </Box>
         </Paper>

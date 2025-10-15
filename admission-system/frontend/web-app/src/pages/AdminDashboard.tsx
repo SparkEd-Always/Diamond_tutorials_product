@@ -33,6 +33,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import config from "../config";
 
 interface DashboardStats {
@@ -519,6 +520,24 @@ const AdminDashboard = () => {
                       Manage Forms
                     </Typography>
                     <Typography variant="caption" color="text.secondary">Click to view and configure application forms</Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+
+            {/* Fee Management Dashboard */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ bgcolor: 'primary.lighter', borderLeft: 4, borderColor: 'primary.main' }}>
+                <CardActionArea onClick={() => navigate('/admin/fees/dashboard')}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <AccountBalanceWalletIcon sx={{ color: 'primary.main' }} />
+                      <Typography color="primary.main" fontWeight={600}>Fee Management</Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={600} sx={{ mt: 1 }}>
+                      Fee Dashboard
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">Click to manage fees and payments</Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>

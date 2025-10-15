@@ -23,7 +23,7 @@ class ApplicationFieldReview(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
-    application = relationship("AdmissionApplication", back_populates="field_reviews")
+    application = relationship("AdmissionApplication", backref="field_reviews")
     reviewer = relationship("User", foreign_keys=[reviewed_by])
 
 
@@ -41,5 +41,5 @@ class ApplicationReview(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
-    application = relationship("AdmissionApplication", back_populates="reviews")
+    application = relationship("AdmissionApplication", backref="reviews")
     reviewer = relationship("User", foreign_keys=[reviewed_by])

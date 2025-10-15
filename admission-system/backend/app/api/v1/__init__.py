@@ -7,6 +7,7 @@ from .academic import router as academic_router
 from .workflow import router as workflow_router
 from .form_config import router as form_config_router
 from .application_review import router as application_review_router
+from .fees import router as fees_router
 
 api_router = APIRouter()
 
@@ -19,5 +20,6 @@ api_router.include_router(academic_router, prefix="/academic", tags=["Academic"]
 api_router.include_router(workflow_router, prefix="/workflow", tags=["Workflow"])
 api_router.include_router(form_config_router, prefix="/form-config", tags=["Form Configuration"])
 api_router.include_router(application_review_router, prefix="/reviews", tags=["Application Reviews"])
+api_router.include_router(fees_router, prefix="/fees", tags=["Fee Management"])
 
 __all__ = ["api_router"]

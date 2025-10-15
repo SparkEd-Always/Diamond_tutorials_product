@@ -47,8 +47,8 @@ class AdmissionApplication(Base):
     academic_year = relationship("AcademicYear")
     class_applying = relationship("Class")
     assigned_section = relationship("Section")
-    field_reviews = relationship("ApplicationFieldReview", back_populates="application", cascade="all, delete-orphan")
-    reviews = relationship("ApplicationReview", back_populates="application", cascade="all, delete-orphan")
+    # field_reviews = relationship("ApplicationFieldReview", back_populates="application", cascade="all, delete-orphan")
+    # reviews = relationship("ApplicationReview", back_populates="application", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<AdmissionApplication {self.application_number} - {self.application_status}>"

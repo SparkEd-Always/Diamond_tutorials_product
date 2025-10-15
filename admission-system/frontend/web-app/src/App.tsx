@@ -20,6 +20,17 @@ import AdminWorkflowSettingsPage from './pages/AdminWorkflowSettingsPage';
 import FormBuilderPage from './pages/FormBuilderPage';
 import FormListPage from './pages/FormListPage';
 import HomePage from './pages/HomePage';
+import FeeTypesPage from './pages/FeeTypesPage';
+import FeeStructuresPage from './pages/FeeStructuresPage';
+import StudentAssignmentsPage from './pages/StudentAssignmentsPage';
+import AdminFeeDashboard from './pages/AdminFeeDashboard';
+import AdminStudentLedgers from './pages/AdminStudentLedgers';
+import AdminPaymentsPage from './pages/AdminPaymentsPage';
+import AdminReportsPage from './pages/AdminReportsPage';
+import ParentFeeDashboard from './pages/ParentFeeDashboard';
+import ParentPaymentPage from './pages/ParentPaymentPage';
+import ParentPaymentHistory from './pages/ParentPaymentHistory';
+import ParentStudentFeeDetailsPage from './pages/ParentStudentFeeDetailsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) => {
@@ -146,6 +157,98 @@ function AppRoutes() {
         element={
           <ProtectedRoute adminOnly={true}>
             <FormBuilderPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Fee Management Routes - Admin */}
+      <Route
+        path="/admin/fees/dashboard"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminFeeDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fees/types"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <FeeTypesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fees/structures"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <FeeStructuresPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fees/assignments"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <StudentAssignmentsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fees/ledgers"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminStudentLedgers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fees/payments"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminPaymentsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fees/reports"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminReportsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Fee Management Routes - Parent */}
+      <Route
+        path="/parent/fees"
+        element={
+          <ProtectedRoute>
+            <ParentFeeDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/parent/fees/pay"
+        element={
+          <ProtectedRoute>
+            <ParentPaymentPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/parent/fees/history"
+        element={
+          <ProtectedRoute>
+            <ParentPaymentHistory />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/parent/fees/student/:studentId"
+        element={
+          <ProtectedRoute>
+            <ParentStudentFeeDetailsPage />
           </ProtectedRoute>
         }
       />

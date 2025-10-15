@@ -1,40 +1,28 @@
-from .auth import UserCreate, UserLogin, Token, UserResponse
-from .admission import (
-    StudentDetailsSchema,
-    ParentDetailsSchema,
-    AddressSchema,
-    ApplicationCreate,
-    ApplicationUpdate,
-    ApplicationStatusUpdate,
-    ApplicationResponse,
-    ApplicationListResponse,
-    DocumentUploadResponse,
-    DocumentVerification,
-    TestSchedule,
-    TestResult,
-    InterviewSchedule,
-    InterviewFeedback,
-    ApplicationFilter
-)
+"""
+Fee Management Schemas
 
-# Fee Management Schemas
-from .fees import (
-    # Fee Type
+This module contains Pydantic schemas for fee management API validation.
+"""
+
+from .fee_type import (
     FeeTypeBase,
     FeeTypeCreate,
     FeeTypeUpdate,
     FeeTypeResponse,
-    # Fee Structure
+)
+
+from .fee_structure import (
     FeeStructureBase,
     FeeStructureCreate,
     FeeStructureUpdate,
     FeeStructureResponse,
-    # Student Fee Assignment
     StudentFeeAssignmentBase,
     StudentFeeAssignmentCreate,
     StudentFeeAssignmentUpdate,
     StudentFeeAssignmentResponse,
-    # Invoice
+)
+
+from .invoice import (
     InvoiceItemBase,
     InvoiceItemCreate,
     InvoiceItemResponse,
@@ -43,57 +31,45 @@ from .fees import (
     InvoiceUpdate,
     InvoiceResponse,
     InvoiceListResponse,
-    # Payment
+)
+
+from .payment import (
     PaymentBase,
     PaymentCreate,
     PaymentUpdate,
     PaymentResponse,
     PaymentListResponse,
-    # Receipt
+)
+
+from .receipt import (
     PaymentReceiptBase,
     PaymentReceiptResponse,
-    # Ledger
+)
+
+from .ledger import (
     StudentFeeLedgerResponse,
     StudentFeeLedgerSummary,
 )
 
 __all__ = [
-    # Auth
-    "UserCreate",
-    "UserLogin",
-    "Token",
-    "UserResponse",
-    # Admission
-    "StudentDetailsSchema",
-    "ParentDetailsSchema",
-    "AddressSchema",
-    "ApplicationCreate",
-    "ApplicationUpdate",
-    "ApplicationStatusUpdate",
-    "ApplicationResponse",
-    "ApplicationListResponse",
-    "DocumentUploadResponse",
-    "DocumentVerification",
-    "TestSchedule",
-    "TestResult",
-    "InterviewSchedule",
-    "InterviewFeedback",
-    "ApplicationFilter",
     # Fee Type
     "FeeTypeBase",
     "FeeTypeCreate",
     "FeeTypeUpdate",
     "FeeTypeResponse",
+
     # Fee Structure
     "FeeStructureBase",
     "FeeStructureCreate",
     "FeeStructureUpdate",
     "FeeStructureResponse",
+
     # Student Fee Assignment
     "StudentFeeAssignmentBase",
     "StudentFeeAssignmentCreate",
     "StudentFeeAssignmentUpdate",
     "StudentFeeAssignmentResponse",
+
     # Invoice
     "InvoiceItemBase",
     "InvoiceItemCreate",
@@ -103,15 +79,18 @@ __all__ = [
     "InvoiceUpdate",
     "InvoiceResponse",
     "InvoiceListResponse",
+
     # Payment
     "PaymentBase",
     "PaymentCreate",
     "PaymentUpdate",
     "PaymentResponse",
     "PaymentListResponse",
+
     # Receipt
     "PaymentReceiptBase",
     "PaymentReceiptResponse",
+
     # Ledger
     "StudentFeeLedgerResponse",
     "StudentFeeLedgerSummary",

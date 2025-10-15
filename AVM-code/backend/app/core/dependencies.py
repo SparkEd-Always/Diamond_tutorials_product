@@ -58,8 +58,9 @@ async def get_current_mobile_user(
     db: Session = Depends(get_db)
 ):
     """
-    Get current user from mobile app (teacher or parent)
+    Get current user from mobile app (teacher or parent) or web admin
     Mobile tokens have phone_number in 'sub' and user type in 'type'
+    Web tokens have unique_id in 'sub' and 'role' field
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -71,30 +72,36 @@ async def get_current_mobile_user(
     if payload is None:
         raise credentials_exception
 
-    phone_number: str = payload.get("sub")
+    sub: str = payload.get("sub")
     user_type: str = payload.get("type")
+    role: str = payload.get("role")
 
-    if phone_number is None or user_type is None:
+    if sub is None:
         raise credentials_exception
 
-    # Check if this is a regular web user (has unique_id in sub)
-    if user_type not in ["teacher", "parent"]:
-        # Try web auth
-        user = db.query(User).filter(User.unique_id == phone_number).first()
+    # Check if this is a web user (has role field instead of type)
+    if role is not None:
+        # Web user authentication
+        user = db.query(User).filter(User.unique_id == sub).first()
         if user:
             return user
+        raise credentials_exception
+
+    # Mobile user authentication
+    if user_type is None:
+        raise credentials_exception
 
     # Mobile user - teacher or parent
     if user_type == "teacher":
         teacher = db.query(Teacher).filter(
-            (Teacher.phone == phone_number) | (Teacher.phone_number == phone_number)
+            (Teacher.phone == sub) | (Teacher.phone_number == sub)
         ).first()
         if teacher is None:
             raise credentials_exception
         return teacher
 
     elif user_type == "parent":
-        parent = db.query(Parent).filter(Parent.phone_number == phone_number).first()
+        parent = db.query(Parent).filter(Parent.phone_number == sub).first()
         if parent is None:
             raise credentials_exception
         return parent

@@ -28,18 +28,28 @@ async def send_otp_mobile(
     """
     try:
         phone = request.phone_number
+        # Normalize phone number - remove +91 for comparison
+        phone_without_prefix = phone.replace('+91', '') if phone.startswith('+91') else phone
+        phone_with_prefix = f"+91{phone_without_prefix}" if not phone.startswith('+91') else phone
+
         user_type = None
 
         # Check if teacher (check both phone and phone_number for compatibility)
         teacher = db.query(Teacher).filter(
-            (Teacher.phone == phone) | (Teacher.phone_number == phone)
+            (Teacher.phone == phone) | (Teacher.phone_number == phone) |
+            (Teacher.phone == phone_with_prefix) | (Teacher.phone_number == phone_with_prefix) |
+            (Teacher.phone == phone_without_prefix) | (Teacher.phone_number == phone_without_prefix)
         ).first()
         if teacher:
             user_type = "teacher"
 
         # Check if parent
         if not user_type:
-            student = db.query(Student).filter(Student.parent_phone == phone).first()
+            student = db.query(Student).filter(
+                (Student.parent_phone == phone) |
+                (Student.parent_phone == phone_with_prefix) |
+                (Student.parent_phone == phone_without_prefix)
+            ).first()
             if student:
                 user_type = "parent"
 
@@ -82,12 +92,18 @@ async def verify_otp_mobile(
             raise HTTPException(status_code=400, detail="Invalid or expired OTP")
 
         phone = request.phone_number
+        # Normalize phone number - remove +91 for comparison
+        phone_without_prefix = phone.replace('+91', '') if phone.startswith('+91') else phone
+        phone_with_prefix = f"+91{phone_without_prefix}" if not phone.startswith('+91') else phone
+
         user_type = None
         user_data = None
 
         # Check if teacher (check both phone and phone_number for compatibility)
         teacher = db.query(Teacher).filter(
-            (Teacher.phone == phone) | (Teacher.phone_number == phone)
+            (Teacher.phone == phone) | (Teacher.phone_number == phone) |
+            (Teacher.phone == phone_with_prefix) | (Teacher.phone_number == phone_with_prefix) |
+            (Teacher.phone == phone_without_prefix) | (Teacher.phone_number == phone_without_prefix)
         ).first()
         if teacher:
             user_type = "teacher"
@@ -112,12 +128,20 @@ async def verify_otp_mobile(
 
         # Check if parent
         if not user_type:
-            student = db.query(Student).filter(Student.parent_phone == phone).first()
+            student = db.query(Student).filter(
+                (Student.parent_phone == phone) |
+                (Student.parent_phone == phone_with_prefix) |
+                (Student.parent_phone == phone_without_prefix)
+            ).first()
             if student:
                 user_type = "parent"
 
                 # Get or create parent record
-                parent = db.query(Parent).filter(Parent.phone_number == phone).first()
+                parent = db.query(Parent).filter(
+                    (Parent.phone_number == phone) |
+                    (Parent.phone_number == phone_with_prefix) |
+                    (Parent.phone_number == phone_without_prefix)
+                ).first()
                 if not parent:
                     parent = Parent(
                         phone_number=phone,
@@ -137,9 +161,13 @@ async def verify_otp_mobile(
                     parent.device_type = request.device_type
                 db.commit()
 
-                # Get all children
+                # Get all children (check all phone variations)
                 children = db.query(Student).filter(
-                    Student.parent_phone == phone,
+                    (
+                        (Student.parent_phone == phone) |
+                        (Student.parent_phone == phone_with_prefix) |
+                        (Student.parent_phone == phone_without_prefix)
+                    ),
                     Student.is_active == "Active"
                 ).all()
 

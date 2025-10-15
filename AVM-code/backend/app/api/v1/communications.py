@@ -37,18 +37,23 @@ async def send_bulk_message(
     """Send bulk WhatsApp message to multiple recipients"""
     try:
         # Get students based on recipient selection
+        print(f"[DEBUG] Recipients requested: {message_request.recipients}")
+
+        # Start with base query - get all active students
         query = db.query(Student).filter(Student.is_active == "Active")
 
         # Filter by class if not "all_parents"
         if message_request.recipients != "all_parents":
             # Convert recipient value back to class name (e.g., "class_7" -> "Class 7")
             class_name = message_request.recipients.replace("_", " ").title()
+            print(f"[DEBUG] Filtering by class_name: {class_name}")
             query = query.filter(Student.class_name == class_name)
 
         students = query.all()
+        print(f"[DEBUG] Found {len(students)} students")
 
         if not students:
-            raise HTTPException(status_code=404, detail="No students found for the selected recipients")
+            raise HTTPException(status_code=404, detail="No parents found")
 
         # Extract phone numbers and parent names
         phone_numbers = [student.parent_phone for student in students if student.parent_phone]

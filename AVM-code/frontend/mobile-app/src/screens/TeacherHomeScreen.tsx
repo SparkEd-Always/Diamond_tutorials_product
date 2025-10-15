@@ -9,15 +9,26 @@ import {
   Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { clearAuthData } from '../utils/secureStorage';
 
-export default function TeacherHomeScreen({ navigation }: any) {
+export default function TeacherHomeScreen({ navigation, route }: any) {
   const [user, setUser] = useState<any>(null);
   const [showClassesModal, setShowClassesModal] = useState(false);
   const [showSubjectsModal, setShowSubjectsModal] = useState(false);
 
   useEffect(() => {
     loadUser();
-  }, []);
+
+    // Check if we need to navigate to a specific screen from notification
+    const navigateTo = route?.params?.navigateTo;
+    if (navigateTo) {
+      console.log('📍 Auto-navigating to:', navigateTo);
+      // Small delay to ensure screen is loaded
+      setTimeout(() => {
+        navigation.navigate(navigateTo);
+      }, 300);
+    }
+  }, [route?.params?.navigateTo]);
 
   const loadUser = async () => {
     const userData = await AsyncStorage.getItem('user');
@@ -36,9 +47,10 @@ export default function TeacherHomeScreen({ navigation }: any) {
           text: 'Logout',
           style: 'destructive',
           onPress: async () => {
-            // Only clear token and user data, keep PIN/biometric settings
-            await AsyncStorage.multiRemove(['access_token', 'user_type', 'user']);
-            navigation.replace('PINLogin');
+            // Clear all auth data including PIN
+            await clearAuthData();
+            // Navigate back to OTP login screen
+            navigation.replace('Login');
           },
         },
       ]
@@ -115,13 +127,6 @@ export default function TeacherHomeScreen({ navigation }: any) {
             title="Attendance History"
             subtitle="View past attendance records"
             onPress={() => navigation.navigate('AttendanceHistory')}
-          />
-
-          <MenuCard
-            icon="📨"
-            title="Messages"
-            subtitle="School announcements and updates"
-            onPress={() => navigation.navigate('Messages')}
           />
 
           <MenuCard

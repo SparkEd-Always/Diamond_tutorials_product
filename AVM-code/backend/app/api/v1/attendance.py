@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from sqlalchemy import text
 from pydantic import BaseModel
 from app.core.database import get_db
-from app.core.dependencies import get_current_admin_user, get_current_teacher_user
+from app.core.dependencies import get_current_admin_user, get_current_teacher_user, get_current_mobile_user
 from app.models.attendance import Attendance, AttendanceStatus
 from app.models.student import Student
 from app.models.user import User
@@ -22,7 +22,7 @@ class ApproveAttendanceRequest(BaseModel):
 async def mark_attendance(
     attendance_data: dict,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_teacher_user)
+    current_user = Depends(get_current_mobile_user)
 ):
     """Mark attendance for students (teachers only)"""
     try:
@@ -47,12 +47,17 @@ async def mark_attendance(
             attendance_date = attendance_date_str
 
         # Get the Teacher record for the logged-in user
-        teacher = db.query(Teacher).filter(Teacher.email == current_user.email).first()
-        if not teacher:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Teacher record not found for user {current_user.email}"
-            )
+        if isinstance(current_user, Teacher):
+            # Mobile user - already a Teacher object
+            teacher = current_user
+        else:
+            # Web user - need to look up Teacher by email
+            teacher = db.query(Teacher).filter(Teacher.email == current_user.email).first()
+            if not teacher:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Teacher record not found for user {current_user.email}"
+                )
 
         created_records = []
 
@@ -341,7 +346,7 @@ async def get_student_attendance(
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_teacher_user)
+    current_user = Depends(get_current_mobile_user)
 ):
     """Get attendance records for a specific student"""
     query = db.query(Attendance).filter(Attendance.student_id == student_id)
@@ -359,7 +364,7 @@ async def get_class_attendance(
     class_name: str,
     attendance_date: Optional[date] = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_teacher_user)
+    current_user = Depends(get_current_mobile_user)
 ):
     """Get attendance records for a specific class"""
     # Get all students in the class
@@ -483,7 +488,7 @@ async def get_attendance_history(
     class_name: Optional[str] = None,
     status: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    current_user = Depends(get_current_mobile_user)
 ):
     """Get attendance history with student details (admin only)"""
     # Default to last 7 days if no dates provided

@@ -316,6 +316,70 @@ async def get_teacher_attendance_summary(
     }
 
 
+@router.post("/update-remarks")
+async def update_teacher_attendance_remarks(
+    remarks_data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin_user)
+):
+    """Update remarks for a teacher's attendance record (admin only)"""
+
+    # Validate required fields
+    if 'teacher_id' not in remarks_data or 'date' not in remarks_data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required fields: teacher_id and date"
+        )
+
+    teacher_id = remarks_data['teacher_id']
+    attendance_date_str = remarks_data['date']
+    remarks = remarks_data.get('remarks', '')
+
+    # Convert date string to date object
+    if isinstance(attendance_date_str, str):
+        attendance_date = datetime.strptime(attendance_date_str, '%Y-%m-%d').date()
+    else:
+        attendance_date = attendance_date_str
+
+    # Find the attendance record
+    attendance_record = db.query(TeacherAttendance).filter(
+        TeacherAttendance.teacher_id == teacher_id,
+        TeacherAttendance.date == attendance_date
+    ).first()
+
+    if not attendance_record:
+        # If no attendance record exists yet, create one with not_marked status
+        teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
+        if not teacher:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Teacher with ID {teacher_id} not found"
+            )
+
+        attendance_record = TeacherAttendance(
+            teacher_id=teacher_id,
+            date=attendance_date,
+            status=TeacherAttendanceStatus.not_marked,
+            remarks=remarks,
+            marked_by_admin_id=current_user.id
+        )
+        db.add(attendance_record)
+    else:
+        # Update existing record's remarks
+        attendance_record.remarks = remarks
+        attendance_record.updated_at = datetime.now()
+
+    db.commit()
+    db.refresh(attendance_record)
+
+    return {
+        "message": "Remarks updated successfully",
+        "teacher_id": teacher_id,
+        "date": attendance_date.strftime('%Y-%m-%d'),
+        "remarks": remarks
+    }
+
+
 @router.post("/lock/{attendance_date}")
 async def lock_teacher_attendance(
     attendance_date: date,

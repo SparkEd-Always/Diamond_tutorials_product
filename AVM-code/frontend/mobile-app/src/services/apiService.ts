@@ -1,7 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = Constants.expoConfig?.extra?.apiUrl || 'http://192.168.1.4:8000';
+// Use localhost with adb reverse for Android emulator, 192.168.1.4 for physical devices
+const API_BASE_URL = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:8000';
 
 class ApiService {
   private api: AxiosInstance;
@@ -17,8 +19,12 @@ class ApiService {
 
     // Request interceptor for adding auth token
     this.api.interceptors.request.use(
-      (config) => {
-        // Token will be added per request
+      async (config) => {
+        // Automatically add token from AsyncStorage to every request
+        const token = await AsyncStorage.getItem('access_token');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
       },
       (error) => {

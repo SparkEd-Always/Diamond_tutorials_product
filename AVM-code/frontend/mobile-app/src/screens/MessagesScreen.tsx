@@ -7,11 +7,14 @@ import {
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { MaterialIcons } from '@expo/vector-icons';
 
-const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
+// Use localhost with adb reverse for Android emulator, 192.168.1.4 for physical devices
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 interface Message {
   id: number;
@@ -133,10 +136,18 @@ export default function MessagesScreen({ navigation }: any) {
       <View style={styles.container}>
         {/* Message Detail View */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={handleBackToList} style={styles.backButton}>
-            <Text style={styles.backButtonText}>← Back</Text>
-          </TouchableOpacity>
+          <Pressable
+            onPress={() => {
+              console.log('Back button pressed!');
+              handleBackToList();
+            }}
+            style={styles.headerBackButton}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          >
+            <MaterialIcons name="arrow-back" size={28} color="#fff" />
+          </Pressable>
           <Text style={styles.headerTitle}>Message</Text>
+          <View style={styles.placeholder} />
         </View>
 
         <View style={styles.messageDetail}>
@@ -163,7 +174,11 @@ export default function MessagesScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerBackButton}>
+          <MaterialIcons name="arrow-back" size={24} color="#fff" />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Messages</Text>
+        <View style={styles.placeholder} />
       </View>
 
       {messages.length === 0 ? (
@@ -204,6 +219,16 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerBackButton: {
+    padding: 12,
+    marginRight: 8,
+    zIndex: 999,
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 20,
@@ -211,16 +236,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     flex: 1,
     textAlign: 'center',
+    marginLeft: -50,
   },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    top: 48,
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
+  placeholder: {
+    width: 50,
   },
   listContainer: {
     padding: 16,

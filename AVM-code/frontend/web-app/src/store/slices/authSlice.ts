@@ -44,7 +44,7 @@ export const login = createAsyncThunk<LoginResponse, LoginCredentials>(
       formData.append('username', credentials.username);
       formData.append('password', credentials.password);
 
-      const response = await axios.post('http://192.168.1.4:8000/api/v1/auth/login', formData, {
+      const response = await axios.post('/api/v1/auth/login', formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -81,7 +81,7 @@ export const getCurrentUser = createAsyncThunk(
         throw new Error('No token available');
       }
 
-      const response = await axios.get('http://192.168.1.4:8000/api/v1/auth/me', {
+      const response = await axios.get('/api/v1/auth/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

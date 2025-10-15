@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 from app.core.database import get_db
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, get_current_mobile_user
 from app.models.user import User
 from app.models.communication import Communication
 from app.models.parent import Parent
@@ -43,41 +43,30 @@ class MessageResponse(BaseModel):
 @router.get("/inbox", response_model=List[MessageResponse])
 async def get_inbox(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_mobile_user)
 ):
     """Get inbox messages for logged-in user (parent or teacher)"""
     try:
-        # Determine user type from token
-        user_type = getattr(current_user, "user_type", None)
-
-        if user_type == "parent":
-            # Get parent ID
-            parent = db.query(Parent).filter(Parent.phone_number == current_user.phone_number).first()
-            if not parent:
-                return []
-
+        # Determine user type - check if it's a Parent or Teacher model instance
+        if isinstance(current_user, Parent):
             messages = db.query(Communication).filter(
                 and_(
                     Communication.recipient_type == "parent",
-                    Communication.recipient_id == parent.id,
+                    Communication.recipient_id == current_user.id,
                     Communication.message_type == "IN_APP"
                 )
             ).order_by(Communication.created_at.desc()).all()
 
-        elif user_type == "teacher":
-            # Get teacher ID
-            teacher = db.query(Teacher).filter(Teacher.phone_number == current_user.phone_number).first()
-            if not teacher:
-                return []
-
+        elif isinstance(current_user, Teacher):
             messages = db.query(Communication).filter(
                 and_(
                     Communication.recipient_type == "teacher",
-                    Communication.recipient_id == teacher.id,
+                    Communication.recipient_id == current_user.id,
                     Communication.message_type == "IN_APP"
                 )
             ).order_by(Communication.created_at.desc()).all()
         else:
+            # Web admin user - no inbox
             return []
 
         return [
@@ -101,35 +90,25 @@ async def get_inbox(
 @router.get("/unread-count")
 async def get_unread_count(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_mobile_user)
 ):
     """Get count of unread messages"""
     try:
-        user_type = getattr(current_user, "user_type", None)
-
-        if user_type == "parent":
-            parent = db.query(Parent).filter(Parent.phone_number == current_user.phone_number).first()
-            if not parent:
-                return {"count": 0}
-
+        if isinstance(current_user, Parent):
             count = db.query(Communication).filter(
                 and_(
                     Communication.recipient_type == "parent",
-                    Communication.recipient_id == parent.id,
+                    Communication.recipient_id == current_user.id,
                     Communication.message_type == "IN_APP",
                     Communication.is_read == False
                 )
             ).count()
 
-        elif user_type == "teacher":
-            teacher = db.query(Teacher).filter(Teacher.phone_number == current_user.phone_number).first()
-            if not teacher:
-                return {"count": 0}
-
+        elif isinstance(current_user, Teacher):
             count = db.query(Communication).filter(
                 and_(
                     Communication.recipient_type == "teacher",
-                    Communication.recipient_id == teacher.id,
+                    Communication.recipient_id == current_user.id,
                     Communication.message_type == "IN_APP",
                     Communication.is_read == False
                 )
@@ -148,7 +127,7 @@ async def get_unread_count(
 async def mark_as_read(
     message_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_mobile_user)
 ):
     """Mark a message as read"""
     try:
@@ -158,16 +137,14 @@ async def mark_as_read(
             raise HTTPException(status_code=404, detail="Message not found")
 
         # Verify the message belongs to current user
-        user_type = getattr(current_user, "user_type", None)
-
-        if user_type == "parent":
-            parent = db.query(Parent).filter(Parent.phone_number == current_user.phone_number).first()
-            if not parent or message.recipient_id != parent.id:
+        if isinstance(current_user, Parent):
+            if message.recipient_type != "parent" or message.recipient_id != current_user.id:
                 raise HTTPException(status_code=403, detail="Not authorized")
-        elif user_type == "teacher":
-            teacher = db.query(Teacher).filter(Teacher.phone_number == current_user.phone_number).first()
-            if not teacher or message.recipient_id != teacher.id:
+        elif isinstance(current_user, Teacher):
+            if message.recipient_type != "teacher" or message.recipient_id != current_user.id:
                 raise HTTPException(status_code=403, detail="Not authorized")
+        else:
+            raise HTTPException(status_code=403, detail="Not authorized")
 
         # Mark as read
         message.is_read = True

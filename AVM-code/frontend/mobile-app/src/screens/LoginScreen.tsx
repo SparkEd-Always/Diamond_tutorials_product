@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -84,7 +85,7 @@ const LoginScreen = () => {
           <View style={[styles.connectionStatus, styles.connectedStatus]}>
             <MaterialIcons name="check-circle" size={16} color="#10B981" />
             <Text style={[styles.connectionText, { color: '#10B981' }]}>
-              Connected to AVM Tutorial Server
+              Connected to Sparky Server
             </Text>
           </View>
         );
@@ -111,10 +112,12 @@ const LoginScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <MaterialIcons name="school" size={60} color="#4F46E5" />
-          </View>
-          <Text style={styles.title}>AVM Tutorial</Text>
+          <Image
+            source={require('../../assets/icon.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Sparky</Text>
           <Text style={styles.subtitle}>Teacher Portal</Text>
         </View>
 
@@ -177,10 +180,9 @@ const LoginScreen = () => {
 
         </View>
 
-        {/* Papaya Production Branding */}
+        {/* Sparky Branding */}
         <View style={styles.branding}>
-          <Text style={styles.brandingText}>A Papaya Production</Text>
-          <Text style={styles.copyrightText}>© 2025 All Rights Reserved</Text>
+          <Text style={styles.brandingText}>© 2025 Sparky from SparkEd</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -201,24 +203,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 40,
   },
-  logoContainer: {
+  logo: {
     width: 100,
     height: 100,
-    borderRadius: 50,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#4F46E5',
+    color: '#2C4E6B',
     marginBottom: 5,
   },
   subtitle: {
@@ -325,11 +318,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: '#6B7280',
-    marginBottom: 4,
-  },
-  copyrightText: {
-    fontSize: 11,
-    color: '#9CA3AF',
   },
 });
 

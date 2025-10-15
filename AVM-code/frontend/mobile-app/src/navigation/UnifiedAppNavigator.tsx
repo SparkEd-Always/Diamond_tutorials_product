@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { ActivityIndicator, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 
 import LoginOTPScreen from '../screens/LoginOTPScreen';
 import SetupQuickLoginScreen from '../screens/SetupQuickLoginScreen';
@@ -23,6 +24,7 @@ import {
   STORAGE_KEYS,
   clearAuthData,
 } from '../utils/secureStorage';
+import { setupNotificationListeners, getNotificationNavigationData } from '../services/notificationService';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +34,25 @@ const UnifiedAppNavigator = () => {
 
   useEffect(() => {
     determineInitialRoute();
+
+    // Set up global notification listeners
+    const cleanup = setupNotificationListeners(
+      (notification) => {
+        console.log('📩 Notification received:', notification);
+      },
+      async (response) => {
+        console.log('🔔 Notification tapped:', response);
+        const navData = getNotificationNavigationData(response);
+
+        if (navData.targetScreen) {
+          // Store the target screen in AsyncStorage
+          await AsyncStorage.setItem('pendingNavigationTarget', navData.targetScreen);
+          console.log('✅ Stored pending navigation target:', navData.targetScreen);
+        }
+      }
+    );
+
+    return cleanup;
   }, []);
 
   const determineInitialRoute = async () => {

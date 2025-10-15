@@ -35,9 +35,9 @@ async def get_classes(
 @router.get("/", response_model=List[dict])
 async def get_students(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_teacher_user)
+    current_user: Union[User, Teacher, Parent] = Depends(get_current_mobile_user)
 ):
-    """Get all students (teachers and admins only)"""
+    """Get all students (mobile app: teachers and admins only)"""
     # Return all students for admins and teachers
     students = db.query(Student).filter(Student.is_active == "Active").all()
     return [

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "AVM Tutorial Teacher",
-    "slug": "avm-tutorial-teacher",
+    "name": "Sparky",
+    "slug": "sparky",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,11 +10,11 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#4F46E5"
+      "backgroundColor": "#2C4E6B"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.avmtutorial.teacher",
+      "bundleIdentifier": "com.sparked.sparky",
       "infoPlist": {
         "NSUserNotificationsUsageDescription": "This app uses notifications to send you important updates from your school."
       }
@@ -22,27 +22,27 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#4F46E5"
+        "backgroundColor": "#FFFFFF"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.avmtutorial.teacher",
+      "package": "com.sparked.sparky",
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"
       ]
     },
     "notification": {
-      "color": "#4F46E5",
+      "color": "#2C4E6B",
       "androidMode": "default",
-      "androidCollapsedTitle": "AVM Tutorial"
+      "androidCollapsedTitle": "Sparky"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "https://avm-tutorial-api.railway.app",
+      "apiUrl": "http://localhost:8000",
       "eas": {
-        "projectId": "avm-tutorial-teacher"
+        "projectId": "sparked-sparky"
       }
     }
   }

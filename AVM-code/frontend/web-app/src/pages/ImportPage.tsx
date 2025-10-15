@@ -27,10 +27,9 @@ import {
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import axios from 'axios';
-import * as XLSX from 'xlsx';
 import { useToast } from '../contexts/ToastContext';
 
-const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
+const API_BASE_URL = '/api/v1';
 
 const ImportPage: React.FC = () => {
   const { token } = useSelector((state: RootState) => state.auth);
@@ -44,6 +43,8 @@ const ImportPage: React.FC = () => {
   const [teacherUploading, setTeacherUploading] = useState(false);
   const [studentErrorsExpanded, setStudentErrorsExpanded] = useState(false);
   const [teacherErrorsExpanded, setTeacherErrorsExpanded] = useState(false);
+  const [studentListExpanded, setStudentListExpanded] = useState(false);
+  const [teacherListExpanded, setTeacherListExpanded] = useState(false);
   const [studentDragging, setStudentDragging] = useState(false);
   const [teacherDragging, setTeacherDragging] = useState(false);
 
@@ -250,34 +251,6 @@ const ImportPage: React.FC = () => {
     }
   };
 
-  const handleDownloadTemplate = (type: 'students' | 'teachers') => {
-    // Create sample data for Excel
-    const templates = {
-      students: [
-        ['first_name', 'last_name', 'class_name', 'date_of_birth', 'gender', 'parent_name', 'parent_phone', 'parent_email', 'address', 'emergency_contact', 'admission_date'],
-        ['Rahul', 'Kumar', '8', '2010-05-15', 'Male', 'Mr. Rajesh Kumar', '+91-9876543210', 'rajesh@example.com', '123 Main St, Delhi', '+91-9876543211', '2023-04-01'],
-        ['Priya', 'Sharma', '7', '2011-08-22', 'Female', 'Mrs. Sunita Sharma', '+91-9876543212', 'sunita@example.com', '456 Park Ave, Mumbai', '+91-9876543213', '2023-04-01'],
-      ],
-      teachers: [
-        ['first_name', 'last_name', 'email', 'phone_number', 'subjects', 'classes_assigned', 'qualification', 'experience_years', 'address', 'emergency_contact', 'joining_date'],
-        ['Priya', 'Patel', 'priya.new@avm.com', '+91-9876543220', 'Mathematics,Science', 'Class 8A,Class 9A', 'M.Sc. Mathematics', '5', '789 School Rd, Delhi', '+91-9876543221', '2023-06-01'],
-        ['Amit', 'Singh', 'amit.new@avm.com', '+91-9876543222', 'English,Hindi', 'Class 7A,Class 7B', 'M.A. English', '3', '321 Teacher St, Mumbai', '+91-9876543223', '2023-06-01'],
-      ],
-    };
-
-    const data = templates[type];
-
-    // Create workbook and worksheet
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(data);
-
-    // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(wb, ws, type === 'students' ? 'Students' : 'Teachers');
-
-    // Generate Excel file and trigger download
-    XLSX.writeFile(wb, `${type}_import_template.xlsx`);
-  };
-
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -404,6 +377,39 @@ const ImportPage: React.FC = () => {
                       <Alert severity="success" icon={<CheckCircleIcon />}>
                         {studentUploadResult.message}
                       </Alert>
+
+                      {/* Imported Students List (Collapsible) */}
+                      {studentUploadResult.imported_students && studentUploadResult.imported_students.length > 0 && (
+                        <Paper sx={{ mt: 2, p: 2, bgcolor: 'success.lighter' }}>
+                          <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            onClick={() => setStudentListExpanded(!studentListExpanded)}
+                            sx={{ cursor: 'pointer' }}
+                          >
+                            <Typography variant="subtitle2" color="success.main">
+                              Imported Students ({studentUploadResult.imported_students.length})
+                            </Typography>
+                            <IconButton size="small" sx={{ transform: studentListExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>
+                              <ExpandMoreIcon />
+                            </IconButton>
+                          </Box>
+                          <Collapse in={studentListExpanded}>
+                            <List dense sx={{ mt: 1 }}>
+                              {studentUploadResult.imported_students.map((student: any, idx: number) => (
+                                <ListItem key={idx}>
+                                  <ListItemText
+                                    primary={student.name}
+                                    secondary={`Phone: ${student.phone}`}
+                                  />
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Collapse>
+                        </Paper>
+                      )}
+
                       {studentUploadResult.errors && studentUploadResult.errors.length > 0 && (
                         <Alert severity="warning" sx={{ mt: 2 }}>
                           <Box display="flex" justifyContent="space-between" alignItems="center" onClick={() => setStudentErrorsExpanded(!studentErrorsExpanded)} sx={{ cursor: 'pointer' }}>
@@ -541,24 +547,35 @@ const ImportPage: React.FC = () => {
                         {teacherUploadResult.message}
                       </Alert>
 
-                      {teacherUploadResult.credentials && teacherUploadResult.credentials.length > 0 && (
-                        <Paper sx={{ mt: 2, p: 2, bgcolor: 'info.lighter' }}>
-                          <Typography variant="subtitle2" color="info.main" gutterBottom>
-                            User Accounts Created ({teacherUploadResult.user_accounts_created}):
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" display="block" mb={1}>
-                            {teacherUploadResult.password_info}
-                          </Typography>
-                          <List dense>
-                            {teacherUploadResult.credentials.map((cred: any, idx: number) => (
-                              <ListItem key={idx}>
-                                <ListItemText
-                                  primary={cred.name}
-                                  secondary={`Email: ${cred.email} | Username: ${cred.username} | Password: ${cred.password}`}
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
+                      {/* Imported Teachers List (Collapsible) */}
+                      {teacherUploadResult.imported_teachers && teacherUploadResult.imported_teachers.length > 0 && (
+                        <Paper sx={{ mt: 2, p: 2, bgcolor: 'success.lighter' }}>
+                          <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            onClick={() => setTeacherListExpanded(!teacherListExpanded)}
+                            sx={{ cursor: 'pointer' }}
+                          >
+                            <Typography variant="subtitle2" color="success.main">
+                              Imported Teachers ({teacherUploadResult.imported_teachers.length})
+                            </Typography>
+                            <IconButton size="small" sx={{ transform: teacherListExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }}>
+                              <ExpandMoreIcon />
+                            </IconButton>
+                          </Box>
+                          <Collapse in={teacherListExpanded}>
+                            <List dense sx={{ mt: 1 }}>
+                              {teacherUploadResult.imported_teachers.map((teacher: any, idx: number) => (
+                                <ListItem key={idx}>
+                                  <ListItemText
+                                    primary={teacher.name}
+                                    secondary={`Phone: ${teacher.phone}`}
+                                  />
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Collapse>
                         </Paper>
                       )}
 

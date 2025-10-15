@@ -15,7 +15,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
+// Use localhost with adb reverse for Android emulator, 192.168.1.4 for physical devices
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 interface StudentAttendance {
   id: number;
@@ -151,20 +152,17 @@ export default function AttendanceScreen({ navigation }: any) {
                 `${API_BASE_URL}/attendance/mark`,
                 {
                   date: formattedDate,
-                  attendance_records: attendanceData,
+                  student_records: attendanceData,
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
               );
 
-              Alert.alert('Success', 'Attendance submitted successfully!');
-
-              // Reset attendance
-              setStudents((prev) =>
-                prev.map((student) => ({ ...student, status: null, remarks: '' }))
-              );
+              Alert.alert('Success', 'Attendance submitted successfully! Status remains visible for your reference.');
             } catch (error: any) {
               console.error('Error submitting attendance:', error.response?.data || error.message);
-              Alert.alert('Error', error.response?.data?.detail || 'Failed to submit attendance');
+              const errorMessage = error.response?.data?.detail || 'Failed to submit attendance';
+              // Show clean error message without status code prefix
+              Alert.alert('Attendance Submission', errorMessage);
             } finally {
               setSubmitting(false);
             }
@@ -197,7 +195,7 @@ export default function AttendanceScreen({ navigation }: any) {
         <View style={styles.studentInfo}>
           <Text style={styles.studentName}>{item.full_name}</Text>
           <Text style={styles.studentDetails}>
-            {item.unique_id} • {item.class_name} {item.section}
+            {item.unique_id} • {item.class_name}
           </Text>
         </View>
 

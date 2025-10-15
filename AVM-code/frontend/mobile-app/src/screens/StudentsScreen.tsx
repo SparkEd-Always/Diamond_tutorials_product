@@ -16,7 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const API_BASE_URL = 'http://192.168.1.4:8000/api/v1';
+// Use localhost with adb reverse for Android emulator, 192.168.1.4 for physical devices
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 interface Student {
   id: number;
@@ -44,14 +45,19 @@ export default function StudentsScreen({ navigation }: any) {
   const loadStudents = async () => {
     try {
       const token = await AsyncStorage.getItem('access_token');
+      console.log('[StudentsScreen] Token from AsyncStorage:', token ? `${token.substring(0, 20)}...` : 'NULL');
+
       if (!token) {
+        console.log('[StudentsScreen] No token found, redirecting to login');
         navigation.replace('Login');
         return;
       }
 
+      console.log('[StudentsScreen] Making API call to:', `${API_BASE_URL}/students/`);
       const response = await axios.get(`${API_BASE_URL}/students/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log('[StudentsScreen] API call successful, got', response.data.length, 'students');
 
       setStudents(response.data);
 
@@ -104,7 +110,7 @@ export default function StudentsScreen({ navigation }: any) {
         <Text style={styles.studentName}>{item.full_name}</Text>
         <Text style={styles.studentId}>{item.unique_id}</Text>
         <Text style={styles.studentClass}>
-          {item.class_name} {item.section}
+          {item.class_name}
         </Text>
       </View>
 

@@ -7,6 +7,9 @@ import { RootState, AppDispatch } from './store/store';
 import { getCurrentUser } from './store/slices/authSlice';
 import { ToastProvider } from './contexts/ToastContext';
 
+// Import axios interceptor to handle 401 errors globally
+import './utils/axiosInterceptor';
+
 // Pages
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';

@@ -31,6 +31,16 @@ from .fees import (
     StudentFeeLedger,
 )
 
+# Communication Models
+from .communication import (
+    Message,
+    MessageType,
+    MessageDelivery,
+    DeliveryStatus,
+    TargetRole,
+    CommunicationPreference,
+)
+
 __all__ = [
     # User & Profile
     "User",
@@ -74,4 +84,12 @@ __all__ = [
     "PaymentStatus",
     "PaymentReceipt",
     "StudentFeeLedger",
+
+    # Communication Module
+    "Message",
+    "MessageType",
+    "MessageDelivery",
+    "DeliveryStatus",
+    "TargetRole",
+    "CommunicationPreference",
 ]

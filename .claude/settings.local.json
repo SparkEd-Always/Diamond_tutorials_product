@@ -24,7 +24,9 @@
       "Bash(test -f \"d:\\Projects\\sparked\\admission-system\\backend\\alembic.ini\")",
       "Bash(netstat:*)",
       "Bash(taskkill:*)",
-      "Bash(sqlite3:*)"
+      "Bash(sqlite3:*)",
+      "Bash(alembic revision:*)",
+      "Bash(timeout 10 python -m app.main)"
     ],
     "deny": [],
     "ask": []

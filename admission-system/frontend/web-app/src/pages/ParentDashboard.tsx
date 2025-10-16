@@ -25,6 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 import ListIcon from "@mui/icons-material/List";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import ForumIcon from "@mui/icons-material/Forum";
 import config from "../config";
 
 const ParentDashboard = () => {
@@ -185,6 +186,21 @@ const ParentDashboard = () => {
               }}
             >
               Fee Management
+            </Button>
+            <Button
+              variant="outlined"
+              fullWidth
+              size="large"
+              startIcon={<ForumIcon />}
+              onClick={() => navigate("/parent/messages")}
+              sx={{
+                maxWidth: 400,
+                borderColor: "white",
+                color: "white",
+                "&:hover": { borderColor: "grey.100", bgcolor: "rgba(255,255,255,0.1)" }
+              }}
+            >
+              Messages
             </Button>
           </Box>
         </Paper>

@@ -34,6 +34,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import ForumIcon from "@mui/icons-material/Forum";
 import config from "../config";
 
 interface DashboardStats {
@@ -538,6 +539,42 @@ const AdminDashboard = () => {
                       Fee Dashboard
                     </Typography>
                     <Typography variant="caption" color="text.secondary">Click to manage fees and payments</Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+
+            {/* Parent Communication */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ bgcolor: 'success.lighter', borderLeft: 4, borderColor: 'success.main' }}>
+                <CardActionArea onClick={() => navigate('/admin/communication/send')}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <ForumIcon sx={{ color: 'success.main' }} />
+                      <Typography color="success.main" fontWeight={600}>Communication</Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={600} sx={{ mt: 1 }}>
+                      Send Messages
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">Click to send messages to parents</Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+
+            {/* Student Information System */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ bgcolor: 'secondary.lighter', borderLeft: 4, borderColor: 'secondary.main' }}>
+                <CardActionArea onClick={() => navigate('/admin/students')}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <PeopleIcon sx={{ color: 'secondary.main' }} />
+                      <Typography color="secondary.main" fontWeight={600}>Student Management</Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={600} sx={{ mt: 1 }}>
+                      Student Records
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">Click to manage student information</Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>

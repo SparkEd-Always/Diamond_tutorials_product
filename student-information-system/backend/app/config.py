@@ -20,10 +20,10 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     API_V1_PREFIX: str = "/api/v1"
 
-    # Database
-    DATABASE_URL: str = "postgresql://postgres:password@localhost:5432/sis_dev"
-    DATABASE_POOL_SIZE: int = 20
-    DATABASE_MAX_OVERFLOW: int = 40
+    # Database (SQLite for development, PostgreSQL for production)
+    DATABASE_URL: str = "sqlite:///./sis.db"
+    DATABASE_POOL_SIZE: int = 5
+    DATABASE_MAX_OVERFLOW: int = 10
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"

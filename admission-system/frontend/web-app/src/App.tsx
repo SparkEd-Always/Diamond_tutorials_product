@@ -31,6 +31,13 @@ import ParentFeeDashboard from './pages/ParentFeeDashboard';
 import ParentPaymentPage from './pages/ParentPaymentPage';
 import ParentPaymentHistory from './pages/ParentPaymentHistory';
 import ParentStudentFeeDetailsPage from './pages/ParentStudentFeeDetailsPage';
+import SendMessagePage from './pages/SendMessagePage';
+import MessageHistoryPage from './pages/MessageHistoryPage';
+import ParentMessagesPage from './pages/ParentMessagesPage';
+import MessageDetailsPage from './pages/MessageDetailsPage';
+import StudentListPage from './pages/StudentListPage';
+import StudentDetailsPage from './pages/StudentDetailsPage';
+import StudentFormPage from './pages/StudentFormPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) => {
@@ -249,6 +256,84 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ParentStudentFeeDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Communication Routes - Admin/Teacher */}
+      <Route
+        path="/admin/communication/send"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <SendMessagePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/communication/history"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <MessageHistoryPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/communication/messages/:id"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <MessageDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Communication Routes - Parent */}
+      <Route
+        path="/parent/messages"
+        element={
+          <ProtectedRoute>
+            <ParentMessagesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/parent/messages/:id"
+        element={
+          <ProtectedRoute>
+            <MessageDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Student Information System (SIS) Routes - Admin */}
+      <Route
+        path="/admin/students"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <StudentListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/students/create"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <StudentFormPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/students/:id"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <StudentDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/students/:id/edit"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <StudentFormPage />
           </ProtectedRoute>
         }
       />

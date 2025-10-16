@@ -3,7 +3,7 @@ Parent and Guardian Models
 Manages parent/guardian information and student-parent relationships
 """
 
-from sqlalchemy import Column, String, Boolean, Enum as SQLAlchemyEnum, DateTime, ForeignKey, Numeric
+from sqlalchemy import Column, String, Boolean, Enum as SQLAlchemyEnum, DateTime, ForeignKey, Numeric, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime

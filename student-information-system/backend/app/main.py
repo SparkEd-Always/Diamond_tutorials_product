@@ -35,7 +35,9 @@ async def lifespan(app: FastAPI):
     logger.info(f"Debug Mode: {settings.DEBUG}")
 
     # Create database tables (in production, use Alembic migrations)
-    # Base.metadata.create_all(bind=engine)
+    logger.info("Creating database tables...")
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database initialized successfully")
 
     yield
 
@@ -197,7 +199,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=8000,
+        port=8001,
         reload=settings.DEBUG,
         log_level=settings.LOG_LEVEL.lower()
     )

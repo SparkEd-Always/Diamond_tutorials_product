@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Paper,
@@ -22,12 +23,28 @@ import {
   Chip,
   Box,
   Alert,
+  AppBar,
+  Toolbar,
+  Menu,
+  Divider,
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  ArrowBack as ArrowBackIcon,
+  School as SchoolIcon,
+  AccountCircle,
+} from '@mui/icons-material';
+import { useAuth } from '../contexts/AuthContext';
 import { feeTypeApi } from '../services/feeApi';
 import type { FeeType, FeeTypeFormData } from '../types/fees';
+import config from '../config';
 
 const FeeTypesPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [feeTypes, setFeeTypes] = useState<FeeType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -126,8 +143,55 @@ const FeeTypesPage: React.FC = () => {
     }
   };
 
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* Header */}
+      <AppBar position="static" elevation={1}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            onClick={() => navigate('/admin/fees/dashboard')}
+            sx={{ mr: 1 }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <SchoolIcon sx={{ mr: 2 }} />
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            {config.schoolName} - Fee Types Management
+          </Typography>
+          <Typography variant="body2" sx={{ mr: 2 }}>
+            {user?.email}
+          </Typography>
+          <IconButton size="large" onClick={handleMenu} color="inherit">
+            <AccountCircle />
+          </IconButton>
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+            <MenuItem onClick={() => navigate('/admin/fees/dashboard')}>
+              Fee Dashboard
+            </MenuItem>
+            <MenuItem onClick={() => navigate('/dashboard')}>
+              Main Dashboard
+            </MenuItem>
+            <Divider />
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">
           Fee Types Management
@@ -202,6 +266,7 @@ const FeeTypesPage: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      </Container>
 
       {/* Create/Edit Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
@@ -313,7 +378,7 @@ const FeeTypesPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </Box>
   );
 };
 

@@ -31,6 +31,7 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import WarningIcon from "@mui/icons-material/Warning";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import config from "../config";
 
 const AdminFeeDashboard = () => {
@@ -55,8 +56,8 @@ const AdminFeeDashboard = () => {
       // Load ledger summaries to calculate stats
       const summaries = await ledgerApi.listSummaries();
 
-      const totalOutstanding = summaries.reduce((sum, s) => sum + s.total_outstanding, 0);
-      const totalCollected = summaries.reduce((sum, s) => sum + s.total_paid, 0);
+      const totalOutstanding = summaries.reduce((sum, s) => sum + Number(s.total_outstanding), 0);
+      const totalCollected = summaries.reduce((sum, s) => sum + Number(s.total_paid), 0);
       const defaultersCount = summaries.filter(s => s.is_defaulter).length;
       const studentsWithFees = summaries.length;
 
@@ -95,39 +96,26 @@ const AdminFeeDashboard = () => {
       {/* Header */}
       <AppBar position="static" elevation={1}>
         <Toolbar>
+          <IconButton
+            color="inherit"
+            onClick={() => navigate("/dashboard")}
+            sx={{ mr: 1 }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
           <SchoolIcon sx={{ mr: 2 }} />
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {config.schoolName} - Admin Portal
+            {config.schoolName} - Fee Management Dashboard
           </Typography>
-
-          {/* Dashboard Switcher */}
-          <Button
-            color="inherit"
-            startIcon={<SwapHorizIcon />}
-            onClick={() => navigate("/admin/dashboard")}
-            sx={{ mr: 2 }}
-          >
-            Admission Dashboard
-          </Button>
-
-          <IconButton onClick={handleMenu} color="inherit">
+          <Typography variant="body2" sx={{ mr: 2 }}>
+            {user?.email}
+          </Typography>
+          <IconButton size="large" onClick={handleMenu} color="inherit">
             <AccountCircle />
           </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem disabled>
-              <Typography variant="body2" color="text.secondary">
-                {user?.email}
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={() => navigate("/admin/dashboard")}>
-              Admission Dashboard
-            </MenuItem>
-            <MenuItem onClick={() => navigate("/admin/fees/dashboard")}>
-              Fee Dashboard
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+            <MenuItem onClick={() => navigate("/dashboard")}>
+              Main Dashboard
             </MenuItem>
             <Divider />
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
@@ -338,12 +326,6 @@ const AdminFeeDashboard = () => {
           </Paper>
         )}
 
-        {/* Info Section */}
-        <Box sx={{ mt: 4, textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
-            💡 Tip: Use the dashboard switcher in the top navigation to move between Admission and Fee Management dashboards
-          </Typography>
-        </Box>
       </Container>
     </Box>
   );

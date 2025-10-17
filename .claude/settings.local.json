@@ -28,7 +28,8 @@
       "Bash(alembic revision:*)",
       "Bash(timeout 10 python -m app.main)",
       "Bash(timeout:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(tasklist:*)"
     ],
     "deny": [],
     "ask": []

@@ -24,14 +24,13 @@ export interface FeeStructure {
   class_id: number;
   fee_type_id: number;
   amount: number;
-  installments_allowed: number;
+  installments: number;
   due_day_of_month?: number;
   due_date_fixed?: string;
   late_fee_applicable: boolean;
   late_fee_percentage: number;
-  late_fee_amount?: number;
-  late_fee_grace_period_days: number;
-  sibling_discount_applicable: boolean;
+  late_fee_amount: number;
+  grace_period_days: number;
   early_payment_discount_percentage?: number;
   early_payment_discount_days?: number;
   is_active: boolean;

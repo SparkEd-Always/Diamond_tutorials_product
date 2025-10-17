@@ -10,6 +10,11 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ParentDashboard from './pages/ParentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminHomePage from './pages/AdminHomePage';
+import AdminAdmissionDashboard from './pages/AdminAdmissionDashboard';
+import AdminFeeDashboard from './pages/AdminFeeDashboard';
+import AdminCommunicationDashboard from './pages/AdminCommunicationDashboard';
+import AdminSISDashboard from './pages/AdminSISDashboard';
 import ApplicationFormPage from './pages/ApplicationFormPage';
 import ParentApplicationListPage from './pages/ParentApplicationListPage';
 import AdminApplicationListPage from './pages/AdminApplicationListPage';
@@ -23,7 +28,6 @@ import HomePage from './pages/HomePage';
 import FeeTypesPage from './pages/FeeTypesPage';
 import FeeStructuresPage from './pages/FeeStructuresPage';
 import StudentAssignmentsPage from './pages/StudentAssignmentsPage';
-import AdminFeeDashboard from './pages/AdminFeeDashboard';
 import AdminStudentLedgers from './pages/AdminStudentLedgers';
 import AdminPaymentsPage from './pages/AdminPaymentsPage';
 import AdminReportsPage from './pages/AdminReportsPage';
@@ -61,7 +65,7 @@ const ProtectedRoute = ({ children, adminOnly = false }: { children: React.React
 // Dashboard Route Component - Routes to correct dashboard based on role
 const DashboardRoute = () => {
   const { isAdmin } = useAuth();
-  return isAdmin ? <AdminDashboard /> : <ParentDashboard />;
+  return isAdmin ? <AdminHomePage /> : <ParentDashboard />;
 };
 
 // Application List Route - Routes to correct list page based on role
@@ -127,6 +131,34 @@ function AppRoutes() {
       />
 
       {/* Admin Only Routes */}
+
+      {/* Module Dashboards */}
+      <Route
+        path="/admin/admission/dashboard"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminAdmissionDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/communication/dashboard"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminCommunicationDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/sis/dashboard"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminSISDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admission Routes */}
       <Route
         path="/admin/applications/:id/review"
         element={

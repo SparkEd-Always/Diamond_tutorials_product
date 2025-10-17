@@ -93,9 +93,9 @@ const AdminStudentLedgers = () => {
       } else if (filterStatus === "overdue") {
         filtered = filtered.filter(l => getTotalOverdue(l) > 0 && !l.is_defaulter);
       } else if (filterStatus === "outstanding") {
-        filtered = filtered.filter(l => l.total_outstanding > 0 && getTotalOverdue(l) === 0);
+        filtered = filtered.filter(l => Number(l.total_outstanding) > 0 && getTotalOverdue(l) === 0);
       } else if (filterStatus === "clear") {
-        filtered = filtered.filter(l => l.total_outstanding === 0);
+        filtered = filtered.filter(l => Number(l.total_outstanding) === 0);
       }
     }
 
@@ -116,8 +116,8 @@ const AdminStudentLedgers = () => {
   };
 
   const getTotalOverdue = (ledger: StudentFeeLedger): number => {
-    return ledger.overdue_0_30_days + ledger.overdue_30_60_days +
-           ledger.overdue_60_90_days + ledger.overdue_90_plus_days;
+    return Number(ledger.overdue_0_30_days) + Number(ledger.overdue_30_60_days) +
+           Number(ledger.overdue_60_90_days) + Number(ledger.overdue_90_plus_days);
   };
 
   const formatCurrency = (amount: number) => {
@@ -147,14 +147,14 @@ const AdminStudentLedgers = () => {
 
   // Calculate aging analysis summary
   const agingSummary = {
-    total_0_30: ledgers.reduce((sum, l) => sum + l.overdue_0_30_days, 0),
-    total_30_60: ledgers.reduce((sum, l) => sum + l.overdue_30_60_days, 0),
-    total_60_90: ledgers.reduce((sum, l) => sum + l.overdue_60_90_days, 0),
-    total_90_plus: ledgers.reduce((sum, l) => sum + l.overdue_90_plus_days, 0),
-    count_0_30: ledgers.filter(l => l.overdue_0_30_days > 0).length,
-    count_30_60: ledgers.filter(l => l.overdue_30_60_days > 0).length,
-    count_60_90: ledgers.filter(l => l.overdue_60_90_days > 0).length,
-    count_90_plus: ledgers.filter(l => l.overdue_90_plus_days > 0).length,
+    total_0_30: ledgers.reduce((sum, l) => sum + Number(l.overdue_0_30_days), 0),
+    total_30_60: ledgers.reduce((sum, l) => sum + Number(l.overdue_30_60_days), 0),
+    total_60_90: ledgers.reduce((sum, l) => sum + Number(l.overdue_60_90_days), 0),
+    total_90_plus: ledgers.reduce((sum, l) => sum + Number(l.overdue_90_plus_days), 0),
+    count_0_30: ledgers.filter(l => Number(l.overdue_0_30_days) > 0).length,
+    count_30_60: ledgers.filter(l => Number(l.overdue_30_60_days) > 0).length,
+    count_60_90: ledgers.filter(l => Number(l.overdue_60_90_days) > 0).length,
+    count_90_plus: ledgers.filter(l => Number(l.overdue_90_plus_days) > 0).length,
   };
 
   return (
@@ -475,13 +475,13 @@ const AdminStudentLedgers = () => {
                 <Grid item xs={12} md={3}>
                   <Typography variant="caption" color="text.secondary">Total Outstanding</Typography>
                   <Typography variant="h6" fontWeight={600} color="error.main">
-                    {formatCurrency(filteredLedgers.reduce((sum, l) => sum + l.total_outstanding, 0))}
+                    {formatCurrency(filteredLedgers.reduce((sum, l) => sum + Number(l.total_outstanding), 0))}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={3}>
                   <Typography variant="caption" color="text.secondary">Total Overdue</Typography>
                   <Typography variant="h6" fontWeight={600} color="error.main">
-                    {formatCurrency(filteredLedgers.reduce((sum, l) => sum + getTotalOverdue(l), 0))}
+                    {formatCurrency(filteredLedgers.reduce((sum, l) => sum + Number(getTotalOverdue(l)), 0))}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={3}>

@@ -1,187 +1,242 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Paper,
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  TextField,
+  IconButton,
+  Box,
+  Alert,
+  Grid,
+  Card,
+  CardContent,
+  CardActionArea,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  InputAdornment,
+  AppBar,
+  Toolbar,
+  Menu,
   MenuItem,
-  IconButton,
   Chip,
-  Box,
-  Alert,
-  Grid,
-  FormControlLabel,
-  Switch,
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Search as SearchIcon,
+  ArrowBack as ArrowBackIcon,
+  School as SchoolIcon,
+  AccountCircle,
+} from '@mui/icons-material';
+import { useAuth } from '../contexts/AuthContext';
 import { feeStructureApi, feeTypeApi } from '../services/feeApi';
 import { academicApi } from '../services/api';
-import type { FeeStructure, FeeStructureFormData, FeeType } from '../types/fees';
+import type { FeeStructure, FeeType } from '../types/fees';
 import type { AcademicYear, Class } from '../types';
+import config from '../config';
+
+// Grouped structure type for display
+interface GroupedStructure {
+  id: string; // Unique identifier for the group
+  name: string; // Custom name assigned by admin
+  totalAmount: number;
+  structures: FeeStructure[]; // All fee types in this structure
+  classId: number;
+  academicYearId: number;
+}
 
 const FeeStructuresPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
   const [feeStructures, setFeeStructures] = useState<FeeStructure[]>([]);
+  const [groupedStructures, setGroupedStructures] = useState<GroupedStructure[]>([]);
   const [feeTypes, setFeeTypes] = useState<FeeType[]>([]);
   const [academicYears, setAcademicYears] = useState<AcademicYear[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [editingStructure, setEditingStructure] = useState<FeeStructure | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Filters
-  const [filterAcademicYear, setFilterAcademicYear] = useState<number | ''>('');
-  const [filterClass, setFilterClass] = useState<number | ''>('');
-  const [filterFeeType, setFilterFeeType] = useState<number | ''>('');
+  // Detail view state
+  const [selectedStructure, setSelectedStructure] = useState<GroupedStructure | null>(null);
+  const [openDetailDialog, setOpenDetailDialog] = useState(false);
+  const [editingFeeType, setEditingFeeType] = useState<FeeStructure | null>(null);
+  const [editAmount, setEditAmount] = useState<number>(0);
 
-  const [formData, setFormData] = useState<FeeStructureFormData>({
-    academic_year_id: 0,
-    class_id: 0,
-    fee_type_id: 0,
-    amount: 0,
-    installments_allowed: 1,
-    due_day_of_month: undefined,
-    due_date_fixed: undefined,
-    late_fee_applicable: true,
-    late_fee_percentage: 2.0,
-    late_fee_amount: undefined,
-    late_fee_grace_period_days: 7,
-    sibling_discount_applicable: true,
-    early_payment_discount_percentage: undefined,
-    early_payment_discount_days: undefined,
-    is_active: true,
-  });
+  // Add fee type state
+  const [openAddFeeDialog, setOpenAddFeeDialog] = useState(false);
+  const [newFeeTypeId, setNewFeeTypeId] = useState<number | ''>('');
+  const [newFeeAmount, setNewFeeAmount] = useState<number>(0);
 
   useEffect(() => {
     loadData();
   }, []);
 
-  useEffect(() => {
-    loadFeeStructures();
-  }, [filterAcademicYear, filterClass, filterFeeType]);
-
   const loadData = async () => {
     try {
-      const [feeTypesData, academicYearsData, classesData] = await Promise.all([
+      setLoading(true);
+      const [feeTypesData, academicYearsData, classesData, structuresData] = await Promise.all([
         feeTypeApi.list({ is_active: true }),
         academicApi.getAcademicYears(),
         academicApi.getClasses(),
+        feeStructureApi.list({}),
       ]);
+
       setFeeTypes(feeTypesData);
       setAcademicYears(academicYearsData);
       setClasses(classesData);
+      setFeeStructures(structuresData);
 
-      // Set default academic year
-      const currentYear = academicYearsData.find((y: AcademicYear) => y.is_current);
-      if (currentYear) {
-        setFilterAcademicYear(currentYear.id);
-        setFormData(prev => ({ ...prev, academic_year_id: currentYear.id }));
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load data');
-    }
-  };
-
-  const loadFeeStructures = async () => {
-    try {
-      setLoading(true);
-      const params: any = {};
-      if (filterAcademicYear) params.academic_year_id = filterAcademicYear;
-      if (filterClass) params.class_id = filterClass;
-      if (filterFeeType) params.fee_type_id = filterFeeType;
-
-      const data = await feeStructureApi.list(params);
-      setFeeStructures(data);
+      // Group structures
+      groupStructures(structuresData, classesData, academicYearsData);
       setError(null);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load fee structures');
+      setError(err.response?.data?.detail || 'Failed to load data');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOpenDialog = (structure?: FeeStructure) => {
-    if (structure) {
-      setEditingStructure(structure);
-      setFormData({
-        academic_year_id: structure.academic_year_id,
-        class_id: structure.class_id,
-        fee_type_id: structure.fee_type_id,
-        amount: structure.amount,
-        installments_allowed: structure.installments_allowed,
-        due_day_of_month: structure.due_day_of_month,
-        due_date_fixed: structure.due_date_fixed,
-        late_fee_applicable: structure.late_fee_applicable,
-        late_fee_percentage: structure.late_fee_percentage,
-        late_fee_amount: structure.late_fee_amount,
-        late_fee_grace_period_days: structure.late_fee_grace_period_days,
-        sibling_discount_applicable: structure.sibling_discount_applicable,
-        early_payment_discount_percentage: structure.early_payment_discount_percentage,
-        early_payment_discount_days: structure.early_payment_discount_days,
-        is_active: structure.is_active,
+  const groupStructures = (structures: FeeStructure[], classList: Class[], yearList: AcademicYear[]) => {
+    // Group by class_id and academic_year_id
+    const grouped = new Map<string, FeeStructure[]>();
+
+    structures.forEach(structure => {
+      const key = `${structure.class_id}-${structure.academic_year_id}`;
+      if (!grouped.has(key)) {
+        grouped.set(key, []);
+      }
+      grouped.get(key)!.push(structure);
+    });
+
+    // Convert to GroupedStructure array
+    const result: GroupedStructure[] = [];
+    grouped.forEach((structureList, key) => {
+      const [classId, yearId] = key.split('-').map(Number);
+      const className = classList.find(c => c.id === classId)?.class_name || 'Unknown';
+      const yearName = yearList.find(y => y.id === yearId)?.year_name || 'Unknown';
+
+      const totalAmount = structureList.reduce((sum, s) => sum + Number(s.amount), 0);
+
+      result.push({
+        id: key,
+        name: `${className} - ${yearName}`, // Default name, admin can customize later
+        totalAmount,
+        structures: structureList,
+        classId,
+        academicYearId: yearId,
       });
-    } else {
-      setEditingStructure(null);
-      const currentYear = academicYears.find(y => y.is_current);
-      setFormData({
-        academic_year_id: currentYear?.id || 0,
-        class_id: 0,
-        fee_type_id: 0,
-        amount: 0,
-        installments_allowed: 1,
-        due_day_of_month: undefined,
-        due_date_fixed: undefined,
-        late_fee_applicable: true,
-        late_fee_percentage: 2.0,
-        late_fee_amount: undefined,
-        late_fee_grace_period_days: 7,
-        sibling_discount_applicable: true,
-        early_payment_discount_percentage: undefined,
-        early_payment_discount_days: undefined,
+    });
+
+    setGroupedStructures(result);
+  };
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const handleCardClick = (structure: GroupedStructure) => {
+    setSelectedStructure(structure);
+    setOpenDetailDialog(true);
+  };
+
+  const handleCloseDetailDialog = () => {
+    setOpenDetailDialog(false);
+    setSelectedStructure(null);
+    setEditingFeeType(null);
+  };
+
+  const handleEditFeeType = (feeType: FeeStructure) => {
+    setEditingFeeType(feeType);
+    setEditAmount(feeType.amount);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingFeeType) return;
+
+    try {
+      await feeStructureApi.update(editingFeeType.id, {
+        ...editingFeeType,
+        amount: editAmount,
+      });
+      setEditingFeeType(null);
+      loadData(); // Reload to refresh
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to update fee type');
+    }
+  };
+
+  const handleDeleteFeeType = async (feeTypeId: number) => {
+    if (!window.confirm('Are you sure you want to remove this fee type from the structure?')) {
+      return;
+    }
+
+    try {
+      await feeStructureApi.delete(feeTypeId);
+      loadData(); // Reload to refresh
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to delete fee type');
+    }
+  };
+
+  const handleOpenAddFeeDialog = () => {
+    setNewFeeTypeId('');
+    setNewFeeAmount(0);
+    setOpenAddFeeDialog(true);
+  };
+
+  const handleCloseAddFeeDialog = () => {
+    setOpenAddFeeDialog(false);
+    setNewFeeTypeId('');
+    setNewFeeAmount(0);
+  };
+
+  const handleAddFeeType = async () => {
+    if (!selectedStructure || !newFeeTypeId || newFeeAmount <= 0) {
+      setError('Please select a fee type and enter a valid amount');
+      return;
+    }
+
+    try {
+      // Create a new fee structure entry matching backend model
+      await feeStructureApi.create({
+        academic_year_id: selectedStructure.academicYearId,
+        class_id: selectedStructure.classId,
+        fee_type_id: newFeeTypeId as number,
+        amount: newFeeAmount,
+        installments: 1,
+        late_fee_applicable: false,
+        late_fee_amount: 0,
+        late_fee_percentage: 0,
+        grace_period_days: 0,
         is_active: true,
       });
-    }
-    setOpenDialog(true);
-  };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setEditingStructure(null);
-  };
-
-  const handleSave = async () => {
-    try {
-      if (editingStructure) {
-        await feeStructureApi.update(editingStructure.id, formData);
-      } else {
-        await feeStructureApi.create(formData);
-      }
-      handleCloseDialog();
-      loadFeeStructures();
+      handleCloseAddFeeDialog();
+      loadData(); // Reload to refresh
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to save fee structure');
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this fee structure?')) {
-      try {
-        await feeStructureApi.delete(id);
-        loadFeeStructures();
-      } catch (err: any) {
-        setError(err.response?.data?.detail || 'Failed to delete fee structure');
-      }
+      setError(err.response?.data?.detail || 'Failed to add fee type');
     }
   };
 
@@ -189,284 +244,296 @@ const FeeStructuresPage: React.FC = () => {
     return feeTypes.find(ft => ft.id === feeTypeId)?.type_name || 'Unknown';
   };
 
-  const getClassName = (classId: number) => {
-    return classes.find(c => c.id === classId)?.class_name || 'Unknown';
+  // Get available fee types (not already in this structure)
+  const getAvailableFeeTypes = () => {
+    if (!selectedStructure) return [];
+    const usedFeeTypeIds = selectedStructure.structures.map(s => s.fee_type_id);
+    return feeTypes.filter(ft => !usedFeeTypeIds.includes(ft.id));
   };
 
+  const formatCurrency = (amount: number) => {
+    return `₹${amount.toLocaleString('en-IN')}`;
+  };
+
+  // Filter structures based on search query
+  const filteredStructures = groupedStructures.filter(structure =>
+    structure.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          Fee Structures Management
-        </Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
-          Add Fee Structure
-        </Button>
-      </Box>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* Header */}
+      <AppBar position="static" elevation={1}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            onClick={() => navigate('/admin/fees/dashboard')}
+            sx={{ mr: 1 }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <SchoolIcon sx={{ mr: 2 }} />
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            {config.schoolName} - Fee Structures Management
+          </Typography>
+          <Typography variant="body2" sx={{ mr: 2 }}>
+            {user?.email}
+          </Typography>
+          <IconButton size="large" onClick={handleMenu} color="inherit">
+            <AccountCircle />
+          </IconButton>
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+            <MenuItem onClick={() => navigate('/admin/fees/dashboard')}>
+              Fee Dashboard
+            </MenuItem>
+            <MenuItem onClick={() => navigate('/dashboard')}>
+              Main Dashboard
+            </MenuItem>
+            <Divider />
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        {/* Page Header */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h4" component="h1" fontWeight={600}>
+            Fee Structures
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              // TODO: Implement create new structure
+              alert('Create New Structure - To be implemented next');
+            }}
+          >
+            Create New Structure
+          </Button>
+        </Box>
 
-      {/* Filters */}
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
-            <TextField
-              select
-              fullWidth
-              label="Academic Year"
-              value={filterAcademicYear}
-              onChange={(e) => setFilterAcademicYear(e.target.value === '' ? '' : Number(e.target.value))}
-            >
-              <MenuItem value="">All</MenuItem>
-              {academicYears.map((year) => (
-                <MenuItem key={year.id} value={year.id}>
-                  {year.year_name} {year.is_current && '(Current)'}
-                </MenuItem>
-              ))}
-            </TextField>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
+
+        {/* Search Bar */}
+        <Paper sx={{ p: 2, mb: 3 }}>
+          <TextField
+            fullWidth
+            placeholder="Search fee structures by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Paper>
+
+        {/* Structure Cards Grid */}
+        {loading ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography>Loading...</Typography>
+          </Box>
+        ) : filteredStructures.length === 0 ? (
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <Typography color="text.secondary">
+              {searchQuery ? 'No fee structures found matching your search' : 'No fee structures found'}
+            </Typography>
+          </Paper>
+        ) : (
+          <Grid container spacing={3}>
+            {filteredStructures.map((structure) => (
+              <Grid item xs={12} md={6} lg={4} key={structure.id}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: 4,
+                    },
+                  }}
+                >
+                  <CardActionArea onClick={() => handleCardClick(structure)} sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom fontWeight={600}>
+                        {structure.name}
+                      </Typography>
+                      <Typography variant="h4" color="primary.main" fontWeight={700}>
+                        {formatCurrency(structure.totalAmount)}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                        {structure.structures.length} fee type{structure.structures.length !== 1 ? 's' : ''}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              select
-              fullWidth
-              label="Class"
-              value={filterClass}
-              onChange={(e) => setFilterClass(e.target.value === '' ? '' : Number(e.target.value))}
-            >
-              <MenuItem value="">All</MenuItem>
-              {classes.map((cls) => (
-                <MenuItem key={cls.id} value={cls.id}>
-                  {cls.class_name}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              select
-              fullWidth
-              label="Fee Type"
-              value={filterFeeType}
-              onChange={(e) => setFilterFeeType(e.target.value === '' ? '' : Number(e.target.value))}
-            >
-              <MenuItem value="">All</MenuItem>
-              {feeTypes.map((ft) => (
-                <MenuItem key={ft.id} value={ft.id}>
-                  {ft.type_name}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-        </Grid>
-      </Paper>
+        )}
+      </Container>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Class</TableCell>
-              <TableCell>Fee Type</TableCell>
-              <TableCell align="right">Amount (₹)</TableCell>
-              <TableCell>Installments</TableCell>
-              <TableCell>Late Fee</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={7} align="center">Loading...</TableCell>
-              </TableRow>
-            ) : feeStructures.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} align="center">No fee structures found</TableCell>
-              </TableRow>
-            ) : (
-              feeStructures.map((structure) => (
-                <TableRow key={structure.id}>
-                  <TableCell>{getClassName(structure.class_id)}</TableCell>
-                  <TableCell>{getFeeTypeName(structure.fee_type_id)}</TableCell>
-                  <TableCell align="right">₹{structure.amount.toLocaleString()}</TableCell>
-                  <TableCell>{structure.installments_allowed}</TableCell>
-                  <TableCell>
-                    {structure.late_fee_applicable ? (
-                      <Chip label={`${structure.late_fee_percentage}%`} size="small" color="warning" />
-                    ) : (
-                      <Chip label="No" size="small" />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={structure.is_active ? 'Active' : 'Inactive'}
-                      size="small"
-                      color={structure.is_active ? 'success' : 'error'}
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton size="small" onClick={() => handleOpenDialog(structure)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => handleDelete(structure.id)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {/* Create/Edit Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle>{editingStructure ? 'Edit Fee Structure' : 'Add Fee Structure'}</DialogTitle>
+      {/* Detail Dialog */}
+      <Dialog
+        open={openDetailDialog}
+        onClose={handleCloseDetailDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6">{selectedStructure?.name}</Typography>
+            <Typography variant="h5" color="primary.main" fontWeight={600}>
+              Total: {selectedStructure && formatCurrency(selectedStructure.totalAmount)}
+            </Typography>
+          </Box>
+        </DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  label="Academic Year"
-                  value={formData.academic_year_id}
-                  onChange={(e) => setFormData({ ...formData, academic_year_id: Number(e.target.value) })}
-                >
-                  {academicYears.map((year) => (
-                    <MenuItem key={year.id} value={year.id}>
-                      {year.year_name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  label="Class"
-                  value={formData.class_id}
-                  onChange={(e) => setFormData({ ...formData, class_id: Number(e.target.value) })}
-                >
-                  {classes.map((cls) => (
-                    <MenuItem key={cls.id} value={cls.id}>
-                      {cls.class_name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  label="Fee Type"
-                  value={formData.fee_type_id}
-                  onChange={(e) => setFormData({ ...formData, fee_type_id: Number(e.target.value) })}
-                >
-                  {feeTypes.map((ft) => (
-                    <MenuItem key={ft.id} value={ft.id}>
-                      {ft.type_name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-            </Grid>
-
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  required
-                  type="number"
-                  label="Amount (₹)"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Installments Allowed"
-                  value={formData.installments_allowed}
-                  onChange={(e) => setFormData({ ...formData, installments_allowed: Number(e.target.value) })}
-                  inputProps={{ min: 1, max: 12 }}
-                />
-              </Grid>
-            </Grid>
-
-            <Typography variant="subtitle2" sx={{ mt: 1 }}>Late Fee Settings</Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Late Fee %"
-                  value={formData.late_fee_percentage}
-                  onChange={(e) => setFormData({ ...formData, late_fee_percentage: Number(e.target.value) })}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Grace Period (days)"
-                  value={formData.late_fee_grace_period_days}
-                  onChange={(e) => setFormData({ ...formData, late_fee_grace_period_days: Number(e.target.value) })}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.late_fee_applicable}
-                      onChange={(e) => setFormData({ ...formData, late_fee_applicable: e.target.checked })}
-                    />
+          <List>
+            {selectedStructure?.structures.map((structure, index) => (
+              <React.Fragment key={structure.id}>
+                {index > 0 && <Divider />}
+                <ListItem
+                  sx={{ py: 2 }}
+                  secondaryAction={
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      {editingFeeType?.id === structure.id ? (
+                        <>
+                          <TextField
+                            size="small"
+                            type="number"
+                            value={editAmount}
+                            onChange={(e) => setEditAmount(Number(e.target.value))}
+                            sx={{ width: 120 }}
+                            InputProps={{
+                              startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                            }}
+                          />
+                          <Button size="small" onClick={handleSaveEdit} variant="contained">
+                            Save
+                          </Button>
+                          <Button size="small" onClick={() => setEditingFeeType(null)}>
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEditFeeType(structure)}
+                            color="primary"
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDeleteFeeType(structure.id)}
+                            color="error"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </>
+                      )}
+                    </Box>
                   }
-                  label="Late Fee Applicable"
-                />
-              </Grid>
-            </Grid>
-
-            <Box>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={formData.sibling_discount_applicable}
-                    onChange={(e) => setFormData({ ...formData, sibling_discount_applicable: e.target.checked })}
+                >
+                  <ListItemText
+                    primary={getFeeTypeName(structure.fee_type_id)}
+                    secondary={
+                      <Box component="span" sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                        <Chip
+                          label={formatCurrency(structure.amount)}
+                          size="small"
+                          color="primary"
+                          variant="outlined"
+                        />
+                        {structure.installments > 1 && (
+                          <Chip
+                            label={`${structure.installments} Installments`}
+                            size="small"
+                            variant="outlined"
+                          />
+                        )}
+                      </Box>
+                    }
+                    secondaryTypographyProps={{ component: 'div' }}
                   />
-                }
-                label="Sibling Discount Applicable"
-              />
-            </Box>
+                </ListItem>
+              </React.Fragment>
+            ))}
+          </List>
 
-            <Box>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={formData.is_active}
-                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  />
-                }
-                label="Active"
-              />
-            </Box>
+          <Box sx={{ mt: 2 }}>
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={handleOpenAddFeeDialog}
+            >
+              Add Fee Type
+            </Button>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" color="primary">
-            {editingStructure ? 'Update' : 'Create'}
+          <Button onClick={handleCloseDetailDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Add Fee Type Dialog */}
+      <Dialog open={openAddFeeDialog} onClose={handleCloseAddFeeDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Add Fee Type to Structure</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <TextField
+              select
+              label="Fee Type"
+              value={newFeeTypeId}
+              onChange={(e) => setNewFeeTypeId(Number(e.target.value))}
+              required
+              fullWidth
+              helperText={getAvailableFeeTypes().length === 0 ? 'All fee types already added to this structure' : 'Select a fee type'}
+            >
+              {getAvailableFeeTypes().map((feeType) => (
+                <MenuItem key={feeType.id} value={feeType.id}>
+                  {feeType.type_name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              label="Amount"
+              type="number"
+              value={newFeeAmount}
+              onChange={(e) => setNewFeeAmount(Number(e.target.value))}
+              required
+              fullWidth
+              InputProps={{
+                startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+              }}
+              helperText="Enter the fee amount"
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAddFeeDialog}>Cancel</Button>
+          <Button
+            onClick={handleAddFeeType}
+            variant="contained"
+            color="primary"
+            disabled={!newFeeTypeId || newFeeAmount <= 0}
+          >
+            Add
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </Box>
   );
 };
 

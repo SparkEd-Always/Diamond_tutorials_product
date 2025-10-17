@@ -1,4 +1,4 @@
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Box } from '@mui/material';
 import type { ButtonProps } from '@mui/material/Button';
 
 interface LoadingButtonProps extends ButtonProps {
@@ -17,9 +17,15 @@ const LoadingButton = ({
     <Button
       {...props}
       disabled={disabled || loading}
-      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : props.startIcon}
     >
-      {loading && loadingText ? loadingText : children}
+      {loading ? (
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5 }}>
+          <CircularProgress size={20} color="inherit" />
+          {loadingText && <span>{loadingText}</span>}
+        </Box>
+      ) : (
+        children
+      )}
     </Button>
   );
 };

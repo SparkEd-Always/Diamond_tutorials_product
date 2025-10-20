@@ -18,7 +18,20 @@ class Student(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     student_id = Column(String(20), unique=True, index=True)  # Generated student ID
     admission_number = Column(String(20), unique=True, index=True)  # Official admission number
-    status = Column(SQLEnum(StudentStatus), default=StudentStatus.APPLICANT)
+
+    # Student personal information (added for fee sessions)
+    first_name = Column(String(100))
+    last_name = Column(String(100))
+    roll_number = Column(String(20))
+
+    # Class assignment
+    current_class_id = Column(Integer, ForeignKey("classes.id"))
+
+    # Status
+    status = Column(SQLEnum(StudentStatus, native_enum=False, values_callable=lambda x: [e.value for e in x]), default=StudentStatus.APPLICANT)
+    is_active = Column(Boolean, default=True)
+
+    # Other information
     blood_group = Column(String(10))
     medical_conditions = Column(Text)
     emergency_contact_name = Column(String(100))
@@ -31,6 +44,7 @@ class Student(Base):
 
     # Relationships
     user = relationship("User", backref="student")
+    current_class = relationship("Class", foreign_keys=[current_class_id])
 
     def __repr__(self):
         return f"<Student {self.student_id}>"

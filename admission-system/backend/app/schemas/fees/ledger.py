@@ -66,6 +66,12 @@ class StudentFeeLedgerSummary(BaseModel):
     id: int
     student_id: int
     academic_year_id: int
+
+    # Student details
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+
+    # Financial summary
     total_fees_assigned: Decimal
     total_paid: Decimal
     total_outstanding: Decimal

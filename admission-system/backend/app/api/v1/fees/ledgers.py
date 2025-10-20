@@ -6,11 +6,13 @@ Endpoints for viewing student fee ledgers and outstanding balances
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from typing import List, Optional
 from ....core.database import get_db
 from ....core.security import get_current_user
 from ....models.user import User
 from ....models.fees import StudentFeeLedger
+from ....models.student import Student, StudentStatus
 from ....schemas.fees import StudentFeeLedgerResponse, StudentFeeLedgerSummary
 
 router = APIRouter()
@@ -55,6 +57,7 @@ async def list_ledger_summaries(
 ):
     """
     List student ledger summaries with filtering
+    Only shows ledgers for enrolled students
 
     **Query Parameters:**
     - `academic_year_id`: Filter by academic year
@@ -64,7 +67,17 @@ async def list_ledger_summaries(
     - `skip`: Number of records to skip (pagination)
     - `limit`: Maximum records to return (max 100)
     """
-    query = db.query(StudentFeeLedger)
+    # Join StudentFeeLedger with Student table to get names and filter by enrolled status
+    query = db.query(
+        StudentFeeLedger,
+        Student.first_name,
+        Student.last_name
+    ).join(
+        Student,
+        StudentFeeLedger.student_id == Student.id
+    ).filter(
+        Student.status == StudentStatus.ENROLLED
+    )
 
     # Apply filters
     if academic_year_id:
@@ -80,9 +93,17 @@ async def list_ledger_summaries(
         query = query.filter(StudentFeeLedger.is_defaulter == is_defaulter)
 
     # Apply pagination
-    ledgers = query.offset(skip).limit(limit).all()
+    results = query.offset(skip).limit(limit).all()
 
-    return ledgers
+    # Convert to response format
+    ledger_summaries = []
+    for ledger, first_name, last_name in results:
+        ledger_dict = ledger.__dict__.copy()
+        ledger_dict['first_name'] = first_name
+        ledger_dict['last_name'] = last_name
+        ledger_summaries.append(StudentFeeLedgerSummary.model_validate(ledger_dict))
+
+    return ledger_summaries
 
 
 @router.get("/defaulters/list", response_model=List[StudentFeeLedgerSummary])

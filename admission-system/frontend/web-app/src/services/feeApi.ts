@@ -4,6 +4,12 @@ import type {
   FeeStructure,
   StudentFeeAssignment,
   StudentFeeLedger,
+  FeeSession,
+  FeeSessionDetail,
+  FeeSessionFormData,
+  FeeSessionSummary,
+  FilteredStudent,
+  StudentFilterCriteria,
   PaginatedResponse,
 } from '../types/fees';
 
@@ -154,9 +160,62 @@ export const ledgerApi = {
   },
 };
 
+// ============================================================================
+// Fee Sessions API
+// ============================================================================
+
+export const feeSessionApi = {
+  list: async (params?: {
+    status_filter?: string;
+    academic_year_id?: number;
+    skip?: number;
+    limit?: number;
+  }): Promise<FeeSession[]> => {
+    const response = await api.get('/fees/sessions', { params });
+    return response.data;
+  },
+
+  get: async (id: number): Promise<FeeSessionDetail> => {
+    const response = await api.get(`/fees/sessions/${id}`);
+    return response.data;
+  },
+
+  create: async (data: FeeSessionFormData): Promise<FeeSession> => {
+    const response = await api.post('/fees/sessions', data);
+    return response.data;
+  },
+
+  update: async (id: number, data: Partial<FeeSessionFormData>): Promise<FeeSession> => {
+    const response = await api.put(`/fees/sessions/${id}`, data);
+    return response.data;
+  },
+
+  close: async (id: number): Promise<FeeSession> => {
+    const response = await api.post(`/fees/sessions/${id}/close`);
+    return response.data;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await api.delete(`/fees/sessions/${id}`);
+  },
+
+  filterStudents: async (criteria: StudentFilterCriteria): Promise<FilteredStudent[]> => {
+    console.log("sending to backend");
+    const response = await api.post('/fees/sessions/filter-students', criteria);
+    console.log("This is the response from the api", response);
+    return response.data;
+  },
+
+  getSummary: async (): Promise<FeeSessionSummary> => {
+    const response = await api.get('/fees/sessions/stats/summary');
+    return response.data;
+  },
+};
+
 export default {
   feeTypeApi,
   feeStructureApi,
   assignmentApi,
   ledgerApi,
+  feeSessionApi,
 };

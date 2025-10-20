@@ -12,23 +12,27 @@ from ...core.database import Base
 class FeeStructure(Base):
     """
     Fee Structure Model
-    Defines the amount for each fee type per class and academic year
+    Defines class-wise and academic year-wise fee amounts
+
+    Links: Academic Year + Class + Fee Type → Amount
 
     Example:
-    - Class 1, Academic Year 2024-25, Tuition Fee: ₹50,000
-    - Class 10, Academic Year 2024-25, Exam Fee: ₹5,000
+    - Class 1, 2024-25, Tuition Fee → ₹30,000
+    - Class 1, 2024-25, Library Fee → ₹1,000
     """
     __tablename__ = "fee_structures"
 
     id = Column(Integer, primary_key=True, index=True)
 
-    # References
+    # Core references
     academic_year_id = Column(Integer, ForeignKey("academic_years.id", ondelete="CASCADE"), nullable=False, index=True)
     class_id = Column(Integer, ForeignKey("classes.id", ondelete="CASCADE"), nullable=False, index=True)
     fee_type_id = Column(Integer, ForeignKey("fee_types.id", ondelete="CASCADE"), nullable=False, index=True)
 
-    # Amount configuration
-    amount = Column(Numeric(10, 2), nullable=False)      # Base amount without tax
+    # Amount for this fee type
+    amount = Column(Numeric(10, 2), nullable=False)
+
+    # Payment configuration
     installments = Column(Integer, default=1)             # Number of installments (1-12)
 
     # Due date configuration
@@ -58,17 +62,55 @@ class FeeStructure(Base):
     # Relationships
     academic_year = relationship("AcademicYear")
     class_info = relationship("Class")
-    fee_type = relationship("FeeType", back_populates="structures")
+    fee_type = relationship("FeeType")
     assignments = relationship("StudentFeeAssignment", back_populates="fee_structure", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<FeeStructure AY:{self.academic_year_id} Class:{self.class_id} Fee:{self.fee_type_id} Amount:{self.amount}>"
+        return f"<FeeStructure Class:{self.class_id} FeeType:{self.fee_type_id}>"
 
     def calculate_installment_amount(self) -> float:
         """Calculate per-installment amount"""
         if self.installments <= 0:
             return float(self.amount)
         return round(float(self.amount) / self.installments, 2)
+
+
+# Note: FeeStructureComponent model is for future refactoring
+# Currently not used - fee_structures table directly links to fee_types
+# Temporarily disabled to avoid relationship errors
+# class FeeStructureComponent(Base):
+#     """
+#     Fee Structure Component Model
+#     Individual fee type within a fee structure
+#
+#     Example:
+#     - FeeStructure: "Class 1 Annual Fees"
+#       - Component 1: Tuition Fee, ₹30,000
+#       - Component 2: Library Fee, ₹1,000
+#       - Component 3: Sports Fee, ₹1,500
+#     """
+#     __tablename__ = "fee_structure_components"
+#
+#     id = Column(Integer, primary_key=True, index=True)
+#
+#     # References
+#     fee_structure_id = Column(Integer, ForeignKey("fee_structures.id", ondelete="CASCADE"), nullable=False, index=True)
+#     fee_type_id = Column(Integer, ForeignKey("fee_types.id", ondelete="CASCADE"), nullable=False, index=True)
+#
+#     # Amount for this specific fee type
+#     amount = Column(Numeric(10, 2), nullable=False)
+#
+#     # Metadata
+#     display_order = Column(Integer, default=0)  # For sorting in UI
+#     is_mandatory = Column(Boolean, default=True)  # Can this component be waived?
+#     created_at = Column(DateTime(timezone=True), server_default=func.now())
+#
+#     # Relationships
+#     fee_structure = relationship("FeeStructure", back_populates="components")
+#     fee_type = relationship("FeeType")
+#
+#     def __repr__(self):
+#         return f"<FeeStructureComponent Structure:{self.fee_structure_id} FeeType:{self.fee_type_id} Amount:{self.amount}>"
 
 
 class StudentFeeAssignment(Base):

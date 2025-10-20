@@ -58,6 +58,11 @@ class FeeStructureResponse(FeeStructureBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
+    # Related entity names for display
+    fee_type_name: Optional[str] = Field(None, description="Fee type name for display")
+    class_name: Optional[str] = Field(None, description="Class name for display")
+    academic_year_name: Optional[str] = Field(None, description="Academic year name for display")
+
     class Config:
         from_attributes = True
 

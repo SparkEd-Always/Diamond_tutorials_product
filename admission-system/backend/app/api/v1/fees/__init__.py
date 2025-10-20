@@ -7,6 +7,7 @@ This module contains all fee management API endpoints organized by domain.
 from fastapi import APIRouter
 from .fee_types import router as fee_types_router
 from .fee_structures import router as fee_structures_router
+from .fee_sessions import router as fee_sessions_router
 from .assignments import router as assignments_router
 from .invoices import router as invoices_router
 from .payments import router as payments_router
@@ -27,6 +28,12 @@ router.include_router(
     fee_structures_router,
     prefix="/structures",
     tags=["Fee Structures"]
+)
+
+router.include_router(
+    fee_sessions_router,
+    prefix="/sessions",
+    tags=["Fee Sessions"]
 )
 
 router.include_router(

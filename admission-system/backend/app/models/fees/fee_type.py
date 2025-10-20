@@ -58,8 +58,8 @@ class FeeType(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    # Relationships
-    structures = relationship("FeeStructure", back_populates="fee_type", cascade="all, delete-orphan")
+    # Relationships - NOTE: Temporarily removed due to fee structure refactoring
+    # structures = relationship("FeeStructure", back_populates="fee_type", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<FeeType {self.code}: {self.type_name}>"

@@ -82,7 +82,9 @@ const AdminStudentLedgers = () => {
     if (searchTerm) {
       filtered = filtered.filter(ledger =>
         ledger.student_id.toString().includes(searchTerm) ||
-        ledger.academic_year_id.toString().includes(searchTerm)
+        ledger.academic_year_id.toString().includes(searchTerm) ||
+        (ledger.first_name && ledger.first_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (ledger.last_name && ledger.last_name.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -317,7 +319,7 @@ const AdminStudentLedgers = () => {
                   <TextField
                     fullWidth
                     size="small"
-                    placeholder="Search by Student ID or Academic Year"
+                    placeholder="Search by Student ID, Name, or Academic Year"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     InputProps={{
@@ -371,6 +373,7 @@ const AdminStudentLedgers = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell><strong>Student ID</strong></TableCell>
+                    <TableCell><strong>Student Name</strong></TableCell>
                     <TableCell><strong>Academic Year</strong></TableCell>
                     <TableCell align="right"><strong>Total Amount</strong></TableCell>
                     <TableCell align="right"><strong>Paid</strong></TableCell>
@@ -384,7 +387,7 @@ const AdminStudentLedgers = () => {
                 <TableBody>
                   {filteredLedgers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
+                      <TableCell colSpan={10} align="center" sx={{ py: 4 }}>
                         <Typography variant="body1" color="text.secondary">
                           {searchTerm || filterStatus !== "all" ? "No students found matching filters" : "No ledger records found"}
                         </Typography>
@@ -393,11 +396,19 @@ const AdminStudentLedgers = () => {
                   ) : (
                     filteredLedgers.map((ledger) => {
                       const agingBucket = getAgingBucket(ledger);
+                      const fullName = ledger.first_name && ledger.last_name
+                        ? `${ledger.first_name} ${ledger.last_name}`
+                        : ledger.first_name || ledger.last_name || 'N/A';
                       return (
                         <TableRow key={ledger.id} hover>
                           <TableCell>
                             <Typography variant="body2" fontWeight={600}>
                               {ledger.student_id}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" fontWeight={500}>
+                              {fullName}
                             </Typography>
                           </TableCell>
                           <TableCell>

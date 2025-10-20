@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Paper,
@@ -26,11 +27,12 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { assignmentApi, feeStructureApi } from '../services/feeApi';
 import type { StudentFeeAssignment, StudentFeeAssignmentFormData, FeeStructure } from '../types/fees';
 
 const StudentAssignmentsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [assignments, setAssignments] = useState<StudentFeeAssignment[]>([]);
   const [feeStructures, setFeeStructures] = useState<FeeStructure[]>([]);
   const [loading, setLoading] = useState(true);
@@ -181,6 +183,15 @@ const StudentAssignmentsPage: React.FC = () => {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      {/* Back Button */}
+      <Button
+        startIcon={<ArrowBackIcon />}
+        onClick={() => navigate('/admin/fees/dashboard')}
+        sx={{ mb: 2 }}
+      >
+        Back to Fee Dashboard
+      </Button>
+
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">
           Student Fee Assignments

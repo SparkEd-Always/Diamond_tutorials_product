@@ -42,6 +42,9 @@ import MessageDetailsPage from './pages/MessageDetailsPage';
 import StudentListPage from './pages/StudentListPage';
 import StudentDetailsPage from './pages/StudentDetailsPage';
 import StudentFormPage from './pages/StudentFormPage';
+import ManageFeeSessionsPage from './pages/fees/ManageFeeSessionsPage';
+import CreateFeeSessionPage from './pages/fees/CreateFeeSessionPage';
+import FeeSessionDetailsPage from './pages/fees/FeeSessionDetailsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) => {
@@ -254,6 +257,32 @@ function AppRoutes() {
         element={
           <ProtectedRoute adminOnly={true}>
             <AdminReportsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Fee Sessions Routes - Admin */}
+      <Route
+        path="/admin/fees/sessions"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <ManageFeeSessionsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fees/sessions/create"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <CreateFeeSessionPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fees/sessions/:id"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <FeeSessionDetailsPage />
           </ProtectedRoute>
         }
       />

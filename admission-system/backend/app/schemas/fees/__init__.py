@@ -51,6 +51,21 @@ from .ledger import (
     StudentFeeLedgerSummary,
 )
 
+from .fee_session import (
+    FeeSessionBase,
+    FeeSessionCreate,
+    FeeSessionUpdate,
+    FeeSessionResponse,
+    FeeSessionListResponse,
+    FeeSessionDetailResponse,
+    FeeSessionAssignmentCreate,
+    FeeSessionAssignmentResponse,
+    StudentAssignmentDetail,
+    BulkStudentAssignment,
+    StudentFilterCriteria,
+    FilteredStudentResponse,
+)
+
 __all__ = [
     # Fee Type
     "FeeTypeBase",
@@ -94,4 +109,18 @@ __all__ = [
     # Ledger
     "StudentFeeLedgerResponse",
     "StudentFeeLedgerSummary",
+
+    # Fee Session
+    "FeeSessionBase",
+    "FeeSessionCreate",
+    "FeeSessionUpdate",
+    "FeeSessionResponse",
+    "FeeSessionListResponse",
+    "FeeSessionDetailResponse",
+    "FeeSessionAssignmentCreate",
+    "FeeSessionAssignmentResponse",
+    "StudentAssignmentDetail",
+    "BulkStudentAssignment",
+    "StudentFilterCriteria",
+    "FilteredStudentResponse",
 ]

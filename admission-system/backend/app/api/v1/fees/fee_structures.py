@@ -71,7 +71,22 @@ async def list_fee_structures(
     # Apply pagination
     fee_structures = query.offset(skip).limit(limit).all()
 
-    return fee_structures
+    # Enrich with related names
+    results = []
+    for fs in fee_structures:
+        fs_dict = FeeStructureResponse.model_validate(fs).model_dump()
+
+        # Add related names
+        if fs.fee_type:
+            fs_dict['fee_type_name'] = fs.fee_type.type_name
+        if fs.class_info:
+            fs_dict['class_name'] = fs.class_info.class_name
+        if fs.academic_year:
+            fs_dict['academic_year_name'] = fs.academic_year.year_name
+
+        results.append(fs_dict)
+
+    return results
 
 
 @router.get("/{fee_structure_id}", response_model=FeeStructureResponse)
@@ -91,7 +106,16 @@ async def get_fee_structure(
             detail=f"Fee structure with ID {fee_structure_id} not found"
         )
 
-    return fee_structure
+    # Enrich with related names
+    fs_dict = FeeStructureResponse.model_validate(fee_structure).model_dump()
+    if fee_structure.fee_type:
+        fs_dict['fee_type_name'] = fee_structure.fee_type.type_name
+    if fee_structure.class_info:
+        fs_dict['class_name'] = fee_structure.class_info.class_name
+    if fee_structure.academic_year:
+        fs_dict['academic_year_name'] = fee_structure.academic_year.year_name
+
+    return fs_dict
 
 
 @router.post("", response_model=FeeStructureResponse, status_code=status.HTTP_201_CREATED)

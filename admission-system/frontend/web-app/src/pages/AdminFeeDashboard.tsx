@@ -32,6 +32,7 @@ import WarningIcon from "@mui/icons-material/Warning";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EventNoteIcon from "@mui/icons-material/EventNote";
 import config from "../config";
 
 const AdminFeeDashboard = () => {
@@ -207,7 +208,7 @@ const AdminFeeDashboard = () => {
 
         {/* Quick Actions */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <CategoryIcon sx={{ mr: 1, color: 'primary.main' }} />
@@ -239,7 +240,40 @@ const AdminFeeDashboard = () => {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
+            <Paper sx={{ p: 3, height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <EventNoteIcon sx={{ mr: 1, color: 'info.main' }} />
+                <Typography variant="h6" fontWeight={600}>
+                  Fee Sessions
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                Bulk assign fees and track collections
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  color="info"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate("/admin/fees/sessions")}
+                  fullWidth
+                >
+                  Manage Sessions
+                </Button>
+                <Button
+                  variant="outlined"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate("/admin/fees/sessions/create")}
+                  fullWidth
+                >
+                  Create New Session
+                </Button>
+              </Box>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={3}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <AssignmentIcon sx={{ mr: 1, color: 'success.main' }} />
@@ -271,7 +305,7 @@ const AdminFeeDashboard = () => {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <ReceiptLongIcon sx={{ mr: 1, color: 'warning.main' }} />

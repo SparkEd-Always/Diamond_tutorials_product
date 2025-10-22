@@ -1,64 +1,91 @@
 from fastapi import APIRouter
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Import routers
 try:
     from .auth import router as auth_router
-except ImportError:
+    logger.info("✅ Successfully imported auth router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import auth router: {e}")
     auth_router = APIRouter()
 
 try:
     from .students import router as students_router
-except ImportError:
+    logger.info("✅ Successfully imported students router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import students router: {e}")
     students_router = APIRouter()
 
 try:
     from .teachers import router as teachers_router
-except ImportError:
+    logger.info("✅ Successfully imported teachers router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import teachers router: {e}")
     teachers_router = APIRouter()
 
 try:
     from .attendance import router as attendance_router
-except ImportError:
+    logger.info("✅ Successfully imported attendance router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import attendance router: {e}")
     attendance_router = APIRouter()
 
 try:
     from .communications import router as communications_router
-except ImportError:
+    logger.info("✅ Successfully imported communications router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import communications router: {e}")
     communications_router = APIRouter()
 
 try:
     from .notices import router as notices_router
-except ImportError:
+    logger.info("✅ Successfully imported notices router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import notices router: {e}")
     notices_router = APIRouter()
 
 try:
     from .whatsapp import router as whatsapp_router
-except ImportError:
+    logger.info("✅ Successfully imported whatsapp router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import whatsapp router: {e}")
     whatsapp_router = APIRouter()
 
 try:
     from .imports import router as imports_router
-except ImportError:
+    logger.info("✅ Successfully imported imports router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import imports router: {e}")
     imports_router = APIRouter()
 
 try:
     from .activities import router as activities_router
-except ImportError:
+    logger.info("✅ Successfully imported activities router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import activities router: {e}")
     activities_router = APIRouter()
 
 try:
     from .teacher_attendance import router as teacher_attendance_router
-except ImportError:
+    logger.info("✅ Successfully imported teacher_attendance router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import teacher_attendance router: {e}")
     teacher_attendance_router = APIRouter()
 
 try:
     from .auth_mobile import router as auth_mobile_router
-except ImportError:
+    logger.info("✅ Successfully imported auth_mobile router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import auth_mobile router: {e}")
     auth_mobile_router = APIRouter()
 
 try:
     from .messages import router as messages_router
-except ImportError:
+    logger.info("✅ Successfully imported messages router")
+except ImportError as e:
+    logger.error(f"❌ Failed to import messages router: {e}")
     messages_router = APIRouter()
 
 api_router = APIRouter()

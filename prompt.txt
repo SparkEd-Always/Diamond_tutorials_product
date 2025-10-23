@@ -1,3 +1,12 @@
-Admin sets up the fee types
-Admin sets up fee structure for each of the classes
-Admin sets up fee structure for a class or course based on the needs
+2025-10-22T06:24:16.000000000Z [inf]  Starting Container
+2025-10-22T06:24:19.072004256Z [err]  INFO:     Started server process [1]
+2025-10-22T06:24:19.072009888Z [err]  INFO:     Waiting for application startup.
+2025-10-22T06:24:19.072016841Z [err]  INFO:     Application startup complete.
+2025-10-22T06:24:19.072023387Z [err]  INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+2025-10-22T06:25:08.655009017Z [inf]  INFO:     100.64.0.2:33974 - "GET / HTTP/1.1" 200 OK
+2025-10-22T06:25:08.655014251Z [inf]  INFO:     100.64.0.2:33974 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-10-22T06:25:10.118329038Z [inf]  INFO:     100.64.0.2:33984 - "GET /docs HTTP/1.1" 200 OK
+2025-10-22T06:25:10.297580637Z [inf]  INFO:     100.64.0.2:33984 - "GET /openapi.json HTTP/1.1" 200 OK
+2025-10-22T06:28:10.669555924Z [inf]  INFO:     100.64.0.3:59804 - "GET /health HTTP/1.1" 200 OK
+2025-10-22T06:28:10.669564637Z [inf]  INFO:     100.64.0.3:59804 - "GET /openapi.json HTTP/1.1" 200 OK
+2025-10-22T06:28:30.286038517Z [inf]  INFO:     100.64.0.4:55472 - "GET /init-admin HTTP/1.1" 405 Method Not Allowed

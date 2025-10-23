@@ -149,7 +149,8 @@ const ParentStudentFeeDetailsPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ px: 2 }}>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
             <CircularProgress />
@@ -489,7 +490,8 @@ const ParentStudentFeeDetailsPage = () => {
             </Box>
           </>
         )}
-      </Container>
+        </Box>
+      </Box>
     </Box>
   );
 };

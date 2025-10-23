@@ -182,8 +182,9 @@ const StudentAssignmentsPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+    <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
       {/* Back Button */}
+      <Box sx={{ px: 2 }}>
       <Button
         startIcon={<ArrowBackIcon />}
         onClick={() => navigate('/admin/fees/dashboard')}
@@ -438,7 +439,8 @@ const StudentAssignmentsPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+      </Box>
+    </Box>
   );
 };
 

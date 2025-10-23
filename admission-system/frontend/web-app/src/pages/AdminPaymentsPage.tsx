@@ -274,9 +274,9 @@ const AdminPaymentsPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
         {/* Page Header */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ px: 2, mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <Button
               startIcon={<ArrowBackIcon />}
@@ -320,7 +320,7 @@ const AdminPaymentsPage = () => {
         )}
 
         {/* Today's Summary Cards */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid container spacing={3} sx={{ mb: 4, width: '100%', m: 0, px: 2 }}>
           <Grid item xs={12} md={4}>
             <Card>
               <CardContent>
@@ -380,6 +380,7 @@ const AdminPaymentsPage = () => {
         </Grid>
 
         {/* Payments Table */}
+        <Box sx={{ px: 2 }}>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
             <CircularProgress />
@@ -471,7 +472,8 @@ const AdminPaymentsPage = () => {
             </Table>
           </TableContainer>
         )}
-      </Container>
+        </Box>
+      </Box>
 
       {/* Record Payment Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>

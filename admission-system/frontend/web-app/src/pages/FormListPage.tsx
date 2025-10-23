@@ -279,16 +279,17 @@ const FormListPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden', display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
-      </Container>
+      </Box>
     );
   }
 
   return (
-    <Box width="100vw" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
+    <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+      <Box sx={{ px: 2 }}>
+        {/* Header */}
+        <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <IconButton onClick={() => navigate('/dashboard')} sx={{ mr: 2 }}>
             <BackIcon />
@@ -601,6 +602,7 @@ const FormListPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      </Box>
     </Box>
   );
 };

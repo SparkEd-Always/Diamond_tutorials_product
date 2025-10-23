@@ -191,82 +191,86 @@ const FeeTypesPage: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          Fee Types Management
-        </Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
-          Add Fee Type
-        </Button>
-      </Box>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, px: 2 }}>
+          <Typography variant="h4" component="h1">
+            Fee Types Management
+          </Typography>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
+            Add Fee Type
+          </Button>
+        </Box>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
+        {error && (
+          <Box sx={{ px: 2, mb: 2 }}>
+            <Alert severity="error" onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          </Box>
+        )}
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Code</TableCell>
-              <TableCell>Frequency</TableCell>
-              <TableCell>Tax Rate</TableCell>
-              <TableCell>Mandatory</TableCell>
-              <TableCell>Taxable</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={8} align="center">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : feeTypes.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} align="center">
-                  No fee types found
-                </TableCell>
-              </TableRow>
-            ) : (
-              feeTypes.map((feeType) => (
-                <TableRow key={feeType.id}>
-                  <TableCell>{feeType.type_name}</TableCell>
-                  <TableCell>{feeType.code}</TableCell>
-                  <TableCell sx={{ textTransform: 'capitalize' }}>
-                    {feeType.frequency.replace('_', ' ')}
-                  </TableCell>
-                  <TableCell>{feeType.tax_rate}%</TableCell>
-                  <TableCell>
-                    <Chip label={feeType.is_mandatory ? 'Yes' : 'No'} size="small" color={feeType.is_mandatory ? 'primary' : 'default'} />
-                  </TableCell>
-                  <TableCell>
-                    <Chip label={feeType.is_taxable ? 'Yes' : 'No'} size="small" color={feeType.is_taxable ? 'success' : 'default'} />
-                  </TableCell>
-                  <TableCell>
-                    <Chip label={feeType.is_active ? 'Active' : 'Inactive'} size="small" color={feeType.is_active ? 'success' : 'error'} />
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton size="small" onClick={() => handleOpenDialog(feeType)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => handleDelete(feeType.id)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
+        <Box sx={{ px: 2 }}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Code</TableCell>
+                  <TableCell>Frequency</TableCell>
+                  <TableCell>Tax Rate</TableCell>
+                  <TableCell>Mandatory</TableCell>
+                  <TableCell>Taxable</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      </Container>
+              </TableHead>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={8} align="center">
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                ) : feeTypes.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} align="center">
+                      No fee types found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  feeTypes.map((feeType) => (
+                    <TableRow key={feeType.id}>
+                      <TableCell>{feeType.type_name}</TableCell>
+                      <TableCell>{feeType.code}</TableCell>
+                      <TableCell sx={{ textTransform: 'capitalize' }}>
+                        {feeType.frequency.replace('_', ' ')}
+                      </TableCell>
+                      <TableCell>{feeType.tax_rate}%</TableCell>
+                      <TableCell>
+                        <Chip label={feeType.is_mandatory ? 'Yes' : 'No'} size="small" color={feeType.is_mandatory ? 'primary' : 'default'} />
+                      </TableCell>
+                      <TableCell>
+                        <Chip label={feeType.is_taxable ? 'Yes' : 'No'} size="small" color={feeType.is_taxable ? 'success' : 'default'} />
+                      </TableCell>
+                      <TableCell>
+                        <Chip label={feeType.is_active ? 'Active' : 'Inactive'} size="small" color={feeType.is_active ? 'success' : 'error'} />
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton size="small" onClick={() => handleOpenDialog(feeType)} color="primary">
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton size="small" onClick={() => handleDelete(feeType.id)} color="error">
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Box>
 
       {/* Create/Edit Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>

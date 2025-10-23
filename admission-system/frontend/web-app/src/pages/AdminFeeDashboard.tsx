@@ -33,6 +33,8 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EventNoteIcon from "@mui/icons-material/EventNote";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import config from "../config";
 
 const AdminFeeDashboard = () => {
@@ -124,9 +126,9 @@ const AdminFeeDashboard = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
         {/* Page Header */}
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 4, px: 2 }}>
           <Typography variant="h4" gutterBottom fontWeight={600} sx={{ display: 'flex', alignItems: 'center' }}>
             <AccountBalanceWalletIcon sx={{ mr: 2, fontSize: 40 }} />
             Fee Management Dashboard
@@ -137,7 +139,7 @@ const AdminFeeDashboard = () => {
         </Box>
 
         {/* Summary Cards */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid container spacing={3} sx={{ mb: 4, width: '100%', m: 0, px: 2 }}>
           <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
@@ -207,8 +209,8 @@ const AdminFeeDashboard = () => {
         </Grid>
 
         {/* Quick Actions */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={3}>
+        <Grid container spacing={3} sx={{ mb: 4, width: '100%', m: 0, px: 2 }}>
+          <Grid item xs={12} md={2.4}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <CategoryIcon sx={{ mr: 1, color: 'primary.main' }} />
@@ -240,7 +242,7 @@ const AdminFeeDashboard = () => {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={2.4}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <EventNoteIcon sx={{ mr: 1, color: 'info.main' }} />
@@ -273,16 +275,82 @@ const AdminFeeDashboard = () => {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={2.4}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <AssignmentIcon sx={{ mr: 1, color: 'success.main' }} />
+                <MonetizationOnIcon sx={{ mr: 1, color: 'secondary.main' }} />
+                <Typography variant="h6" fontWeight={600}>
+                  Adhoc Fees
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                One-time fees: fines, lost items, special exams
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate("/admin/fees/adhoc")}
+                  fullWidth
+                >
+                  Manage Adhoc
+                </Button>
+                <Button
+                  variant="outlined"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate("/admin/fees/adhoc/create")}
+                  fullWidth
+                >
+                  Create Adhoc Fee
+                </Button>
+              </Box>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={2.4}>
+            <Paper sx={{ p: 3, height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <AccountBalanceIcon sx={{ mr: 1, color: 'success.main' }} />
+                <Typography variant="h6" fontWeight={600}>
+                  Financial Ledger
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                Student ledger, manual entries, audit trail
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate("/admin/ledger/manual-entry")}
+                  fullWidth
+                >
+                  Manual Entry
+                </Button>
+                <Button
+                  variant="outlined"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate("/admin/fees/ledgers")}
+                  fullWidth
+                >
+                  View Ledgers
+                </Button>
+              </Box>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={2.4}>
+            <Paper sx={{ p: 3, height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <AssignmentIcon sx={{ mr: 1, color: 'primary.main' }} />
                 <Typography variant="h6" fontWeight={600}>
                   Student Management
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Assign fees and manage student payments
+                Assign fees and track student payments
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Button
@@ -293,19 +361,11 @@ const AdminFeeDashboard = () => {
                 >
                   Fee Assignments
                 </Button>
-                <Button
-                  variant="outlined"
-                  endIcon={<ArrowForwardIcon />}
-                  onClick={() => navigate("/admin/fees/ledgers")}
-                  fullWidth
-                >
-                  Student Ledgers
-                </Button>
               </Box>
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={2.4}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <ReceiptLongIcon sx={{ mr: 1, color: 'warning.main' }} />
@@ -314,16 +374,25 @@ const AdminFeeDashboard = () => {
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Track payments and generate reports
+                Record payments, track collections, generate reports
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate("/admin/fees/payments/record")}
+                  fullWidth
+                >
+                  Record Payment
+                </Button>
                 <Button
                   variant="outlined"
                   endIcon={<ArrowForwardIcon />}
                   onClick={() => navigate("/admin/fees/payments")}
                   fullWidth
                 >
-                  Payments
+                  View Payments
                 </Button>
                 <Button
                   variant="outlined"
@@ -340,27 +409,29 @@ const AdminFeeDashboard = () => {
 
         {/* Alerts Section */}
         {stats.defaultersCount > 0 && (
-          <Paper sx={{ p: 3, bgcolor: 'error.lighter', borderLeft: 4, borderColor: 'error.main' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <WarningIcon sx={{ mr: 1, color: 'error.main' }} />
-              <Typography variant="h6" fontWeight={600} color="error.main">
-                Attention Required
+          <Box sx={{ px: 2 }}>
+            <Paper sx={{ p: 3, bgcolor: 'error.lighter', borderLeft: 4, borderColor: 'error.main' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <WarningIcon sx={{ mr: 1, color: 'error.main' }} />
+                <Typography variant="h6" fontWeight={600} color="error.main">
+                  Attention Required
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                {stats.defaultersCount} student(s) have fees overdue for more than 90 days. Immediate action required.
               </Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              {stats.defaultersCount} student(s) have fees overdue for more than 90 days. Immediate action required.
-            </Typography>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => navigate("/admin/fees/assignments")}
-            >
-              View Defaulters
-            </Button>
-          </Paper>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => navigate("/admin/fees/assignments")}
+              >
+                View Defaulters
+              </Button>
+            </Paper>
+          </Box>
         )}
 
-      </Container>
+      </Box>
     </Box>
   );
 };

@@ -295,9 +295,9 @@ const FeeStructuresPage: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
         {/* Page Header */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, px: 2 }}>
           <Typography variant="h4" component="h1" fontWeight={600}>
             Fee Structures
           </Typography>
@@ -314,72 +314,78 @@ const FeeStructuresPage: React.FC = () => {
         </Box>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-            {error}
-          </Alert>
+          <Box sx={{ px: 2, mb: 2 }}>
+            <Alert severity="error" onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          </Box>
         )}
 
         {/* Search Bar */}
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <TextField
-            fullWidth
-            placeholder="Search fee structures by name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Paper>
+        <Box sx={{ px: 2, mb: 3 }}>
+          <Paper sx={{ p: 2 }}>
+            <TextField
+              fullWidth
+              placeholder="Search fee structures by name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Paper>
+        </Box>
 
         {/* Structure Cards Grid */}
-        {loading ? (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography>Loading...</Typography>
-          </Box>
-        ) : filteredStructures.length === 0 ? (
-          <Paper sx={{ p: 4, textAlign: 'center' }}>
-            <Typography color="text.secondary">
-              {searchQuery ? 'No fee structures found matching your search' : 'No fee structures found'}
-            </Typography>
-          </Paper>
-        ) : (
-          <Grid container spacing={3}>
-            {filteredStructures.map((structure) => (
-              <Grid item xs={12} md={6} lg={4} key={structure.id}>
-                <Card
-                  sx={{
-                    height: '100%',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: 4,
-                    },
-                  }}
-                >
-                  <CardActionArea onClick={() => handleCardClick(structure)} sx={{ height: '100%' }}>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom fontWeight={600}>
-                        {structure.name}
-                      </Typography>
-                      <Typography variant="h4" color="primary.main" fontWeight={700}>
-                        {formatCurrency(structure.totalAmount)}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        {structure.structures.length} fee type{structure.structures.length !== 1 ? 's' : ''}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        )}
-      </Container>
+        <Box sx={{ px: 2 }}>
+          {loading ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography>Loading...</Typography>
+            </Box>
+          ) : filteredStructures.length === 0 ? (
+            <Paper sx={{ p: 4, textAlign: 'center' }}>
+              <Typography color="text.secondary">
+                {searchQuery ? 'No fee structures found matching your search' : 'No fee structures found'}
+              </Typography>
+            </Paper>
+          ) : (
+            <Grid container spacing={3} sx={{ width: '100%', m: 0 }}>
+              {filteredStructures.map((structure) => (
+                <Grid item xs={12} md={6} lg={4} key={structure.id}>
+                  <Card
+                    sx={{
+                      height: '100%',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: 4,
+                      },
+                    }}
+                  >
+                    <CardActionArea onClick={() => handleCardClick(structure)} sx={{ height: '100%' }}>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom fontWeight={600}>
+                          {structure.name}
+                        </Typography>
+                        <Typography variant="h4" color="primary.main" fontWeight={700}>
+                          {formatCurrency(structure.totalAmount)}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                          {structure.structures.length} fee type{structure.structures.length !== 1 ? 's' : ''}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Box>
+      </Box>
 
       {/* Detail Dialog */}
       <Dialog

@@ -143,9 +143,11 @@ const ParentApplicationDetailsPage = () => {
             <Typography variant="h6">Application Details</Typography>
           </Toolbar>
         </AppBar>
-        <Container maxWidth="lg" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-          <DetailsSkeleton />
-        </Container>
+        <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+          <Box sx={{ px: 2 }}>
+            <DetailsSkeleton />
+          </Box>
+        </Box>
       </Box>
     );
   }
@@ -171,8 +173,9 @@ const ParentApplicationDetailsPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-        {/* Application Overview */}
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ px: 2 }}>
+          {/* Application Overview */}
         <Paper
           variant="outlined"
           sx={{
@@ -418,7 +421,8 @@ const ParentApplicationDetailsPage = () => {
             </Box>
           </Paper>
         )}
-      </Container>
+        </Box>
+      </Box>
 
       {/* Delete Confirmation Dialog */}
       <Dialog

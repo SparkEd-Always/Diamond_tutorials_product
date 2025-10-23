@@ -170,9 +170,11 @@ const ApplicationDetailsPage = () => {
             <Typography variant="h6">Application Details</Typography>
           </Toolbar>
         </AppBar>
-        <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-          <DetailsSkeleton />
-        </Container>
+        <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+          <Box sx={{ px: 2 }}>
+            <DetailsSkeleton />
+          </Box>
+        </Box>
       </Box>
     );
   }
@@ -196,8 +198,9 @@ const ApplicationDetailsPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-        {/* Application Overview - Prominent Status Card */}
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ px: 2 }}>
+          {/* Application Overview - Prominent Status Card */}
         <Paper
           sx={{
             p: 4,
@@ -464,7 +467,8 @@ const ApplicationDetailsPage = () => {
             )}
           </Box>
         )}
-      </Container>
+        </Box>
+      </Box>
 
       {/* Delete Confirmation Dialog */}
       <Dialog

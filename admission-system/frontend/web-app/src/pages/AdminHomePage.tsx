@@ -61,22 +61,6 @@ const AdminHomePage = () => {
       path: "/admin/fees/dashboard",
       stats: "Monitor collections and outstanding fees",
     },
-    {
-      title: "Communication",
-      description: "Send messages and announcements to parents and students",
-      icon: <ForumIcon sx={{ fontSize: 60 }} />,
-      color: "info",
-      path: "/admin/communication/dashboard",
-      stats: "Broadcast updates and track engagement",
-    },
-    {
-      title: "Student Information",
-      description: "Comprehensive student data and academic records management",
-      icon: <PeopleIcon sx={{ fontSize: 60 }} />,
-      color: "secondary",
-      path: "/admin/sis/dashboard",
-      stats: "Maintain complete student profiles",
-    },
   ];
 
   return (
@@ -106,9 +90,9 @@ const AdminHomePage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 6, px: { xs: 2, sm: 3, md: 4 } }}>
+      <Box sx={{ py: 6, width: '100%', overflow: 'hidden' }}>
         {/* Welcome Section */}
-        <Box sx={{ mb: 6, textAlign: "center" }}>
+        <Box sx={{ mb: 6, textAlign: "center", px: 2 }}>
           <Typography variant="h3" gutterBottom fontWeight={700}>
             <DashboardIcon sx={{ mr: 2, fontSize: 48, verticalAlign: "middle" }} />
             Welcome to Admin Portal
@@ -119,18 +103,22 @@ const AdminHomePage = () => {
         </Box>
 
         {/* Module Cards */}
-        <Grid container spacing={4}>
+        <Grid container spacing={4} sx={{ width: '100%', m: 0, px: 2 }}>
           {modules.map((module, index) => (
             <Grid item xs={12} md={6} key={index}>
               <Card
+                elevation={2}
                 sx={{
                   height: "100%",
-                  transition: "all 0.3s ease",
-                  borderLeft: 6,
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  borderTop: 4,
                   borderColor: `${module.color}.main`,
+                  background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
                   "&:hover": {
-                    transform: "translateY(-8px)",
-                    boxShadow: 6,
+                    transform: "translateY(-12px)",
+                    boxShadow: 8,
+                    borderColor: `${module.color}.dark`,
+                    background: 'linear-gradient(135deg, #ffffff 0%, #ffffff 100%)',
                   },
                 }}
               >
@@ -138,7 +126,7 @@ const AdminHomePage = () => {
                   onClick={() => navigate(module.path)}
                   sx={{ height: "100%", p: 3 }}
                 >
-                  <CardContent>
+                  <CardContent sx={{ textAlign: 'center' }}>
                     <Box
                       sx={{
                         display: "flex",
@@ -192,7 +180,7 @@ const AdminHomePage = () => {
             💡 Each module has its own dashboard with detailed analytics and management tools
           </Typography>
         </Box>
-      </Container>
+      </Box>
     </Box>
   );
 };

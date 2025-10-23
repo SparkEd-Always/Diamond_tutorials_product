@@ -169,9 +169,11 @@ const AdminApplicationDetailsPage = () => {
             <Typography variant="h6">Application Details (Admin)</Typography>
           </Toolbar>
         </AppBar>
-        <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-          <DetailsSkeleton />
-        </Container>
+        <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+          <Box sx={{ px: 2 }}>
+            <DetailsSkeleton />
+          </Box>
+        </Box>
       </Box>
     );
   }
@@ -203,8 +205,9 @@ const AdminApplicationDetailsPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-        {/* Application Overview */}
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ px: 2 }}>
+          {/* Application Overview */}
         <Paper
           sx={{
             p: 4,
@@ -474,7 +477,8 @@ const AdminApplicationDetailsPage = () => {
             </Box>
           </Paper>
         )}
-      </Container>
+        </Box>
+      </Box>
 
       {/* Change Status Dialog */}
       <Dialog

@@ -8,11 +8,12 @@ from fastapi import APIRouter
 from .fee_types import router as fee_types_router
 from .fee_structures import router as fee_structures_router
 from .fee_sessions import router as fee_sessions_router
+from .adhoc_fees import router as adhoc_fees_router
 from .assignments import router as assignments_router
 from .invoices import router as invoices_router
-from .payments import router as payments_router
+from .payments_improved import router as payments_router  # Using improved payments API
 from .receipts import router as receipts_router
-from .ledgers import router as ledgers_router
+from .ledger import router as ledgers_router
 
 # Create main fees router
 router = APIRouter()
@@ -34,6 +35,12 @@ router.include_router(
     fee_sessions_router,
     prefix="/sessions",
     tags=["Fee Sessions"]
+)
+
+router.include_router(
+    adhoc_fees_router,
+    prefix="/adhoc",
+    tags=["Adhoc Fees"]
 )
 
 router.include_router(

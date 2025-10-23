@@ -876,15 +876,16 @@ const ApplicationFormPage = () => {
       )}
 
       {/* Main Content */}
-      <Container
-        maxWidth="lg"
+      <Box
         sx={{
           flex: 1,
-          py: { xs: 2, sm: 4 },
-          px: { xs: 2, sm: 3, md: 4 },
+          py: 4,
+          width: '100%',
+          overflow: 'hidden',
           pb: { xs: 10, sm: 4 } // Extra padding bottom for mobile sticky buttons
         }}
       >
+        <Box sx={{ px: 2 }}>
         {/* Step Title (Mobile) */}
         {isMobile && (
           <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -924,7 +925,8 @@ const ApplicationFormPage = () => {
         <Paper sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
           {renderStepContent()}
         </Paper>
-      </Container>
+        </Box>
+      </Box>
 
       {/* Navigation Buttons */}
       <Paper
@@ -941,7 +943,7 @@ const ApplicationFormPage = () => {
           mt: isMobile ? 0 : 2,
         }}
       >
-        <Container maxWidth="lg">
+        <Box sx={{ px: 2 }}>
           <Box
             sx={{
               display: 'flex',
@@ -981,7 +983,7 @@ const ApplicationFormPage = () => {
               </Button>
             )}
           </Box>
-        </Container>
+        </Box>
       </Paper>
 
       {/* Draft Saved Dialog */}

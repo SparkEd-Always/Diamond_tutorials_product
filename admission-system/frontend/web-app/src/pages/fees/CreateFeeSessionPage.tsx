@@ -227,9 +227,9 @@ const CreateFeeSessionPage: React.FC = () => {
   const isFirstStep = activeStep === 0;
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+    <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
       {/* Header */}
-      <Box mb={4}>
+      <Box sx={{ px: 2, mb: 4 }}>
         <Button
           startIcon={<BackIcon />}
           onClick={() => navigate('/admin/fees/sessions')}
@@ -246,6 +246,7 @@ const CreateFeeSessionPage: React.FC = () => {
       </Box>
 
       {/* Stepper */}
+      <Box sx={{ px: 2 }}>
       <Paper sx={{ p: 3, mb: 3 }}>
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
           {steps.map((step, index) => (
@@ -315,7 +316,8 @@ const CreateFeeSessionPage: React.FC = () => {
           </Box>
         </Box>
       </Paper>
-    </Container>
+      </Box>
+    </Box>
   );
 };
 

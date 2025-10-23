@@ -240,9 +240,10 @@ const AdminApplicationReviewPage: React.FC = () => {
   };
 
   return (
-    <Box width="100vw" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
+    <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+      <Box sx={{ px: 2 }}>
+        {/* Header */}
+        <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <IconButton onClick={() => navigate('/applications')} sx={{ mr: 2 }}>
             <BackIcon />
@@ -402,6 +403,7 @@ const AdminApplicationReviewPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      </Box>
     </Box>
   );
 };

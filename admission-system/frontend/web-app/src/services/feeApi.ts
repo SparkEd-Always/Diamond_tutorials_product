@@ -138,7 +138,7 @@ export const ledgerApi = {
     return response.data;
   },
 
-  listSummaries: async (params?: {
+  listSummaries: async (_params?: {
     academic_year_id?: number;
     has_outstanding?: boolean;
     has_overdue?: boolean;
@@ -146,17 +146,20 @@ export const ledgerApi = {
     skip?: number;
     limit?: number;
   }): Promise<StudentFeeLedger[]> => {
-    const response = await api.get('/fees/ledgers/summary/list', { params });
-    return response.data;
+    // TODO: This endpoint doesn't exist yet - returning empty array
+    // Use the new ledgerApi from ledgerApi.ts for the new ledger system
+    console.warn('Old ledger API listSummaries() called - endpoint not implemented. Use new ledgerApi instead.');
+    return [];
   },
 
-  listDefaulters: async (params?: {
+  listDefaulters: async (_params?: {
     academic_year_id?: number;
     skip?: number;
     limit?: number;
   }): Promise<StudentFeeLedger[]> => {
-    const response = await api.get('/fees/ledgers/defaulters/list', { params });
-    return response.data;
+    // TODO: This endpoint doesn't exist yet - returning empty array
+    console.warn('Old ledger API listDefaulters() called - endpoint not implemented.');
+    return [];
   },
 };
 
@@ -212,10 +215,60 @@ export const feeSessionApi = {
   },
 };
 
+// ============================================================================
+// Adhoc Fees API
+// ============================================================================
+
+export const adhocFeeApi = {
+  list: async (params?: {
+    payment_status?: string;
+    student_id?: number;
+    is_paid?: boolean;
+    is_active?: boolean;
+    search_query?: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<import('../types/fees').AdhocFeeListItem[]> => {
+    const response = await api.get('/fees/adhoc', { params });
+    return response.data;
+  },
+
+  get: async (id: number): Promise<import('../types/fees').AdhocFeeAssignment> => {
+    const response = await api.get(`/fees/adhoc/${id}`);
+    return response.data;
+  },
+
+  create: async (data: import('../types/fees').AdhocFeeFormData): Promise<import('../types/fees').AdhocFeeAssignment[]> => {
+    const response = await api.post('/fees/adhoc', data);
+    return response.data;
+  },
+
+  update: async (id: number, data: Partial<import('../types/fees').AdhocFeeFormData>): Promise<import('../types/fees').AdhocFeeAssignment> => {
+    const response = await api.put(`/fees/adhoc/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await api.delete(`/fees/adhoc/${id}`);
+  },
+
+  getByStudent: async (studentId: number, isPaid?: boolean): Promise<import('../types/fees').AdhocFeeListItem[]> => {
+    const params = isPaid !== undefined ? { is_paid: isPaid } : {};
+    const response = await api.get(`/fees/adhoc/student/${studentId}`, { params });
+    return response.data;
+  },
+
+  getSummary: async (): Promise<import('../types/fees').AdhocFeeSummary> => {
+    const response = await api.get('/fees/adhoc/stats/summary');
+    return response.data;
+  },
+};
+
 export default {
   feeTypeApi,
   feeStructureApi,
   assignmentApi,
   ledgerApi,
   feeSessionApi,
+  adhocFeeApi,
 };

@@ -45,6 +45,11 @@ import StudentFormPage from './pages/StudentFormPage';
 import ManageFeeSessionsPage from './pages/fees/ManageFeeSessionsPage';
 import CreateFeeSessionPage from './pages/fees/CreateFeeSessionPage';
 import FeeSessionDetailsPage from './pages/fees/FeeSessionDetailsPage';
+import AdhocFeeListPage from './pages/fees/AdhocFeeListPage';
+import CreateAdhocFeePage from './pages/fees/CreateAdhocFeePage';
+import RecordPaymentPage from './pages/fees/RecordPaymentPage';
+import StudentLedgerTimelinePage from './pages/ledger/StudentLedgerTimelinePage';
+import ManualLedgerEntryPage from './pages/ledger/ManualLedgerEntryPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) => {
@@ -283,6 +288,52 @@ function AppRoutes() {
         element={
           <ProtectedRoute adminOnly={true}>
             <FeeSessionDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Adhoc Fees Routes - Admin */}
+      <Route
+        path="/admin/fees/adhoc"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdhocFeeListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fees/adhoc/create"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <CreateAdhocFeePage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Payment Recording Route - Admin */}
+      <Route
+        path="/admin/fees/payments/record"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <RecordPaymentPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Student Ledger Routes - Admin */}
+      <Route
+        path="/admin/ledger/student/:studentId"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <StudentLedgerTimelinePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/ledger/manual-entry"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <ManualLedgerEntryPage />
           </ProtectedRoute>
         }
       />

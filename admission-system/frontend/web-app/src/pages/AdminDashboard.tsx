@@ -148,7 +148,7 @@ const AdminDashboard = () => {
   const activeCount = stats.testScheduled + stats.testCompleted + stats.interviewScheduled;
 
   return (
-    <Box sx={{ width: "100vw",minHeight: "100vh", bgcolor: "background.default" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       {/* Header */}
       <AppBar position="static" elevation={1}>
         <Toolbar>
@@ -168,10 +168,9 @@ const AdminDashboard = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ justifyContent: "center",  py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-        
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
         {/* Welcome Section */}
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 4, px: 2 }}>
           <Typography variant="h4" gutterBottom fontWeight={600}>
             <DashboardIcon sx={{ mr: 1, verticalAlign: "middle" }} />
             Admission Dashboard
@@ -185,7 +184,7 @@ const AdminDashboard = () => {
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          px: { xs: 2, sm: 4, md: 30 },
+          px: 2,
           mb: 6
         }}>
           {/* Total Applications */}
@@ -262,7 +261,7 @@ const AdminDashboard = () => {
         </Box>
 
         {/* Application Workflow Pipeline */}
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 4, px: 2 }}>
           <Typography variant="h6" gutterBottom fontWeight={600}>
             Application Workflow Pipeline
           </Typography>
@@ -466,11 +465,11 @@ const AdminDashboard = () => {
         </Box>
 
         {/* Management Tools */}
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 4, px: 2 }}>
           <Typography variant="h6" gutterBottom fontWeight={600}>
             Management Tools
           </Typography>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ width: '100%', m: 0 }}>
 
             {/* Applications Management */}
             <Grid item xs={12} sm={6} md={4}>
@@ -581,7 +580,7 @@ const AdminDashboard = () => {
             </Grid>
           </Grid>
         </Box>
-      </Container>
+      </Box>
     </Box>
   );
 };

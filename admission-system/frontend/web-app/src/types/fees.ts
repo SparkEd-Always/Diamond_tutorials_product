@@ -216,3 +216,193 @@ export interface PaginatedResponse<T> {
   page_size: number;
   total_pages: number;
 }
+
+// ============================================================================
+// Adhoc Fee Assignment Types
+// ============================================================================
+
+export type AdhocFeePaymentStatus = 'pending' | 'partial' | 'paid' | 'overdue';
+
+export interface AdhocFeeAssignment {
+  id: number;
+  fee_name: string;
+  description?: string;
+  amount: number;
+  assigned_date: string;
+  due_date: string;
+  student_id: number;
+  paid_amount: number;
+  outstanding_amount: number;
+  payment_status: AdhocFeePaymentStatus;
+  is_paid: boolean;
+  paid_at?: string;
+  assigned_by: number;
+  assigned_at: string;
+  remarks?: string;
+  is_active: boolean;
+
+  // Populated from relationships (optional)
+  student_name?: string;
+  student_admission_number?: string;
+  student_roll_number?: string;
+  student_class?: string;
+  assigned_by_name?: string;
+}
+
+export interface AdhocFeeFormData {
+  fee_name: string;
+  description?: string;
+  amount: number;
+  assigned_date: string;
+  due_date: string;
+  student_ids: number[];
+  remarks?: string;
+}
+
+export interface AdhocFeeListItem {
+  id: number;
+  fee_name: string;
+  amount: number;
+  assigned_date: string;
+  due_date: string;
+  student_id: number;
+  student_name: string;
+  student_admission_number: string;
+  paid_amount: number;
+  outstanding_amount: number;
+  payment_status: AdhocFeePaymentStatus;
+  is_paid: boolean;
+  assigned_at: string;
+}
+
+export interface AdhocFeeSummary {
+  total_adhoc_fees: number;
+  total_amount_assigned: number;
+  total_amount_paid: number;
+  total_outstanding: number;
+  pending_count: number;
+  paid_count: number;
+  overdue_count: number;
+  collection_percentage: number;
+}
+
+// ============================================================================
+// Payment Types
+// ============================================================================
+
+export type PaymentMethod =
+  | 'cash'
+  | 'upi'
+  | 'credit_card'
+  | 'debit_card'
+  | 'net_banking'
+  | 'wallet'
+  | 'cheque'
+  | 'demand_draft'
+  | 'bank_transfer'
+  | 'other';
+
+export type PaymentStatus =
+  | 'initiated'
+  | 'pending'
+  | 'processing'
+  | 'success'
+  | 'failed'
+  | 'cancelled'
+  | 'refund_initiated'
+  | 'refunded'
+  | 'disputed';
+
+export interface PaymentAllocation {
+  fee_session_id?: number;
+  adhoc_fee_id?: number;
+  amount: number;
+  fee_description?: string;
+}
+
+export interface Payment {
+  id: number;
+  payment_number: string;
+  payment_date: string;
+  student_id: number;
+  student_name?: string;
+  academic_year_id: number;
+  academic_year_name?: string;
+  amount: number;
+  payment_method: PaymentMethod;
+  status: PaymentStatus;
+
+  // Ledger integration
+  ledger_transaction_id?: number;
+  ledger_balance_after?: number;
+
+  // Allocations
+  allocations?: PaymentAllocation[];
+
+  // Offline payment details
+  cheque_number?: string;
+  cheque_date?: string;
+  bank_name?: string;
+  branch_name?: string;
+  transaction_id?: string;
+  bank_reference?: string;
+
+  // Online payment details
+  gateway_name?: string;
+  gateway_order_id?: string;
+  gateway_payment_id?: string;
+
+  // Status tracking
+  is_verified: boolean;
+  verified_by?: number;
+  verified_at?: string;
+  is_reconciled: boolean;
+  reconciled_at?: string;
+  reconciled_by?: number;
+
+  // Receipt
+  receipt_number?: string;
+
+  // Metadata
+  remarks?: string;
+  recorded_by?: number;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface OfflinePaymentFormData {
+  student_id: number;
+  academic_year_id: number;
+  amount: number;
+  payment_method: PaymentMethod;
+  payment_date?: string;
+  cheque_number?: string;
+  cheque_date?: string;
+  bank_name?: string;
+  branch_name?: string;
+  transaction_id?: string;
+  bank_reference?: string;
+  remarks?: string;
+  allocate_to?: PaymentAllocation[];
+}
+
+export interface PaymentStatistics {
+  total_payments_count: number;
+  total_amount_received: number;
+  payments_today: number;
+  amount_today: number;
+  pending_verification_count: number;
+  payments_by_method: Record<string, { count: number; amount: number }>;
+}
+
+// Student's outstanding fees for payment allocation
+export interface OutstandingFeeItem {
+  id: number;
+  fee_type: 'fee_session' | 'adhoc_fee';
+  description: string;
+  total_amount: number;
+  paid_amount: number;
+  outstanding_amount: number;
+  due_date: string;
+  is_overdue: boolean;
+}

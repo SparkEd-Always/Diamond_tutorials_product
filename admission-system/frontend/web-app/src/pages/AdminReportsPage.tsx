@@ -243,9 +243,9 @@ const AdminReportsPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
         {/* Page Header */}
-        <Box sx={{ mb: 3, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box sx={{ px: 2, mb: 3, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Button
               startIcon={<ArrowBackIcon />}
@@ -632,7 +632,7 @@ const AdminReportsPage = () => {
             </Table>
           </TableContainer>
         </TabPanel>
-      </Container>
+      </Box>
     </Box>
   );
 };

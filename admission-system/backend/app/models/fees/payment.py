@@ -52,9 +52,10 @@ class Payment(Base):
     payment_date = Column(DateTime(timezone=True), nullable=False, index=True)
 
     # References
-    invoice_id = Column(Integer, ForeignKey("invoices.id", ondelete="CASCADE"), nullable=False, index=True)
+    invoice_id = Column(Integer, ForeignKey("invoices.id", ondelete="CASCADE"), nullable=True, index=True)  # Optional - can pay without invoice
     student_id = Column(Integer, ForeignKey("students.id", ondelete="CASCADE"), nullable=False, index=True)
     parent_id = Column(Integer, ForeignKey("parents.id", ondelete="CASCADE"), nullable=True, index=True)
+    academic_year_id = Column(Integer, ForeignKey("academic_years.id", ondelete="CASCADE"), nullable=False, index=True)
 
     # Payment details
     payment_method = Column(SQLEnum(PaymentMethod), nullable=False, index=True)
@@ -111,11 +112,13 @@ class Payment(Base):
     invoice = relationship("Invoice", back_populates="payments")
     student = relationship("Student")
     parent = relationship("Parent")
+    academic_year = relationship("AcademicYear")
     recorded_by_user = relationship("User", foreign_keys=[recorded_by])
     verified_by_user = relationship("User", foreign_keys=[verified_by])
     reconciled_by_user = relationship("User", foreign_keys=[reconciled_by])
     refund_initiated_by_user = relationship("User", foreign_keys=[refund_initiated_by])
     receipt = relationship("PaymentReceipt", back_populates="payment", uselist=False, cascade="all, delete-orphan")
+    allocations = relationship("PaymentAllocation", back_populates="payment", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Payment {self.payment_number} Amount:{self.amount} Method:{self.payment_method.value} Status:{self.status.value}>"
@@ -142,3 +145,23 @@ class Payment(Base):
             PaymentMethod.DEMAND_DRAFT,
             PaymentMethod.BANK_TRANSFER
         ]
+
+    @staticmethod
+    def generate_payment_number(academic_year_name: str, db) -> str:
+        """
+        Generate unique payment number
+        Format: PAY/2024-25/000001
+        """
+        # Get the last payment number for this academic year
+        last_payment = db.query(Payment).filter(
+            Payment.payment_number.like(f"PAY/{academic_year_name}/%")
+        ).order_by(Payment.id.desc()).first()
+
+        if last_payment:
+            # Extract sequence number and increment
+            last_seq = int(last_payment.payment_number.split('/')[-1])
+            new_seq = last_seq + 1
+        else:
+            new_seq = 1
+
+        return f"PAY/{academic_year_name}/{str(new_seq).zfill(6)}"

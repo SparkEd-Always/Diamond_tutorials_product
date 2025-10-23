@@ -117,9 +117,10 @@ const ApplicationListPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3, md: 4 } }}>
-        {/* Filters */}
-        <Box sx={{ mb: 2, display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ px: 2, mb: 3 }}>
+          {/* Filters */}
+          <Box sx={{ mb: 2, display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
           <TextField
             placeholder="Search applications..."
             variant="outlined"
@@ -301,7 +302,8 @@ const ApplicationListPage = () => {
             />
           </Paper>
         )}
-      </Container>
+        </Box>
+      </Box>
     </Box>
   );
 };

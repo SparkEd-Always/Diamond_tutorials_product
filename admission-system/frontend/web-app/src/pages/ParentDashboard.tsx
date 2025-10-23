@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Container,
   Box,
   Typography,
   Button,
@@ -124,9 +123,9 @@ const ParentDashboard = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
         {/* Welcome Section */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ px: 2, mb: 3 }}>
           <Typography variant="h5" gutterBottom fontWeight={600} sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
             <DashboardIcon sx={{ mr: 1, fontSize: 28 }} />
             Parent Dashboard
@@ -137,90 +136,92 @@ const ParentDashboard = () => {
         </Box>
 
         {/* Quick Actions */}
-        <Paper sx={{ p: 3, mb: 4, bgcolor: "primary.main", color: "white" }}>
-          <Typography variant="h6" gutterBottom>
-            Quick Actions
-          </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1, alignItems: 'center' }}>
-            <Button
-              variant="contained"
-              fullWidth
-              size="large"
-              startIcon={<AddIcon />}
-              onClick={() => navigate("/apply")}
-              sx={{
-                maxWidth: 400,
-                bgcolor: "white",
-                color: "primary.main",
-                "&:hover": { bgcolor: "grey.100" }
-              }}
-            >
-              New Application
-            </Button>
-            <Button
-              variant="outlined"
-              fullWidth
-              size="large"
-              startIcon={<ListIcon />}
-              onClick={() => navigate("/applications")}
-              sx={{
-                maxWidth: 400,
-                borderColor: "white",
-                color: "white",
-                "&:hover": { borderColor: "grey.100", bgcolor: "rgba(255,255,255,0.1)" }
-              }}
-            >
-              View All Applications
-            </Button>
-            <Button
-              variant="outlined"
-              fullWidth
-              size="large"
-              startIcon={<AccountBalanceWalletIcon />}
-              onClick={() => navigate("/parent/fees")}
-              sx={{
-                maxWidth: 400,
-                borderColor: "white",
-                color: "white",
-                "&:hover": { borderColor: "grey.100", bgcolor: "rgba(255,255,255,0.1)" }
-              }}
-            >
-              Fee Management
-            </Button>
-            <Button
-              variant="outlined"
-              fullWidth
-              size="large"
-              startIcon={<ForumIcon />}
-              onClick={() => navigate("/parent/messages")}
-              sx={{
-                maxWidth: 400,
-                borderColor: "white",
-                color: "white",
-                "&:hover": { borderColor: "grey.100", bgcolor: "rgba(255,255,255,0.1)" }
-              }}
-            >
-              Messages
-            </Button>
-          </Box>
-        </Paper>
+        <Box sx={{ px: 2, mb: 4 }}>
+          <Paper sx={{ p: 3, bgcolor: "primary.main", color: "white" }}>
+            <Typography variant="h6" gutterBottom>
+              Quick Actions
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1, alignItems: 'center' }}>
+              <Button
+                variant="contained"
+                fullWidth
+                size="large"
+                startIcon={<AddIcon />}
+                onClick={() => navigate("/apply")}
+                sx={{
+                  maxWidth: 400,
+                  bgcolor: "white",
+                  color: "primary.main",
+                  "&:hover": { bgcolor: "grey.100" }
+                }}
+              >
+                New Application
+              </Button>
+              <Button
+                variant="outlined"
+                fullWidth
+                size="large"
+                startIcon={<ListIcon />}
+                onClick={() => navigate("/applications")}
+                sx={{
+                  maxWidth: 400,
+                  borderColor: "white",
+                  color: "white",
+                  "&:hover": { borderColor: "grey.100", bgcolor: "rgba(255,255,255,0.1)" }
+                }}
+              >
+                View All Applications
+              </Button>
+              <Button
+                variant="outlined"
+                fullWidth
+                size="large"
+                startIcon={<AccountBalanceWalletIcon />}
+                onClick={() => navigate("/parent/fees")}
+                sx={{
+                  maxWidth: 400,
+                  borderColor: "white",
+                  color: "white",
+                  "&:hover": { borderColor: "grey.100", bgcolor: "rgba(255,255,255,0.1)" }
+                }}
+              >
+                Fee Management
+              </Button>
+              <Button
+                variant="outlined"
+                fullWidth
+                size="large"
+                startIcon={<ForumIcon />}
+                onClick={() => navigate("/parent/messages")}
+                sx={{
+                  maxWidth: 400,
+                  borderColor: "white",
+                  color: "white",
+                  "&:hover": { borderColor: "grey.100", bgcolor: "rgba(255,255,255,0.1)" }
+                }}
+              >
+                Messages
+              </Button>
+            </Box>
+          </Paper>
+        </Box>
 
         {/* Stats Badge Pills */}
-        <Box
-          sx={{
-            mb: 4,
-            display: "flex",
-            gap: 1.5,
-            flexWrap: "wrap",
-            justifyContent: "center",
-            py: 1.5,
-            px: 2,
-            bgcolor: "grey.50",
-            borderRadius: 2,
-            border: "1px solid",
-            borderColor: "grey.200"
-          }}
-        >
+        <Box sx={{ px: 2, mb: 4 }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 1.5,
+              flexWrap: "wrap",
+              justifyContent: "center",
+              py: 1.5,
+              px: 2,
+              bgcolor: "grey.50",
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: "grey.200"
+            }}
+          >
           <Chip
             label={`${stats.total} Total`}
             variant="outlined"
@@ -265,10 +266,11 @@ const ParentDashboard = () => {
               color: "warning.main"
             }}
           />
+          </Box>
         </Box>
 
         {/* Recent Applications */}
-        <Box>
+        <Box sx={{ px: 2 }}>
           <Typography variant="h6" gutterBottom fontWeight={600}>
             Recent Applications
           </Typography>
@@ -338,7 +340,7 @@ const ParentDashboard = () => {
             </Box>
           )}
         </Box>
-      </Container>
+      </Box>
     </Box>
   );
 };

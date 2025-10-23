@@ -26,6 +26,8 @@ from ....schemas.fees.fee_session import (
     FilteredStudentResponse,
     BulkStudentAssignment,
 )
+from ....services.ledger_service import LedgerService
+from ....models.fees.ledger_transaction import LedgerEntryType
 
 router = APIRouter()
 
@@ -158,6 +160,24 @@ def create_fee_session(
             is_paid=False
         )
         db.add(session_assignment)
+        db.flush()  # Get session_assignment ID
+
+        # Create ledger entry for this fee assignment
+        try:
+            ledger_entry = LedgerService.create_fee_assignment_entry(
+                student_id=student.id,
+                academic_year_id=session_data.academic_year_id,
+                amount=total_expected_amount,
+                description=f"{session_data.session_name} - Fee Assignment",
+                entry_type=LedgerEntryType.FEE_ASSIGNMENT.value,
+                fee_session_id=new_session.id,
+                transaction_date=session_data.start_date,
+                created_by=current_user.id,
+                db=db
+            )
+        except Exception as e:
+            # Log error but don't fail the fee session creation
+            print(f"Warning: Failed to create ledger entry for student {student.id}: {str(e)}")
 
     db.commit()
 

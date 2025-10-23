@@ -104,29 +104,33 @@ const FeeSessionDetailsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ px: 2 }}>
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
           <CircularProgress />
         </Box>
-      </Container>
+        </Box>
+      </Box>
     );
   }
 
   if (error || !session) {
     return (
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ px: 2 }}>
         <Alert severity="error">{error || 'Session not found'}</Alert>
         <Button startIcon={<BackIcon />} onClick={() => navigate('/admin/fees/sessions')} sx={{ mt: 2 }}>
           Back to Sessions
         </Button>
-      </Container>
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+    <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
       {/* Header */}
-      <Box mb={3}>
+      <Box sx={{ px: 2, mb: 3 }}>
         <Button
           startIcon={<BackIcon />}
           onClick={() => navigate('/admin/fees/sessions')}
@@ -160,7 +164,7 @@ const FeeSessionDetailsPage: React.FC = () => {
       )}
 
       {/* Statistics Cards */}
-      <Grid container spacing={3} mb={3}>
+      <Grid container spacing={3} sx={{ mb: 3, width: '100%', m: 0, px: 2 }}>
         <Grid item xs={12} md={3}>
           <Paper sx={{ p: 3, textAlign: 'center', borderTop: 4, borderColor: 'primary.main' }}>
             <Typography variant="h3" fontWeight="bold" color="primary.main">
@@ -207,7 +211,8 @@ const FeeSessionDetailsPage: React.FC = () => {
       </Grid>
 
       {/* Financial Summary */}
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Box sx={{ px: 2, mb: 3 }}>
+      <Paper sx={{ p: 3 }}>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
           Financial Summary
         </Typography>
@@ -248,9 +253,11 @@ const FeeSessionDetailsPage: React.FC = () => {
           </Grid>
         </Grid>
       </Paper>
+      </Box>
 
       {/* Session Details */}
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Box sx={{ px: 2, mb: 3 }}>
+      <Paper sx={{ p: 3 }}>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
           Session Details
         </Typography>
@@ -287,8 +294,10 @@ const FeeSessionDetailsPage: React.FC = () => {
           )}
         </Grid>
       </Paper>
+      </Box>
 
       {/* Student Assignments */}
+      <Box sx={{ px: 2 }}>
       <Paper sx={{ p: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h6" fontWeight="bold">
@@ -380,7 +389,8 @@ const FeeSessionDetailsPage: React.FC = () => {
           </Table>
         </TableContainer>
       </Paper>
-    </Container>
+      </Box>
+    </Box>
   );
 };
 

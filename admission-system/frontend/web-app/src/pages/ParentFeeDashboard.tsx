@@ -127,9 +127,9 @@ const ParentFeeDashboard = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
         {/* Page Header */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ px: 2, mb: 3 }}>
           <Typography variant="h5" gutterBottom fontWeight={600} sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
             <AccountBalanceWalletIcon sx={{ mr: 1, fontSize: 28 }} />
             Fee Management
@@ -376,7 +376,7 @@ const ParentFeeDashboard = () => {
             </Box>
           </>
         )}
-      </Container>
+      </Box>
     </Box>
   );
 };

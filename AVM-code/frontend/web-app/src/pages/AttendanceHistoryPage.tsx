@@ -29,10 +29,11 @@ import {
   FilterList as FilterListIcon,
   Download as DownloadIcon,
   CalendarToday as CalendarIcon,
-  CheckCircle,
-  Cancel,
-  Schedule,
+  CheckCircleOutline,
+  HighlightOffOutlined,
+  AccessTimeOutlined,
   EventNote,
+  ErrorOutline,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useSelector } from 'react-redux';
@@ -122,11 +123,11 @@ const AttendanceHistoryPage: React.FC = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'present':
-        return <CheckCircle fontSize="small" />;
+        return <CheckCircleOutline fontSize="small" />;
       case 'absent':
-        return <Cancel fontSize="small" />;
+        return <HighlightOffOutlined fontSize="small" />;
       case 'late':
-        return <Schedule fontSize="small" />;
+        return <AccessTimeOutlined fontSize="small" />;
       case 'leave':
         return <EventNote fontSize="small" />;
       default:
@@ -315,7 +316,7 @@ const AttendanceHistoryPage: React.FC = () => {
                   </Typography>
                 </Box>
                 <Avatar sx={{ bgcolor: 'success.light', width: 56, height: 56 }}>
-                  <CheckCircle sx={{ color: 'success.main' }} />
+                  <CheckCircleOutline sx={{ color: 'success.main', fontSize: 36 }} />
                 </Avatar>
               </Stack>
             </CardContent>
@@ -335,7 +336,7 @@ const AttendanceHistoryPage: React.FC = () => {
                   </Typography>
                 </Box>
                 <Avatar sx={{ bgcolor: 'error.light', width: 56, height: 56 }}>
-                  <Cancel sx={{ color: 'error.main' }} />
+                  <HighlightOffOutlined sx={{ color: 'error.main', fontSize: 36 }} />
                 </Avatar>
               </Stack>
             </CardContent>
@@ -355,7 +356,7 @@ const AttendanceHistoryPage: React.FC = () => {
                   </Typography>
                 </Box>
                 <Avatar sx={{ bgcolor: 'warning.light', width: 56, height: 56 }}>
-                  <Schedule sx={{ color: 'warning.main' }} />
+                  <AccessTimeOutlined sx={{ color: 'warning.main', fontSize: 36 }} />
                 </Avatar>
               </Stack>
             </CardContent>

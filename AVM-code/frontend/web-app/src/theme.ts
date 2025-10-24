@@ -4,9 +4,9 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#203C64', // Dark Blue (Book Covers from logo)
+      main: '#2C4E6B', // Dark Blue (Exact match from logo)
       light: '#3A5A8A', // Lighter blue
-      dark: '#0E1826', // Darker blue (background gradient)
+      dark: '#1A2F47', // Darker blue (background gradient)
     },
     secondary: {
       main: '#47C752', // Green (Bookmark from logo)
@@ -90,7 +90,7 @@ const theme = createTheme({
           },
         },
         contained: {
-          background: 'linear-gradient(180deg, #3A5A8A 0%, #203C64 50%, #0E1826 100%)',
+          background: 'linear-gradient(180deg, #3A5A8A 0%, #2C4E6B 50%, #1A2F47 100%)',
           boxShadow: `
             0 1px 0 0 rgba(255,255,255,0.3) inset,
             0 -1px 0 0 rgba(0,0,0,0.2) inset,
@@ -101,7 +101,7 @@ const theme = createTheme({
           border: '1px solid rgba(58, 90, 138, 0.5)',
           color: '#ffffff !important',
           '&:hover': {
-            background: 'linear-gradient(180deg, #4A6A9A 0%, #2A4C74 50%, #203C64 100%)',
+            background: 'linear-gradient(180deg, #4A6A9A 0%, #3A5A8A 50%, #2C4E6B 100%)',
             boxShadow: `
               0 1px 0 0 rgba(255,255,255,0.4) inset,
               0 -1px 0 0 rgba(0,0,0,0.3) inset,
@@ -193,7 +193,7 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: 'linear-gradient(180deg, #3A5A8A 0%, #203C64 70%, #0E1826 100%)',
+          background: 'linear-gradient(180deg, #3A5A8A 0%, #2C4E6B 70%, #1A2F47 100%)',
           boxShadow: `
             0 1px 0 0 rgba(255,255,255,0.25) inset,
             0 4px 20px -2px rgba(32, 60, 100, 0.4),

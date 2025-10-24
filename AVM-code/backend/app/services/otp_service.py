@@ -4,9 +4,11 @@ Generates and validates OTPs for phone number login
 """
 import random
 import logging
+import os
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from app.models.parent import OTP
+from twilio.rest import Client
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -19,10 +21,53 @@ class OTPService:
         return str(random.randint(100000, 999999))
 
     @staticmethod
+    async def send_otp_via_twilio(phone_number: str, otp_code: str) -> bool:
+        """
+        Send OTP via Twilio SMS service
+        """
+        try:
+            # Twilio credentials from environment variables
+            account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+            auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+            twilio_number = os.getenv("TWILIO_PHONE_NUMBER")
+
+            if not all([account_sid, auth_token, twilio_number]):
+                logger.warning("Twilio credentials not set, skipping SMS")
+                return False
+
+            # Ensure phone number has country code
+            if not phone_number.startswith("+"):
+                phone_number = f"+91{phone_number}"
+
+            # Initialize Twilio client
+            client = Client(account_sid, auth_token)
+
+            # SMS message
+            message_body = f"Your OTP for Sparky login is {otp_code}. Valid for 10 minutes. - AVM Tutorials"
+
+            # Send SMS
+            message = client.messages.create(
+                body=message_body,
+                from_=twilio_number,
+                to=phone_number
+            )
+
+            if message.sid:
+                logger.info(f"✅ OTP sent via Twilio to {phone_number} (SID: {message.sid})")
+                return True
+            else:
+                logger.error(f"❌ Twilio failed to send message")
+                return False
+
+        except Exception as e:
+            logger.error(f"❌ Twilio error: {str(e)}")
+            return False
+
+    @staticmethod
     async def send_otp(phone_number: str, db: Session) -> str:
         """
         Generate and send OTP to phone number
-        For now, just logs to console. In production, integrate SMS service.
+        Tries MSG91 first, falls back to console logging
         """
         # Generate OTP
         otp_code = OTPService.generate_otp()
@@ -40,14 +85,21 @@ class OTPService:
         db.add(otp_record)
         db.commit()
 
-        # TODO: In production, send SMS via Twilio/other service
-        # For now, log to console and logger
-        otp_message = f"🔐 OTP for {phone_number}: {otp_code}"
-        validity_message = f"⏰ Valid for 10 minutes"
+        # Try to send via Twilio
+        sms_sent = await OTPService.send_otp_via_twilio(phone_number, otp_code)
 
-        print(otp_message)
+        # Always log to console (for backup/debugging)
+        if sms_sent:
+            console_msg = f"📱 OTP sent to {phone_number} via SMS"
+        else:
+            console_msg = f"🔐 OTP for {phone_number}: {otp_code} (SMS failed, using console)"
+
+        print(console_msg)
+        logger.info(console_msg)
+
+        # Log validity
+        validity_message = f"⏰ Valid for 10 minutes"
         print(validity_message)
-        logger.info(otp_message)
         logger.info(validity_message)
 
         return otp_code

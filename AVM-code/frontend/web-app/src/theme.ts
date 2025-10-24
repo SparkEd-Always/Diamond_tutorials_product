@@ -1,22 +1,22 @@
 import { createTheme } from '@mui/material/styles';
 
-// Sparky Color Palette - Exact colors from SparkEd Logo
+// SparkEd Color Palette - Official Brand Colors
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2C4E6B', // Dark Blue (Exact match from logo)
-      light: '#3A5A8A', // Lighter blue
-      dark: '#1A2F47', // Darker blue (background gradient)
+      main: '#2C4E8A', // Secondary Blue (main UI elements)
+      light: '#1E3664', // Background Bottom (lighter areas)
+      dark: '#1A2E5C', // Primary Blue (darkest)
     },
     secondary: {
-      main: '#47C752', // Green (Bookmark from logo)
-      light: '#6FFF8F', // Glow Green (soft glow effect)
-      dark: '#36A03E', // Darker green
+      main: '#3EE06D', // Green Bookmark (primary accent)
+      light: '#55F07A', // Green Highlight (hover/active states)
+      dark: '#2DBF5A', // Darker green (pressed states)
     },
     success: {
-      main: '#47C752', // Green bookmark
-      light: '#6FFF8F', // Glow green
-      dark: '#36A03E',
+      main: '#3EE06D', // Green bookmark
+      light: '#55F07A', // Green highlight
+      dark: '#2DBF5A',
     },
     warning: {
       main: '#F59E0B', // Warning Orange
@@ -90,7 +90,7 @@ const theme = createTheme({
           },
         },
         contained: {
-          background: 'linear-gradient(180deg, #3A5A8A 0%, #2C4E6B 50%, #1A2F47 100%)',
+          background: 'linear-gradient(180deg, #1E3664 0%, #2C4E8A 50%, #1A2E5C 100%)',
           boxShadow: `
             0 1px 0 0 rgba(255,255,255,0.3) inset,
             0 -1px 0 0 rgba(0,0,0,0.2) inset,
@@ -101,7 +101,7 @@ const theme = createTheme({
           border: '1px solid rgba(58, 90, 138, 0.5)',
           color: '#ffffff !important',
           '&:hover': {
-            background: 'linear-gradient(180deg, #4A6A9A 0%, #3A5A8A 50%, #2C4E6B 100%)',
+            background: 'linear-gradient(180deg, #2E5E9A 0%, #3C5E9A 50%, #2C4E8A 100%)',
             boxShadow: `
               0 1px 0 0 rgba(255,255,255,0.4) inset,
               0 -1px 0 0 rgba(0,0,0,0.3) inset,
@@ -123,7 +123,7 @@ const theme = createTheme({
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         },
         containedSecondary: {
-          background: 'linear-gradient(180deg, #6FFF8F 0%, #47C752 50%, #36A03E 100%)',
+          background: 'linear-gradient(180deg, #55F07A 0%, #3EE06D 50%, #2DBF5A 100%)',
           boxShadow: `
             0 1px 0 0 rgba(255,255,255,0.4) inset,
             0 -1px 0 0 rgba(0,0,0,0.15) inset,
@@ -133,7 +133,7 @@ const theme = createTheme({
           `,
           border: '1px solid rgba(111, 255, 143, 0.6)',
           '&:hover': {
-            background: 'linear-gradient(180deg, #8FFFAB 0%, #6FFF8F 50%, #47C752 100%)',
+            background: 'linear-gradient(180deg, #6FFF8F 0%, #55F07A 50%, #3EE06D 100%)',
             boxShadow: `
               0 1px 0 0 rgba(255,255,255,0.5) inset,
               0 -1px 0 0 rgba(0,0,0,0.2) inset,
@@ -193,7 +193,7 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: 'linear-gradient(180deg, #3A5A8A 0%, #2C4E6B 70%, #1A2F47 100%)',
+          background: 'linear-gradient(180deg, #1E3664 0%, #2C4E8A 70%, #16233E 100%)',
           boxShadow: `
             0 1px 0 0 rgba(255,255,255,0.25) inset,
             0 4px 20px -2px rgba(32, 60, 100, 0.4),

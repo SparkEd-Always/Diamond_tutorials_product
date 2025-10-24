@@ -2,6 +2,11 @@ import axios from 'axios';
 import { store } from '../store/store';
 import { logout } from '../store/slices/authSlice';
 
+// Configure axios baseURL from environment variable
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+console.log('API URL:', axios.defaults.baseURL);
+
 /**
  * Axios Response Interceptor
  * Handles 401 Unauthorized errors globally

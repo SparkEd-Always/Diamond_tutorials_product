@@ -67,7 +67,8 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleChangePasswordOpen = () => {
+  const handleChangePasswordOpen = (e: React.MouseEvent) => {
+    e.preventDefault();
     setChangePasswordOpen(true);
     setChangePasswordError('');
     setChangePasswordSuccess('');
@@ -119,8 +120,8 @@ const LoginPage: React.FC = () => {
 
     try {
       // First, login to get the token
-      const API_BASE_URL = process.env.REACT_APP_API_URL || '/api/v1';
-      const loginResponse = await axios.post(`${API_BASE_URL}/auth/login`,
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+      const loginResponse = await axios.post(`${API_BASE_URL}/api/v1/auth/login`,
         new URLSearchParams({
           username: changePasswordData.username,
           password: changePasswordData.currentPassword,
@@ -134,7 +135,7 @@ const LoginPage: React.FC = () => {
 
       // Then, change the password
       await axios.post(
-        `${API_BASE_URL}/auth/change-password`,
+        `${API_BASE_URL}/api/v1/auth/change-password`,
         {
           current_password: changePasswordData.currentPassword,
           new_password: changePasswordData.newPassword,
@@ -218,6 +219,7 @@ const LoginPage: React.FC = () => {
                     variant="outlined"
                     required
                     placeholder="Enter your username"
+                    InputLabelProps={{ shrink: true }}
                   />
 
                   <TextField
@@ -230,6 +232,7 @@ const LoginPage: React.FC = () => {
                     variant="outlined"
                     required
                     placeholder="Enter your password"
+                    InputLabelProps={{ shrink: true }}
                   />
 
                   <Button
@@ -287,6 +290,7 @@ const LoginPage: React.FC = () => {
                 variant="outlined"
                 required
                 placeholder="Enter your username"
+                InputLabelProps={{ shrink: true }}
               />
 
               <TextField
@@ -299,6 +303,7 @@ const LoginPage: React.FC = () => {
                 variant="outlined"
                 required
                 placeholder="Enter your current password"
+                InputLabelProps={{ shrink: true }}
               />
 
               <TextField
@@ -311,6 +316,7 @@ const LoginPage: React.FC = () => {
                 variant="outlined"
                 required
                 placeholder="Enter your new password (min 6 characters)"
+                InputLabelProps={{ shrink: true }}
               />
 
               <TextField
@@ -323,6 +329,7 @@ const LoginPage: React.FC = () => {
                 variant="outlined"
                 required
                 placeholder="Confirm your new password"
+                InputLabelProps={{ shrink: true }}
               />
             </Stack>
           </Box>

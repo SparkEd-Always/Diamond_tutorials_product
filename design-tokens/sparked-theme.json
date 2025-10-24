@@ -1,0 +1,133 @@
+{
+  "$schema": "https://tr.designtokens.org/format",
+  "name": "SparkEd Theme",
+  "version": "1.0.0",
+  "colors": {
+    "primary": {
+      "$type": "color",
+      "$value": "#2C4E8A",
+      "$description": "Primary blue - main UI elements"
+    },
+    "primary-dark": {
+      "$type": "color",
+      "$value": "#1A2E5C",
+      "$description": "Primary blue dark variant"
+    },
+    "primary-light": {
+      "$type": "color",
+      "$value": "#1E3664",
+      "$description": "Primary blue light variant"
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "#3EE06D",
+      "$description": "Green bookmark - primary accent"
+    },
+    "secondary-light": {
+      "$type": "color",
+      "$value": "#55F07A",
+      "$description": "Green highlight - hover/active states"
+    },
+    "secondary-dark": {
+      "$type": "color",
+      "$value": "#2DBF5A",
+      "$description": "Green dark - pressed states"
+    },
+    "background": {
+      "top": {
+        "$type": "color",
+        "$value": "#16233E",
+        "$description": "Gradient background top"
+      },
+      "bottom": {
+        "$type": "color",
+        "$value": "#1E3664",
+        "$description": "Gradient background bottom"
+      },
+      "default": {
+        "$type": "color",
+        "$value": "#F8FAFC",
+        "$description": "Default background"
+      },
+      "paper": {
+        "$type": "color",
+        "$value": "#FFFFFF",
+        "$description": "Paper/card background"
+      }
+    },
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": "#1F2937",
+        "$description": "Primary text color"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#6B7280",
+        "$description": "Secondary text color"
+      },
+      "on-primary": {
+        "$type": "color",
+        "$value": "#FFFFFF",
+        "$description": "Text on primary colored backgrounds"
+      },
+      "on-secondary": {
+        "$type": "color",
+        "$value": "#FFFFFF",
+        "$description": "Text on secondary colored backgrounds"
+      }
+    },
+    "base": {
+      "white": {
+        "$type": "color",
+        "$value": "#FFFFFF",
+        "$description": "Pure white"
+      },
+      "black": {
+        "$type": "color",
+        "$value": "#000000",
+        "$description": "Pure black"
+      }
+    }
+  },
+  "spacing": {
+    "xs": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": "32px"
+    }
+  },
+  "borderRadius": {
+    "sm": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "full": {
+      "$type": "dimension",
+      "$value": "9999px"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+/**
+ * SparkEd Color Palette - Official Brand Colors
+ * Generated for consistent use across web application
+ */
+
+:root {
+  /* Primary Blues */
+  --color-primary: #2C4E8A;
+  --color-primary-dark: #1A2E5C;
+  --color-primary-light: #1E3664;
+
+  /* Background Gradients */
+  --color-background-top: #16233E;
+  --color-background-bottom: #1E3664;
+
+  /* Accent Colors - Green */
+  --color-accent: #3EE06D;
+  --color-accent-light: #55F07A;
+  --color-accent-dark: #2DBF5A;
+
+  /* Success States (Green) */
+  --color-success: #3EE06D;
+  --color-success-light: #55F07A;
+  --color-success-dark: #2DBF5A;
+
+  /* Base Colors */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* Semantic Names */
+  --surface-primary: var(--color-primary);
+  --surface-background: var(--color-background-bottom);
+  --surface-accent: var(--color-accent);
+
+  /* Text Colors */
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --text-on-primary: var(--color-white);
+  --text-on-accent: var(--color-white);
+
+  /* Background */
+  --bg-default: #F8FAFC;
+  --bg-paper: var(--color-white);
+}
+
+/* Dark Theme Variant (Optional) */
+[data-theme="dark"] {
+  --color-primary: #3C5E9A;
+  --color-primary-dark: #16233E;
+  --color-primary-light: #2E5E9A;
+
+  --text-primary: var(--color-white);
+  --text-secondary: #D1D5DB;
+
+  --bg-default: #0F172A;
+  --bg-paper: #1E293B;
+}

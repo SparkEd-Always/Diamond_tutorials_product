@@ -14,12 +14,12 @@ import {
   Image,
 } from 'react-native';
 import axios from 'axios';
+import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { registerForPushNotificationsAsync, setupNotificationListeners } from '../services/notificationService';
 import { savePhoneNumber, updateLastLogin, hasCompletedSetup } from '../utils/secureStorage';
 
-// Use localhost with adb reverse for Android emulator, 192.168.1.4 for physical devices
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL = `${Constants.expoConfig?.extra?.apiUrl || 'http://localhost:8000'}/api/v1`;
 
 export default function LoginOTPScreen({ navigation, route }: any) {
   const { resetPIN, phone: prefilledPhone } = route?.params || {};
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#2C4E6B',
+    color: '#2C4E8A',
     marginBottom: 4,
   },
   subtitle: {
@@ -322,11 +322,11 @@ const styles = StyleSheet.create({
     color: '#1F2937',
   },
   button: {
-    backgroundColor: '#2C4E6B',
+    backgroundColor: '#2C4E8A',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
-    shadowColor: '#2C4E6B',
+    shadowColor: '#2C4E8A',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -346,23 +346,23 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   linkText: {
-    color: '#2C4E6B',
+    color: '#2C4E8A',
     fontSize: 14,
     fontWeight: '500',
   },
   footer: {
     marginTop: 32,
-    paddingTop: 24,
-    alignItems: 'center',
-    backgroundColor: '#FFF4E6',
-    paddingBottom: 12,
+    paddingTop: 16,
+    paddingBottom: 16,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    alignItems: 'center',
+    backgroundColor: '#2C4E8A',
+    borderRadius: 12,
   },
   footerBrand: {
     fontSize: 14,
-    color: '#6B7280',
-    fontWeight: '500',
+    color: '#FFFFFF',
+    fontWeight: '600',
     textAlign: 'center',
   },
 });

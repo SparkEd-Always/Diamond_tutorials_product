@@ -170,7 +170,7 @@ export default function ParentHomeScreen({ navigation, route }: any) {
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>AVM Tutorials Parent App v1.0</Text>
+          <Text style={styles.footerText}>© 2025 Sparky from SparkEd</Text>
         </View>
       </ScrollView>
     </View>
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#3EE06D',
     padding: 24,
     paddingTop: 48,
     flexDirection: 'row',
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#34C759',
+    backgroundColor: '#3EE06D',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     color: '#999',
   },
   viewButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#3EE06D',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     color: '#ccc',
   },
   contactCard: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#3EE06D',
     borderRadius: 12,
     padding: 20,
     margin: 16,
@@ -357,11 +357,15 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   footer: {
-    padding: 24,
+    padding: 16,
+    margin: 16,
     alignItems: 'center',
+    backgroundColor: '#2C4E8A',
+    borderRadius: 12,
   },
   footerText: {
     fontSize: 12,
-    color: '#999',
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 });

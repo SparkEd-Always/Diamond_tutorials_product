@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#2C4E6B',
+    color: '#2C4E8A',
     marginBottom: 5,
   },
   subtitle: {
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   retryText: {
-    color: '#4F46E5',
+    color: '#2C4E8A',
     fontSize: 14,
     fontWeight: '500',
   },
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   loginButton: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#2C4E8A',
     height: 48,
     borderRadius: 8,
     justifyContent: 'center',
@@ -310,14 +310,15 @@ const styles = StyleSheet.create({
   branding: {
     alignItems: 'center',
     marginTop: 30,
-    paddingVertical: 15,
-    backgroundColor: '#FFF4E6',
-    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    backgroundColor: '#2C4E8A',
+    borderRadius: 12,
   },
   brandingText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#6B7280',
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });
 

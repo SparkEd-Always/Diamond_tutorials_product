@@ -13,10 +13,10 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import Constants from 'expo-constants';
 import { MaterialIcons } from '@expo/vector-icons';
 
-// Use localhost with adb reverse for Android emulator, 192.168.1.4 for physical devices
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL = `${Constants.expoConfig?.extra?.apiUrl || 'http://localhost:8000'}/api/v1`;
 
 interface StudentAttendance {
   id: number;

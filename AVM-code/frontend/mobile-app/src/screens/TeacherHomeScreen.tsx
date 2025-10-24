@@ -138,7 +138,7 @@ export default function TeacherHomeScreen({ navigation, route }: any) {
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>AVM Tutorials Teacher App v1.0</Text>
+          <Text style={styles.footerText}>© 2025 Sparky from SparkEd</Text>
         </View>
       </ScrollView>
 
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2C4E8A',
     padding: 24,
     paddingTop: 48,
     flexDirection: 'row',
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#2C4E8A',
   },
   statLabel: {
     fontSize: 14,
@@ -322,12 +322,16 @@ const styles = StyleSheet.create({
     color: '#ccc',
   },
   footer: {
-    padding: 24,
+    padding: 16,
+    margin: 16,
     alignItems: 'center',
+    backgroundColor: '#2C4E8A',
+    borderRadius: 12,
   },
   footerText: {
     fontSize: 12,
-    color: '#999',
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   modalOverlay: {
     flex: 1,
@@ -347,7 +351,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#2C4E8A',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -375,7 +379,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   closeButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2C4E8A',
     borderRadius: 8,
     padding: 14,
     alignItems: 'center',

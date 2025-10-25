@@ -82,11 +82,10 @@ const Layout: React.FC = () => {
 
     // Mark activities as viewed when notification is opened
     const token = localStorage.getItem('token');
-    const API_BASE_URL = process.env.REACT_APP_API_URL || '/api/v1';
 
     if (token && user) {
       try {
-        await axios.post(`${API_BASE_URL}/activities/mark-viewed`, null, {
+        await axios.post('/api/v1/activities/mark-viewed', null, {
           headers: { Authorization: `Bearer ${token}` }
         });
         // Clear the unread count badge
@@ -105,25 +104,24 @@ const Layout: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
-      const API_BASE_URL = process.env.REACT_APP_API_URL || '/api/v1';
 
       if (!token || !user) return;
 
       try {
         // Fetch pending attendance count
-        const pendingResponse = await axios.get(`${API_BASE_URL}/attendance/pending-approval`, {
+        const pendingResponse = await axios.get('/api/v1/attendance/pending-approval', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setPendingCount(pendingResponse.data.length || 0);
 
         // Fetch all recent activities (for display in popover)
-        const activitiesResponse = await axios.get(`${API_BASE_URL}/activities/recent?limit=10`, {
+        const activitiesResponse = await axios.get('/api/v1/activities/recent?limit=10', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setActivities(activitiesResponse.data.activities || []);
 
         // Fetch unread activities count (for badge)
-        const unreadResponse = await axios.get(`${API_BASE_URL}/activities/recent?unread_only=true&limit=100`, {
+        const unreadResponse = await axios.get('/api/v1/activities/recent?unread_only=true&limit=100', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUnreadCount(unreadResponse.data.count || 0);

@@ -201,7 +201,7 @@ async def send_to_parents(
 
             # Send push notification if parent has push token
             if parent.push_token:
-                PushNotificationService.send_message_notification(
+                await PushNotificationService.send_message_notification(
                     push_token=parent.push_token,
                     sender_name="AVM Tutorial",
                     message_preview=message[:100],

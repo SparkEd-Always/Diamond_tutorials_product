@@ -567,6 +567,7 @@ async def get_attendance_history(
 
         result.append({
             "id": record.id,
+            "student_id": student.id if student else None,
             "student_name": student.full_name if student else "Unknown",
             "student_unique_id": student.unique_id if student else "N/A",
             "class_name": student.class_name if student else "N/A",

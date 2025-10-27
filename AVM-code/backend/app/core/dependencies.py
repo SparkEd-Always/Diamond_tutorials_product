@@ -91,17 +91,27 @@ async def get_current_mobile_user(
     if user_type is None:
         raise credentials_exception
 
+    # Normalize phone number - check all variations like in auth_mobile.py
+    phone_without_prefix = sub.replace('+91', '') if sub.startswith('+91') else sub
+    phone_with_prefix = f"+91{phone_without_prefix}" if not sub.startswith('+91') else sub
+
     # Mobile user - teacher or parent
     if user_type == "teacher":
         teacher = db.query(Teacher).filter(
-            (Teacher.phone == sub) | (Teacher.phone_number == sub)
+            (Teacher.phone == sub) | (Teacher.phone_number == sub) |
+            (Teacher.phone == phone_with_prefix) | (Teacher.phone_number == phone_with_prefix) |
+            (Teacher.phone == phone_without_prefix) | (Teacher.phone_number == phone_without_prefix)
         ).first()
         if teacher is None:
             raise credentials_exception
         return teacher
 
     elif user_type == "parent":
-        parent = db.query(Parent).filter(Parent.phone_number == sub).first()
+        parent = db.query(Parent).filter(
+            (Parent.phone_number == sub) |
+            (Parent.phone_number == phone_with_prefix) |
+            (Parent.phone_number == phone_without_prefix)
+        ).first()
         if parent is None:
             raise credentials_exception
         return parent

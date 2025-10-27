@@ -79,3 +79,19 @@ tmp/
 # Uploaded documents
 admission-system/backend/documents/
 documents/uploads/
+
+# Mobile app builds and distribution files
+*.apk
+*.aab
+*.ipa
+AVM-code/frontend/mobile-app/*.apk
+AVM-code/frontend/mobile-app/download.html
+AVM-code/frontend/mobile-app/qr-code.html
+
+# Backup files
+*-backup.*
+*.backup
+
+# Large image files
+*.png.large
+SparkEd*.png

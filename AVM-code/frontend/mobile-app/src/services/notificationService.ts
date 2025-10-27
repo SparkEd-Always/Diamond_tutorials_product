@@ -39,10 +39,15 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
   // Android-specific setup
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
+      name: 'Default Notifications',
+      description: 'Important updates from your school',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#4F46E5',
+      sound: 'default',
+      enableVibrate: true,
+      showBadge: true,
+      enableLights: true,
     });
   }
 

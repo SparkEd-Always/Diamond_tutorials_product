@@ -291,8 +291,16 @@ async def approve_attendance(
                 if not parent_phone:
                     continue
 
+                # Normalize phone number for comparison (handle +91 prefix variations)
+                phone_without_prefix = parent_phone.replace('+91', '') if parent_phone.startswith('+91') else parent_phone
+                phone_with_prefix = f"+91{phone_without_prefix}" if not parent_phone.startswith('+91') else parent_phone
+
                 # Get parent's push token from database
-                parent = db.query(Parent).filter(Parent.phone_number == parent_phone).first()
+                parent = db.query(Parent).filter(
+                    (Parent.phone_number == parent_phone) |
+                    (Parent.phone_number == phone_with_prefix) |
+                    (Parent.phone_number == phone_without_prefix)
+                ).first()
 
                 if parent and parent.push_token:
                     # Send push notification

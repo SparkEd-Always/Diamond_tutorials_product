@@ -155,8 +155,18 @@ async def verify_otp_mobile(
 
                 # Update parent record
                 parent.last_login = datetime.utcnow()
+
+                # Debug logging for push token
+                print(f"📱 Parent login - Phone: {phone}")
+                print(f"📱 Push token received: {request.push_token}")
+                print(f"📱 Device type: {request.device_type}")
+
                 if request.push_token:
                     parent.push_token = request.push_token
+                    print(f"✅ Push token saved for parent {parent.name}")
+                else:
+                    print(f"⚠️ No push token provided during login!")
+
                 if request.device_type:
                     parent.device_type = request.device_type
                 db.commit()

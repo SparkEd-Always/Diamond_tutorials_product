@@ -69,8 +69,8 @@ export default function LoginOTPScreen({ navigation, route }: any) {
         setOtpSent(true);
         setUserType(response.data.user_type);
         Alert.alert(
-          'OTP Sent',
-          `OTP sent successfully. Check backend console for OTP (development mode).`
+          'Success',
+          'OTP sent'
         );
       }
     } catch (error: any) {
@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   title: {
     fontSize: 32,
@@ -356,12 +357,10 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 16,
     alignItems: 'center',
-    backgroundColor: '#2C4E8A',
-    borderRadius: 12,
   },
   footerBrand: {
     fontSize: 14,
-    color: '#FFFFFF',
+    color: '#6B7280',
     fontWeight: '600',
     textAlign: 'center',
   },

@@ -207,6 +207,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     marginBottom: 20,
+    backgroundColor: 'transparent',
   },
   title: {
     fontSize: 28,
@@ -312,13 +313,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
     paddingVertical: 16,
     paddingHorizontal: 16,
-    backgroundColor: '#2C4E8A',
-    borderRadius: 12,
   },
   brandingText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#6B7280',
   },
 });
 

@@ -40,10 +40,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "https://product-production-afd1.up.railway.app",
-      "eas": {
-        "projectId": "sparked-sparky"
-      }
+      "apiUrl": "https://product-production-afd1.up.railway.app"
     }
   }
 }

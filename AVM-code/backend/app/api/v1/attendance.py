@@ -356,6 +356,12 @@ async def get_student_attendance(
     if end_date:
         query = query.filter(Attendance.date <= end_date)
 
+    # Filter based on user type:
+    # - Parents: Can ONLY see admin-approved records
+    # - Teachers/Admins: Can see all records
+    if isinstance(current_user, Parent):
+        query = query.filter(Attendance.admin_approved == True)
+
     records = query.order_by(Attendance.date.desc()).all()
     return records
 
@@ -490,20 +496,43 @@ async def get_attendance_history(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_mobile_user)
 ):
-    """Get attendance history with student details (admin only)"""
+    """Get attendance history with student details (teachers and parents)"""
     # Default to last 7 days if no dates provided
     if not start_date:
         start_date = date.today() - timedelta(days=7)
     if not end_date:
         end_date = date.today()
 
-    # Query attendance records with joins (approved or not, since mobile app needs unapproved too)
+    # Query attendance records with joins
     query = db.query(Attendance).join(
         Student, Attendance.student_id == Student.id
     ).filter(
         Attendance.date >= start_date,
         Attendance.date <= end_date
     )
+
+    # Filter based on user type:
+    # - Teachers: Can see all records (approved + pending) for their workflow
+    # - Parents: Can ONLY see admin-approved records
+    if isinstance(current_user, Parent):
+        # Parents can only see approved attendance
+        query = query.filter(Attendance.admin_approved == True)
+        # Also filter to only their children's attendance
+        children = db.query(Student).filter(
+            Student.parent_phone == current_user.phone_number
+        ).all()
+        if children:
+            student_ids = [child.id for child in children]
+            query = query.filter(Student.id.in_(student_ids))
+        else:
+            # No children found, return empty list
+            return []
+    elif isinstance(current_user, Teacher):
+        # Teachers can see all records (approved and pending)
+        pass
+    else:
+        # Admin/Web users can see all records
+        pass
 
     # Add optional filters
     if class_name:

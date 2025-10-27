@@ -13,9 +13,9 @@ router = APIRouter()
 @router.get("/classes", response_model=List[str])
 async def get_classes(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_teacher_user)
+    current_user: Union[User, Teacher, Parent] = Depends(get_current_mobile_user)
 ):
-    """Get distinct classes from students (teachers and admins only)"""
+    """Get distinct classes from students (mobile app: teachers and admins only)"""
     # Query distinct class names from active students
     classes = db.query(Student.class_name).filter(
         Student.is_active == "Active",

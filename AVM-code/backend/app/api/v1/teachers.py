@@ -64,7 +64,7 @@ async def create_teacher(
             first_name=teacher_data['first_name'],
             last_name=teacher_data['last_name'],
             full_name=teacher_data['full_name'],
-            email=teacher_data['email'],
+            email=teacher_data.get('email'),  # Optional field
             phone_number=teacher_data['phone_number'],
             subjects=teacher_data.get('subjects', []),
             classes_assigned=teacher_data.get('classes_assigned', []),

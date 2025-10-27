@@ -10,6 +10,7 @@ from app.models.attendance import Attendance, AttendanceStatus
 from app.models.student import Student
 from app.models.user import User
 from app.models.teacher import Teacher
+from app.models.parent import Parent
 from app.services.activity_service import ActivityService
 
 router = APIRouter()

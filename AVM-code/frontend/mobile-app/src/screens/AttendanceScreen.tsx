@@ -26,6 +26,8 @@ interface StudentAttendance {
   section: string;
   status: 'present' | 'absent' | 'late' | 'leave' | null;
   remarks?: string;
+  isLocked?: boolean;  // Attendance already approved, cannot edit
+  lockedReason?: string;  // Why it's locked
 }
 
 export default function AttendanceScreen({ navigation }: any) {
@@ -59,19 +61,41 @@ export default function AttendanceScreen({ navigation }: any) {
         return;
       }
 
-      const response = await axios.get(`${API_BASE_URL}/students/`, {
+      // Fetch students
+      const studentsResponse = await axios.get(`${API_BASE_URL}/students/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const studentsData = response.data.map((student: any) => ({
-        id: student.id,
-        unique_id: student.unique_id,
-        full_name: student.full_name,
-        class_name: student.class_name,
-        section: student.section,
-        status: null as StudentAttendance['status'],
-        remarks: '',
-      }));
+      // Fetch existing attendance for today
+      const today = selectedDate.toISOString().split('T')[0];
+      let existingAttendance: any[] = [];
+      try {
+        const attendanceResponse = await axios.get(`${API_BASE_URL}/attendance/history`, {
+          params: { start_date: today, end_date: today },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        existingAttendance = attendanceResponse.data || [];
+      } catch (err) {
+        console.log('No existing attendance found or error fetching:', err);
+      }
+
+      const studentsData = studentsResponse.data.map((student: any) => {
+        // Check if this student has existing attendance that's been submitted/approved
+        const existing = existingAttendance.find((att: any) => att.student_id === student.id);
+        const isLocked = existing && (existing.submitted_for_approval || existing.admin_approved);
+
+        return {
+          id: student.id,
+          unique_id: student.unique_id,
+          full_name: student.full_name,
+          class_name: student.class_name,
+          section: student.section,
+          status: (existing && isLocked ? existing.status : null) as StudentAttendance['status'],
+          remarks: (existing && isLocked ? existing.remarks : ''),
+          isLocked: isLocked,
+          lockedReason: existing?.admin_approved ? 'Already approved by admin' : 'Submitted for approval'
+        };
+      });
 
       setStudents(studentsData);
 
@@ -122,22 +146,34 @@ export default function AttendanceScreen({ navigation }: any) {
   };
 
   const handleSubmitAttendance = async () => {
+    // Filter out locked students from submission
     const attendanceData = students
-      .filter((student) => student.status !== null)
+      .filter((student) => student.status !== null && !student.isLocked)
       .map((student) => ({
         student_id: student.id,
         status: student.status as string,
         remarks: student.remarks || '',
       }));
 
+    const lockedCount = students.filter((s) => s.isLocked).length;
+
     if (attendanceData.length === 0) {
-      Alert.alert('No Attendance', 'Please mark attendance for at least one student');
+      if (lockedCount > 0) {
+        Alert.alert('No New Attendance', `All ${lockedCount} students have already submitted/approved attendance. No new attendance to submit.`);
+      } else {
+        Alert.alert('No Attendance', 'Please mark attendance for at least one student');
+      }
       return;
+    }
+
+    let message = `Submit attendance for ${attendanceData.length} students?`;
+    if (lockedCount > 0) {
+      message += `\n\n(${lockedCount} student(s) with already approved attendance will be skipped)`;
     }
 
     Alert.alert(
       'Submit Attendance',
-      `Submit attendance for ${attendanceData.length} students?`,
+      message,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -148,7 +184,7 @@ export default function AttendanceScreen({ navigation }: any) {
               const token = await AsyncStorage.getItem('access_token');
               const formattedDate = selectedDate.toISOString().split('T')[0];
 
-              await axios.post(
+              const response = await axios.post(
                 `${API_BASE_URL}/attendance/mark`,
                 {
                   date: formattedDate,
@@ -157,11 +193,11 @@ export default function AttendanceScreen({ navigation }: any) {
                 { headers: { Authorization: `Bearer ${token}` } }
               );
 
-              Alert.alert('Success', 'Attendance submitted successfully! Status remains visible for your reference.');
+              // Show success with skipped students info if any
+              Alert.alert('Success', response.data.message || 'Attendance submitted successfully!');
             } catch (error: any) {
               console.error('Error submitting attendance:', error.response?.data || error.message);
               const errorMessage = error.response?.data?.detail || 'Failed to submit attendance';
-              // Show clean error message without status code prefix
               Alert.alert('Attendance Submission', errorMessage);
             } finally {
               setSubmitting(false);
@@ -191,12 +227,26 @@ export default function AttendanceScreen({ navigation }: any) {
     const statuses: StudentAttendance['status'][] = ['present', 'absent', 'late', 'leave'];
 
     return (
-      <View style={styles.studentCard}>
+      <View style={[
+        styles.studentCard,
+        item.isLocked && styles.lockedCard
+      ]}>
         <View style={styles.studentInfo}>
-          <Text style={styles.studentName}>{item.full_name}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={styles.studentName}>{item.full_name}</Text>
+            {item.isLocked && (
+              <View style={styles.lockedBadge}>
+                <MaterialIcons name="lock" size={12} color="#FFFFFF" />
+                <Text style={styles.lockedBadgeText}>Approved</Text>
+              </View>
+            )}
+          </View>
           <Text style={styles.studentDetails}>
             {item.unique_id} • {item.class_name}
           </Text>
+          {item.isLocked && item.lockedReason && (
+            <Text style={styles.lockedReasonText}>{item.lockedReason}</Text>
+          )}
         </View>
 
         <View style={styles.statusButtons}>
@@ -206,13 +256,16 @@ export default function AttendanceScreen({ navigation }: any) {
               style={[
                 styles.statusButton,
                 { backgroundColor: item.status === status ? getStatusColor(status) : '#F3F4F6' },
+                item.isLocked && styles.disabledButton
               ]}
-              onPress={() => handleStatusChange(item.id, status)}
+              onPress={() => !item.isLocked && handleStatusChange(item.id, status)}
+              disabled={item.isLocked}
             >
               <Text
                 style={[
                   styles.statusButtonText,
                   { color: item.status === status ? '#FFFFFF' : '#6B7280' },
+                  item.isLocked && styles.disabledButtonText
                 ]}
               >
                 {status?.charAt(0).toUpperCase()}
@@ -221,9 +274,16 @@ export default function AttendanceScreen({ navigation }: any) {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.remarksButton} onPress={() => handleRemarksPress(item)}>
-          <MaterialIcons name="comment" size={20} color={item.remarks ? '#4F46E5' : '#9CA3AF'} />
-          <Text style={[styles.remarksButtonText, { color: item.remarks ? '#4F46E5' : '#9CA3AF' }]}>
+        <TouchableOpacity
+          style={[styles.remarksButton, item.isLocked && styles.disabledButton]}
+          onPress={() => !item.isLocked && handleRemarksPress(item)}
+          disabled={item.isLocked}
+        >
+          <MaterialIcons name="comment" size={20} color={item.isLocked ? '#D1D5DB' : (item.remarks ? '#4F46E5' : '#9CA3AF')} />
+          <Text style={[
+            styles.remarksButtonText,
+            { color: item.isLocked ? '#D1D5DB' : (item.remarks ? '#4F46E5' : '#9CA3AF') }
+          ]}>
             {item.remarks ? 'Edit Note' : 'Add Note'}
           </Text>
         </TouchableOpacity>
@@ -514,6 +574,38 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     marginTop: 4,
+  },
+  lockedCard: {
+    backgroundColor: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    opacity: 0.8,
+  },
+  lockedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#10B981',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  lockedBadgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  lockedReasonText: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontStyle: 'italic',
+    marginTop: 4,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  disabledButtonText: {
+    color: '#D1D5DB',
   },
   statusButtons: {
     flexDirection: 'row',

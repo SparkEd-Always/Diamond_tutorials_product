@@ -61,6 +61,7 @@ async def mark_attendance(
                 )
 
         created_records = []
+        skipped_records = []
 
         for record in student_records:
             # Validate student record fields
@@ -85,12 +86,14 @@ async def mark_attendance(
             ).first()
 
             if existing_attendance:
-                # Check if already submitted for approval - prevent editing if locked
+                # Check if already submitted for approval - skip this student instead of blocking
                 if existing_attendance.submitted_for_approval:
-                    raise HTTPException(
-                        status_code=status.HTTP_403_FORBIDDEN,
-                        detail=f"Attendance for {student.full_name} has been submitted for approval and cannot be edited"
-                    )
+                    skipped_records.append({
+                        "student_id": student.id,
+                        "student_name": student.full_name,
+                        "reason": "already_submitted"
+                    })
+                    continue  # Skip this student, continue with others
 
                 # Update existing record
                 existing_attendance.status = AttendanceStatus(record['status'])
@@ -146,9 +149,18 @@ async def mark_attendance(
                 # Don't fail attendance submission if activity logging fails
 
         status_message = "saved as draft" if is_draft else "submitted for approval"
+
+        # Build response message
+        message = f"Attendance {status_message} successfully for {len(created_records)} students"
+        if skipped_records:
+            skipped_names = ", ".join([s["student_name"] for s in skipped_records])
+            message += f"\n\nSkipped {len(skipped_records)} student(s) with already approved attendance: {skipped_names}"
+
         return {
-            "message": f"Attendance {status_message} successfully for {len(created_records)} students",
+            "message": message,
             "records_created": len(created_records),
+            "records_skipped": len(skipped_records),
+            "skipped_students": skipped_records,
             "date": attendance_date.strftime('%Y-%m-%d') if hasattr(attendance_date, 'strftime') else str(attendance_date),
             "status": "draft" if is_draft else "pending_admin_approval"
         }

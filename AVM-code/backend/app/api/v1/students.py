@@ -10,7 +10,7 @@ from app.models.parent import Parent
 
 router = APIRouter()
 
-@router.get("/classes", response_model=List[dict])
+@router.get("/classes", response_model=List[str])
 async def get_classes(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_teacher_user)
@@ -20,14 +20,11 @@ async def get_classes(
     classes = db.query(Student.class_name).filter(
         Student.is_active == "Active",
         Student.class_name.isnot(None)
-    ).distinct().all()
+    ).distinct().order_by(Student.class_name).all()
 
-    # Format the results
+    # Return simple list of class names
     return [
-        {
-            "value": class_name[0].lower().replace(" ", "_"),  # "Class 7" -> "class_7"
-            "label": f"{class_name[0]} Parents"  # "Class 7" -> "Class 7 Parents"
-        }
+        class_name[0]
         for class_name in classes
         if class_name[0]  # Filter out any None values
     ]

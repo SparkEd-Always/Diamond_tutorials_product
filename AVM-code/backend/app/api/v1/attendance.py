@@ -519,8 +519,15 @@ async def get_attendance_history(
         # Parents can only see approved attendance
         query = query.filter(Attendance.admin_approved == True)
         # Also filter to only their children's attendance
+        # Normalize phone number for comparison (handle +91 prefix variations)
+        parent_phone = current_user.phone_number
+        phone_without_prefix = parent_phone.replace('+91', '') if parent_phone.startswith('+91') else parent_phone
+        phone_with_prefix = f"+91{phone_without_prefix}" if not parent_phone.startswith('+91') else parent_phone
+
         children = db.query(Student).filter(
-            Student.parent_phone == current_user.phone_number
+            (Student.parent_phone == parent_phone) |
+            (Student.parent_phone == phone_with_prefix) |
+            (Student.parent_phone == phone_without_prefix)
         ).all()
         if children:
             student_ids = [child.id for child in children]

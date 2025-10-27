@@ -45,7 +45,7 @@ const API_BASE_URL = '/api/v1';
 interface AttendanceRecord {
   id: number;
   student_name: string;
-  student_id: string;
+  student_unique_id: string;
   class_name: string;
   date: string;
   status: 'present' | 'absent' | 'late' | 'leave';
@@ -92,7 +92,7 @@ const AttendanceHistoryPage: React.FC = () => {
   const filteredData = attendanceData.filter(record => {
     const matchesSearch = searchQuery === '' ||
       record.student_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      record.student_id.toLowerCase().includes(searchQuery.toLowerCase());
+      record.student_unique_id.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesStatus = statusFilter === 'all' || record.status === statusFilter;
     const matchesClass = classFilter === 'all' || record.class_name === classFilter;
@@ -149,7 +149,7 @@ const AttendanceHistoryPage: React.FC = () => {
     // Prepare CSV rows
     const rows = filteredData.map(record => [
       record.student_name,
-      record.student_id,
+      record.student_unique_id,
       record.class_name,
       format(new Date(record.date), 'dd MMM yyyy'),
       record.status.toUpperCase(),
@@ -412,7 +412,7 @@ const AttendanceHistoryPage: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={record.student_id}
+                        label={record.student_unique_id}
                         size="small"
                         variant="outlined"
                         color="primary"

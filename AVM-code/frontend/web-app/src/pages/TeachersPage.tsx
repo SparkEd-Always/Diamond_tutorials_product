@@ -66,11 +66,6 @@ const SUBJECTS_LIST = [
   'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Physical Education'
 ];
 
-const CLASSES_LIST = [
-  'Class 5A', 'Class 5B', 'Class 6A', 'Class 6B', 'Class 7A', 'Class 7B',
-  'Class 8A', 'Class 8B', 'Class 9A', 'Class 9B', 'Class 10A', 'Class 10B'
-];
-
 const TeachersPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { teachers, isLoading, error } = useSelector((state: RootState) => state.teachers);
@@ -80,6 +75,7 @@ const TeachersPage: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [classesList, setClassesList] = useState<string[]>([]);
   const [formData, setFormData] = useState<Teacher>({
     first_name: '',
     last_name: '',
@@ -98,7 +94,20 @@ const TeachersPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchTeachers());
+    fetchClasses();
   }, [dispatch]);
+
+  const fetchClasses = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/students/classes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setClassesList(response.data);
+    } catch (error) {
+      console.error('Failed to fetch classes:', error);
+      showToast('Failed to load classes', 'error');
+    }
+  };
 
   const handleSelectTeacher = (teacherId: number) => {
     setSelectedTeachers(prev =>
@@ -491,7 +500,7 @@ const TeachersPage: React.FC = () => {
                     </Box>
                   )}
                 >
-                  {CLASSES_LIST.map((className) => (
+                  {classesList.map((className) => (
                     <MenuItem key={className} value={className}>
                       {className}
                     </MenuItem>

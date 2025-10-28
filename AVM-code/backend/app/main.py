@@ -165,6 +165,36 @@ async def create_admins():
     finally:
         db.close()
 
+@app.post("/clear-activity-logs")
+async def clear_activity_logs():
+    """Clear all records from the activity_logs table"""
+    from sqlalchemy.orm import sessionmaker
+    from .models.activity_log import ActivityLog
+
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+
+    try:
+        # Count records before deletion
+        count_before = db.query(ActivityLog).count()
+
+        # Delete all activity logs
+        db.query(ActivityLog).delete()
+        db.commit()
+
+        count_after = db.query(ActivityLog).count()
+
+        return {
+            "message": "Activity logs cleared successfully",
+            "records_deleted": count_before,
+            "records_remaining": count_after
+        }
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e)}
+    finally:
+        db.close()
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

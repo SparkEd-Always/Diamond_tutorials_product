@@ -86,6 +86,85 @@ async def init_admin():
     finally:
         db.close()
 
+@app.post("/create-admins")
+async def create_admins():
+    """Create two admin users: ADMumesh and ADMmahantesh"""
+    from sqlalchemy.orm import sessionmaker
+    from .models.user import User, UserRole
+    from bcrypt import hashpw, gensalt
+
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+
+    admins_data = [
+        {
+            "unique_id": "AVM-ADM-002",
+            "username": "ADMumesh",
+            "full_name": "Umesh",
+            "email": "umesh@avm.com",
+            "phone_number": "+91-9008152221",
+            "password": "admin1"
+        },
+        {
+            "unique_id": "AVM-ADM-003",
+            "username": "ADMmahantesh",
+            "full_name": "Mahantesh",
+            "email": "mahantesh@avm.com",
+            "phone_number": "+91-8197537794",
+            "password": "admin2"
+        }
+    ]
+
+    results = []
+
+    try:
+        for admin_data in admins_data:
+            # Check if user already exists
+            existing = db.query(User).filter(
+                (User.username == admin_data["username"]) |
+                (User.email == admin_data["email"])
+            ).first()
+
+            if existing:
+                results.append({
+                    "username": admin_data["username"],
+                    "status": "already_exists"
+                })
+                continue
+
+            # Hash password with bcrypt
+            hashed_password = hashpw(admin_data["password"].encode('utf-8'), gensalt()).decode('utf-8')
+
+            # Create admin user
+            admin = User(
+                unique_id=admin_data["unique_id"],
+                email=admin_data["email"],
+                phone_number=admin_data["phone_number"],
+                username=admin_data["username"],
+                full_name=admin_data["full_name"],
+                hashed_password=hashed_password,
+                role=UserRole.ADMIN,
+                is_active=True,
+                is_verified=True
+            )
+
+            db.add(admin)
+            db.commit()
+
+            results.append({
+                "username": admin_data["username"],
+                "full_name": admin_data["full_name"],
+                "status": "created"
+            })
+
+        return {"message": "Done", "results": results}
+
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e)}
+    finally:
+        db.close()
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

@@ -128,7 +128,7 @@ const FeeStructuresPage: React.FC = () => {
       const className = classList.find(c => c.id === classId)?.class_name || 'Unknown';
       const yearName = yearList.find(y => y.id === yearId)?.year_name || 'Unknown';
 
-      const totalAmount = structureList.reduce((sum, s) => sum + Number(s.amount), 0);
+      const totalAmount = structureList.reduce((sum, s) => sum + Number(s.total_amount || s.amount || 0), 0);
 
       result.push({
         id: key,
@@ -169,19 +169,36 @@ const FeeStructuresPage: React.FC = () => {
 
   const handleEditFeeType = (feeType: FeeStructure) => {
     setEditingFeeType(feeType);
-    setEditAmount(feeType.amount);
+    setEditAmount(feeType.total_amount || feeType.amount || 0);
   };
 
   const handleSaveEdit = async () => {
-    if (!editingFeeType) return;
+    if (!editingFeeType || !selectedStructure) return;
 
     try {
       await feeStructureApi.update(editingFeeType.id, {
         ...editingFeeType,
         amount: editAmount,
+        total_amount: editAmount, // Update both for compatibility
       });
       setEditingFeeType(null);
-      loadData(); // Reload to refresh
+
+      // Reload data and update selectedStructure
+      await loadData();
+
+      // After loadData completes, find and update the selected structure
+      // This ensures the dialog shows the updated data
+      const structuresData = await feeStructureApi.list({});
+      const updatedGroup = structuresData.filter(
+        s => s.class_id === selectedStructure.classId && s.academic_year_id === selectedStructure.academicYearId
+      );
+      const totalAmount = updatedGroup.reduce((sum, s) => sum + Number(s.total_amount || s.amount || 0), 0);
+
+      setSelectedStructure({
+        ...selectedStructure,
+        structures: updatedGroup,
+        totalAmount,
+      });
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to update fee type');
     }
@@ -240,7 +257,8 @@ const FeeStructuresPage: React.FC = () => {
     }
   };
 
-  const getFeeTypeName = (feeTypeId: number) => {
+  const getFeeTypeName = (feeTypeId?: number) => {
+    if (!feeTypeId) return 'Unknown';
     return feeTypes.find(ft => ft.id === feeTypeId)?.type_name || 'Unknown';
   };
 
@@ -452,11 +470,25 @@ const FeeStructuresPage: React.FC = () => {
                   }
                 >
                   <ListItemText
-                    primary={getFeeTypeName(structure.fee_type_id)}
+                    primary={
+                      <Box>
+                        <Typography variant="body1" fontWeight={500}>
+                          {structure.fee_type_name || structure.structure_name || getFeeTypeName(structure.fee_type_id)}
+                        </Typography>
+                        {structure.components && structure.components.length > 0 && (
+                          <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                            {structure.components.length === 1
+                              ? `(Editing ${structure.components[0].fee_type_name} component)`
+                              : `(${structure.components.length} components - editing structure total)`
+                            }
+                          </Typography>
+                        )}
+                      </Box>
+                    }
                     secondary={
                       <Box component="span" sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                         <Chip
-                          label={formatCurrency(structure.amount)}
+                          label={formatCurrency(structure.total_amount || structure.amount || 0)}
                           size="small"
                           color="primary"
                           variant="outlined"
@@ -465,6 +497,14 @@ const FeeStructuresPage: React.FC = () => {
                           <Chip
                             label={`${structure.installments} Installments`}
                             size="small"
+                            variant="outlined"
+                          />
+                        )}
+                        {structure.components && structure.components.length > 0 && (
+                          <Chip
+                            label={`✓ Component-based`}
+                            size="small"
+                            color="success"
                             variant="outlined"
                           />
                         )}

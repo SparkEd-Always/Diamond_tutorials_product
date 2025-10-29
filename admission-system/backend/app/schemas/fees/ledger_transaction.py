@@ -126,3 +126,46 @@ class StudentLedgerDetail(BaseModel):
     summary: LedgerSummary
     recent_transactions: List[LedgerTimelineItem]
     total_transaction_count: int
+
+
+class LedgerTransactionCreate(BaseModel):
+    """Schema for creating a ledger transaction (internal use)"""
+    student_id: int
+    academic_year_id: int
+    entry_type: str
+    amount: Decimal
+    description: str
+    transaction_date: Optional[datetime] = None
+    remarks: Optional[str] = None
+    fee_session_id: Optional[int] = None
+    adhoc_fee_id: Optional[int] = None
+    payment_id: Optional[int] = None
+
+
+class ManualEntryCreate(BaseModel):
+    """Schema for creating manual ledger entry (admin only)"""
+    student_id: int = Field(..., gt=0, description="Student ID")
+    academic_year_id: int = Field(..., gt=0, description="Academic year ID")
+    entry_type: str = Field(..., description="Entry type (discount, waiver, refund, etc.)")
+    amount: Decimal = Field(..., gt=0, description="Amount (always positive)")
+    description: str = Field(..., min_length=5, description="Description of transaction")
+    transaction_date: Optional[datetime] = Field(None, description="Transaction date (defaults to now)")
+    remarks: Optional[str] = Field(None, description="Admin remarks")
+
+
+class ReversalRequest(BaseModel):
+    """Schema for reversing a transaction"""
+    transaction_id: int = Field(..., gt=0, description="Transaction ID to reverse")
+    reason: str = Field(..., min_length=10, description="Reason for reversal")
+
+
+class LedgerTransactionListResponse(BaseModel):
+    """Response for paginated ledger transaction list"""
+    transactions: List[LedgerTransactionResponse]
+    total_count: int
+    page_number: int
+    page_size: int
+    total_pages: int
+    current_balance: Decimal
+    total_debits: Decimal
+    total_credits: Decimal

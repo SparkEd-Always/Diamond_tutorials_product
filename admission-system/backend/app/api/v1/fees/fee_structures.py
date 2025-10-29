@@ -10,12 +10,13 @@ from typing import List, Optional
 from ....core.database import get_db
 from ....core.security import get_current_user
 from ....models.user import User, UserRole
-from ....models.fees import FeeStructure, FeeType
+from ....models.fees import FeeStructure, FeeStructureComponent, FeeType
 from ....models.academic import AcademicYear, Class
 from ....schemas.fees import (
     FeeStructureCreate,
     FeeStructureUpdate,
-    FeeStructureResponse
+    FeeStructureResponse,
+    FeeStructureComponentResponse
 )
 
 router = APIRouter()
@@ -71,7 +72,7 @@ async def list_fee_structures(
     # Apply pagination
     fee_structures = query.offset(skip).limit(limit).all()
 
-    # Enrich with related names
+    # Enrich with related names and components
     results = []
     for fs in fee_structures:
         fs_dict = FeeStructureResponse.model_validate(fs).model_dump()
@@ -83,6 +84,18 @@ async def list_fee_structures(
             fs_dict['class_name'] = fs.class_info.class_name
         if fs.academic_year:
             fs_dict['academic_year_name'] = fs.academic_year.year_name
+
+        # Add components with enriched fee type names
+        if fs.components:
+            enriched_components = []
+            for component in fs.components:
+                comp_dict = FeeStructureComponentResponse.model_validate(component).model_dump()
+                if component.fee_type:
+                    comp_dict['fee_type_name'] = component.fee_type.type_name
+                enriched_components.append(comp_dict)
+            fs_dict['components'] = enriched_components
+        else:
+            fs_dict['components'] = []
 
         results.append(fs_dict)
 
@@ -106,7 +119,7 @@ async def get_fee_structure(
             detail=f"Fee structure with ID {fee_structure_id} not found"
         )
 
-    # Enrich with related names
+    # Enrich with related names and components
     fs_dict = FeeStructureResponse.model_validate(fee_structure).model_dump()
     if fee_structure.fee_type:
         fs_dict['fee_type_name'] = fee_structure.fee_type.type_name
@@ -114,6 +127,18 @@ async def get_fee_structure(
         fs_dict['class_name'] = fee_structure.class_info.class_name
     if fee_structure.academic_year:
         fs_dict['academic_year_name'] = fee_structure.academic_year.year_name
+
+    # Add components with enriched fee type names
+    if fee_structure.components:
+        enriched_components = []
+        for component in fee_structure.components:
+            comp_dict = FeeStructureComponentResponse.model_validate(component).model_dump()
+            if component.fee_type:
+                comp_dict['fee_type_name'] = component.fee_type.type_name
+            enriched_components.append(comp_dict)
+        fs_dict['components'] = enriched_components
+    else:
+        fs_dict['components'] = []
 
     return fs_dict
 
@@ -189,6 +214,9 @@ async def update_fee_structure(
     Update an existing fee structure
 
     **Permissions:** Admin only
+
+    **Legacy Behavior:** If updating 'amount', this will also update the
+    corresponding component (for legacy single-fee-type structures).
     """
     # Get existing fee structure
     fee_structure = db.query(FeeStructure).filter(FeeStructure.id == fee_structure_id).first()
@@ -199,15 +227,40 @@ async def update_fee_structure(
             detail=f"Fee structure with ID {fee_structure_id} not found"
         )
 
-    # Update fields
+    # Track if amount is being updated
     update_data = fee_structure_data.model_dump(exclude_unset=True)
+    amount_update = update_data.get('amount', update_data.get('total_amount'))
+
+    print(f"[DEBUG] Update data: {update_data}")
+    print(f"[DEBUG] Amount update: {amount_update}")
+    print(f"[DEBUG] Components count: {len(fee_structure.components) if fee_structure.components else 0}")
+
+    # Update fee structure fields
     for field, value in update_data.items():
         setattr(fee_structure, field, value)
+
+    # If amount is being updated and this is a legacy structure with one component,
+    # update the component as well
+    if amount_update is not None and fee_structure.components:
+        if len(fee_structure.components) == 1:
+            # Legacy structure - update the single component
+            component = fee_structure.components[0]
+            print(f"[DEBUG] Updating component {component.id} from {component.amount} to {amount_update}")
+            component.amount = amount_update
+
+            # Recalculate total_amount from components
+            fee_structure.recalculate_and_update_total()
+            print(f"[DEBUG] Recalculated total_amount: {fee_structure.total_amount}")
+        elif len(fee_structure.components) > 1:
+            # Multi-component structure - just recalculate total from existing components
+            # (individual component updates should use the components API)
+            fee_structure.recalculate_and_update_total()
 
     db.commit()
     db.refresh(fee_structure)
 
-    return fee_structure
+    # Return enriched response
+    return await get_fee_structure(fee_structure_id, db, current_user)
 
 
 @router.delete("/{fee_structure_id}", status_code=status.HTTP_204_NO_CONTENT)

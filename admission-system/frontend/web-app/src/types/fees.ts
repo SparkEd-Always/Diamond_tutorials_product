@@ -18,12 +18,32 @@ export interface FeeType {
   updated_at?: string;
 }
 
+export interface FeeStructureComponent {
+  id: number;
+  fee_structure_id: number;
+  fee_type_id: number;
+  amount: number;
+  is_mandatory: boolean;
+  display_order: number;
+  created_at: string;
+
+  // Related entity names for display (populated by backend)
+  fee_type_name?: string;
+}
+
 export interface FeeStructure {
   id: number;
   academic_year_id: number;
   class_id: number;
-  fee_type_id: number;
-  amount: number;
+  fee_type_id?: number; // Optional now (legacy field)
+  amount?: number; // Optional now (legacy field, use total_amount instead)
+
+  // New fields for refactored fee structure
+  total_amount?: number; // Total amount from all components
+  structure_name?: string; // Human-readable name
+  structure_code?: string; // Unique code
+  structure_description?: string; // Description
+
   installments: number;
   due_day_of_month?: number;
   due_date_fixed?: string;
@@ -41,6 +61,9 @@ export interface FeeStructure {
   fee_type_name?: string;
   class_name?: string;
   academic_year_name?: string;
+
+  // Components for refactored structures
+  components?: FeeStructureComponent[];
 }
 
 export interface StudentFeeAssignment {

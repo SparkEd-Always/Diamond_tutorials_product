@@ -29,7 +29,11 @@
       "Bash(timeout 10 python -m app.main)",
       "Bash(timeout:*)",
       "Bash(findstr:*)",
-      "Bash(tasklist:*)"
+      "Bash(tasklist:*)",
+      "Bash(test:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build)",
+      "Bash(node -e \"try { require(''./src/types/ledger.ts''); console.log(''OK''); } catch(e) { console.log(''Syntax OK - TS file''); }\")"
     ],
     "deny": [],
     "ask": []

@@ -12,6 +12,10 @@ from .fee_type import (
 )
 
 from .fee_structure import (
+    FeeStructureComponentBase,
+    FeeStructureComponentCreate,
+    FeeStructureComponentUpdate,
+    FeeStructureComponentResponse,
     FeeStructureBase,
     FeeStructureCreate,
     FeeStructureUpdate,
@@ -72,6 +76,12 @@ __all__ = [
     "FeeTypeCreate",
     "FeeTypeUpdate",
     "FeeTypeResponse",
+
+    # Fee Structure Component
+    "FeeStructureComponentBase",
+    "FeeStructureComponentCreate",
+    "FeeStructureComponentUpdate",
+    "FeeStructureComponentResponse",
 
     # Fee Structure
     "FeeStructureBase",

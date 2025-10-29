@@ -1,304 +1,326 @@
 /**
- * Student Ledger TypeScript Types
+ * Ledger Type Definitions
  *
- * These types match the backend API responses for the student financial ledger system.
- * The ledger is the single source of truth for all student financial transactions.
+ * TypeScript types for student fee ledger and transactions
  */
 
-/**
- * Ledger Entry Types (Transaction Types)
- */
+// ============================================================================
+// Ledger Transaction Types
+// ============================================================================
+
 export type LedgerEntryType =
-  // CHARGES (Debits - Money Owed by Student)
-  | 'fee_assignment'      // Regular fee structure assignment
-  | 'adhoc_fee'           // One-time fees (lost items, etc.)
-  | 'late_fee'            // Overdue penalties
-  | 'fine'                // Disciplinary fines
-  | 'adjustment_debit'    // Manual increase in balance
+  // Fee Assignments (Debits)
+  | 'fee_assignment'
+  | 'adhoc_fee'
+  | 'late_fee'
+  | 'penalty'
+  // Payments (Credits)
+  | 'payment_online'
+  | 'payment_cash'
+  | 'payment_cheque'
+  | 'payment_dd'
+  | 'payment_bank_transfer'
+  // Adjustments (Credits)
+  | 'discount'
+  | 'waiver'
+  | 'refund'
+  | 'late_fee_reversal'
+  | 'write_off'
+  // Corrections
+  | 'reversal';
 
-  // PAYMENTS (Credits - Money Received from Student)
-  | 'payment_online'      // Online payments (UPI, cards, etc.)
-  | 'payment_cash'        // Cash at school office
-  | 'payment_cheque'      // Cheque payment
-  | 'payment_dd'          // Demand draft
-  | 'payment_bank_transfer' // NEFT/RTGS/IMPS
-  | 'payment_upi'         // UPI payments
-
-  // ADJUSTMENTS (Credits - Reductions in Amount Due)
-  | 'discount'            // Discounts applied
-  | 'waiver'              // Fee waivers
-  | 'scholarship'         // Scholarship credits
-  | 'refund'              // Refund to student
-  | 'adjustment_credit'   // Manual decrease in balance
-
-  // CORRECTIONS
-  | 'reversal';           // Reverse a previous transaction
-
-/**
- * Payment Method Types
- */
-export type PaymentMethod =
-  | 'cash'
-  | 'upi'
-  | 'card'
-  | 'cheque'
-  | 'bank_transfer'
-  | 'dd'
-  | 'online';
-
-/**
- * Base Ledger Transaction
- * Represents a single financial transaction in the student ledger
- */
 export interface LedgerTransaction {
   id: number;
-  transaction_number: string;          // TXN/2024-25/000001
-  transaction_date: string;             // ISO date string
+  transaction_number: string;
+  transaction_date: string;
   student_id: number;
   academic_year_id: number;
-  entry_type: LedgerEntryType;
-  debit_amount: number;                 // Amount charged (fees)
-  credit_amount: number;                // Amount paid/reduced
-  balance: number;                      // Balance after this transaction
-  description: string;
-  remarks?: string;
-  transaction_metadata?: Record<string, any>;
-
-  // Payment details (for payment entries)
-  payment_method?: PaymentMethod;
-  payment_reference?: string;           // Transaction ID, cheque number, etc.
-
-  // References to source records
-  reference_type?: string;              // 'fee_session', 'adhoc_fee', 'payment', etc.
+  entry_type: LedgerEntryType | string;
+  debit_amount: number;
+  credit_amount: number;
+  balance: number;
+  reference_type?: string;
   reference_id?: number;
   fee_session_id?: number;
   adhoc_fee_id?: number;
   payment_id?: number;
   invoice_id?: number;
-
-  // Reversal support
+  description: string;
+  remarks?: string;
+  metadata?: Record<string, any>;
+  created_by?: number;
+  created_at: string;
   is_reversed: boolean;
   reversed_by?: number;
   reversed_at?: string;
   reversal_transaction_id?: number;
-  reverses_transaction_id?: number;
 
-  // Audit trail
-  created_by?: number;
-  created_at: string;
-  is_locked: boolean;
+  // Populated from relationships (optional)
+  student_name?: string;
+  academic_year_name?: string;
+  created_by_name?: string;
 }
 
-/**
- * Ledger Timeline Item (Simplified for Timeline View)
- */
 export interface LedgerTimelineItem {
   id: number;
   transaction_number: string;
   transaction_date: string;
-  entry_type: LedgerEntryType;
-  description: string;
+  entry_type: string;
   debit_amount: number;
   credit_amount: number;
   balance: number;
-  payment_method?: PaymentMethod;
+  description: string;
+  remarks?: string;
   is_reversed: boolean;
   created_at: string;
+  payment_method?: string;
 }
 
-/**
- * Ledger Summary (Balance Overview)
- */
+// ============================================================================
+// Ledger Summary Types
+// ============================================================================
+
 export interface LedgerSummary {
-  total_debits: number;      // Total fees assigned
-  total_credits: number;     // Total payments received
-  current_balance: number;   // Outstanding amount (debits - credits)
-  transaction_count: number; // Number of transactions
+  student_id: number;
+  academic_year_id: number;
+  total_debits: number;
+  total_credits: number;
+  current_balance: number;
+  transaction_count: number;
+  first_transaction_date?: string;
+  last_transaction_date?: string;
+
+  // Additional calculated fields
+  total_fees_assigned?: number;
+  total_paid?: number;
+  total_adjustments?: number;
 }
 
-/**
- * Student Ledger Detail (Full Ledger with Timeline)
- */
+export interface StudentFeeLedger {
+  id: number;
+  student_id: number;
+  academic_year_id: number;
+  total_fees_assigned: number;
+  total_paid: number;
+  total_outstanding: number;
+  total_discount: number;
+  total_late_fee: number;
+  has_outstanding: boolean;
+  has_overdue: boolean;
+  is_defaulter: boolean;
+  last_payment_date?: string;
+  last_payment_amount?: number;
+  updated_at: string;
+
+  // Optional populated fields
+  student_name?: string;
+  first_name?: string;
+  last_name?: string;
+  academic_year_name?: string;
+}
+
 export interface StudentLedgerDetail {
   student_id: number;
   student_name: string;
   admission_number: string;
   roll_number?: string;
+  academic_year_id: number;
+  academic_year_name: string;
   summary: LedgerSummary;
   timeline: LedgerTimelineItem[];
   total_transactions: number;
-  page_size: number;
+}
+
+// ============================================================================
+// API Request/Response Types
+// ============================================================================
+
+export interface LedgerTransactionListResponse {
+  transactions: LedgerTransaction[];
+  total_count: number;
   page_number: number;
-}
-
-/**
- * Manual Ledger Entry Creation (Admin creates manual entry)
- */
-export interface ManualLedgerEntryCreate {
-  student_id: number;
-  academic_year_id: number;
-  entry_type: LedgerEntryType;
-  amount: number;
-  description: string;
-  transaction_date?: string;      // Defaults to now if not provided
-  payment_method?: PaymentMethod;
-  payment_reference?: string;
-}
-
-/**
- * Reversal Request (Reverse a transaction)
- */
-export interface ReversalRequest {
-  transaction_id: number;
-  reason: string;
-}
-
-/**
- * Ledger Statistics (Overall System Stats)
- */
-export interface LedgerStatistics {
-  total_transactions: number;
+  page_size: number;
+  total_pages: number;
+  current_balance: number;
   total_debits: number;
   total_credits: number;
-  net_outstanding: number;
-  breakdown_by_type: {
-    entry_type: string;
-    count: number;
-    debit_total: number;
-    credit_total: number;
-  }[];
 }
 
-/**
- * Search Transaction Result
- */
-export interface TransactionSearchResult {
-  id: number;
-  transaction_number: string;
-  transaction_date: string;
+export interface LedgerTransactionFilters {
   student_id: number;
-  student_name: string;
-  admission_number: string;
-  entry_type: string;
-  description: string;
-  debit_amount: number;
-  credit_amount: number;
-  balance: number;
-  payment_method?: string;
-  is_reversed: boolean;
-}
-
-/**
- * Search Transactions Response
- */
-export interface SearchTransactionsResponse {
-  total_count: number;
-  page_size: number;
-  page_number: number;
-  transactions: TransactionSearchResult[];
-}
-
-/**
- * Ledger Query Parameters (Filtering and Pagination)
- */
-export interface LedgerQueryParams {
   academic_year_id?: number;
-  entry_type?: LedgerEntryType;
+  entry_type?: string;
   start_date?: string;
   end_date?: string;
   skip?: number;
   limit?: number;
 }
 
-/**
- * Search Query Parameters
- */
-export interface SearchQueryParams extends LedgerQueryParams {
-  query: string;
-  min_amount?: number;
-  max_amount?: number;
+export interface ManualEntryCreate {
+  student_id: number;
+  academic_year_id: number;
+  entry_type: LedgerEntryType | string;
+  amount: number;
+  description: string;
+  transaction_date?: string;
+  remarks?: string;
 }
 
-/**
- * Entry Type Display Config (For UI rendering)
- */
+export interface ManualLedgerEntryCreate extends ManualEntryCreate {}
+
+export interface LedgerQueryParams {
+  skip?: number;
+  limit?: number;
+  entry_type?: string;
+  start_date?: string;
+  end_date?: string;
+  academic_year_id?: number;
+}
+
+export interface SearchQueryParams {
+  query: string;
+  skip?: number;
+  limit?: number;
+  entry_type?: string;
+  start_date?: string;
+  end_date?: string;
+}
+
+export interface LedgerStatistics {
+  total_students: number;
+  total_transactions: number;
+  total_debits: number;
+  total_credits: number;
+  total_outstanding: number;
+  students_with_outstanding: number;
+  students_with_credit_balance: number;
+  average_balance: number;
+  median_balance: number;
+  total_defaulters?: number;
+}
+
+export interface SearchTransactionsResponse {
+  transactions: LedgerTransaction[];
+  total_count: number;
+  page_number: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface ReversalRequest {
+  transaction_id: number;
+  reason: string;
+}
+
+// ============================================================================
+// Payment Allocation Types
+// ============================================================================
+
+export interface PaymentAllocation {
+  payment_id: number;
+  student_id: number;
+  fee_type: 'fee_session' | 'adhoc_fee';
+  fee_session_id?: number;
+  adhoc_fee_id?: number;
+  allocated_amount: number;
+  fee_description: string;
+  allocated_by?: number;
+  allocated_at?: string;
+}
+
+export interface PaymentAllocationRequest {
+  fee_session_id?: number;
+  adhoc_fee_id?: number;
+  amount: number;
+}
+
+export interface PaymentAllocationResponse {
+  fee_session_id?: number;
+  adhoc_fee_id?: number;
+  fee_description: string;
+  allocated_amount: number;
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+export function getEntryTypeLabel(entryType: string): string {
+  const labels: Record<string, string> = {
+    'fee_assignment': 'Fee Assignment',
+    'adhoc_fee': 'Adhoc Fee',
+    'late_fee': 'Late Fee',
+    'penalty': 'Penalty',
+    'payment_online': 'Online Payment',
+    'payment_cash': 'Cash Payment',
+    'payment_cheque': 'Cheque Payment',
+    'payment_dd': 'Demand Draft',
+    'payment_bank_transfer': 'Bank Transfer',
+    'discount': 'Discount',
+    'waiver': 'Waiver',
+    'refund': 'Refund',
+    'late_fee_reversal': 'Late Fee Reversal',
+    'write_off': 'Write Off',
+    'reversal': 'Reversal',
+  };
+  return labels[entryType] || entryType;
+}
+
+export function formatCurrency(amount: number): string {
+  return `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+export function getBalanceColor(balance: number): 'error' | 'success' | 'default' {
+  if (balance > 0) return 'error'; // Outstanding (student owes money)
+  if (balance < 0) return 'success'; // Credit (school owes money)
+  return 'default'; // Zero balance
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+}
+
+export function formatDateTime(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+// Entry type configuration for UI display
 export interface EntryTypeConfig {
-  value: LedgerEntryType;
   label: string;
-  color: 'error' | 'success' | 'info' | 'warning';
-  icon: string;
+  color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
   isDebit: boolean;
 }
 
-/**
- * Entry Type Configurations for UI
- */
-export const LEDGER_ENTRY_TYPES: EntryTypeConfig[] = [
-  // Debits (Charges)
-  { value: 'fee_assignment', label: 'Fee Assignment', color: 'error', icon: '📚', isDebit: true },
-  { value: 'adhoc_fee', label: 'Adhoc Fee', color: 'error', icon: '💰', isDebit: true },
-  { value: 'late_fee', label: 'Late Fee', color: 'error', icon: '⏰', isDebit: true },
-  { value: 'fine', label: 'Fine', color: 'error', icon: '⚠️', isDebit: true },
-  { value: 'adjustment_debit', label: 'Adjustment (Debit)', color: 'error', icon: '📝', isDebit: true },
-
-  // Credits (Payments)
-  { value: 'payment_online', label: 'Online Payment', color: 'success', icon: '💳', isDebit: false },
-  { value: 'payment_cash', label: 'Cash Payment', color: 'success', icon: '💵', isDebit: false },
-  { value: 'payment_cheque', label: 'Cheque Payment', color: 'success', icon: '📄', isDebit: false },
-  { value: 'payment_dd', label: 'Demand Draft', color: 'success', icon: '🏦', isDebit: false },
-  { value: 'payment_bank_transfer', label: 'Bank Transfer', color: 'success', icon: '🏧', isDebit: false },
-  { value: 'payment_upi', label: 'UPI Payment', color: 'success', icon: '📱', isDebit: false },
-
-  // Adjustments (Credits)
-  { value: 'discount', label: 'Discount', color: 'info', icon: '🎫', isDebit: false },
-  { value: 'waiver', label: 'Waiver', color: 'info', icon: '🎓', isDebit: false },
-  { value: 'scholarship', label: 'Scholarship', color: 'info', icon: '🏆', isDebit: false },
-  { value: 'refund', label: 'Refund', color: 'info', icon: '↩️', isDebit: false },
-  { value: 'adjustment_credit', label: 'Adjustment (Credit)', color: 'info', icon: '📝', isDebit: false },
-
-  // Corrections
-  { value: 'reversal', label: 'Reversal', color: 'warning', icon: '🔄', isDebit: false },
-];
-
-/**
- * Get entry type configuration
- */
-export const getEntryTypeConfig = (entryType: LedgerEntryType): EntryTypeConfig | undefined => {
-  return LEDGER_ENTRY_TYPES.find(type => type.value === entryType);
+export const LEDGER_ENTRY_TYPES: Record<string, EntryTypeConfig> = {
+  'fee_assignment': { label: 'Fee Assignment', color: 'error', isDebit: true },
+  'adhoc_fee': { label: 'Adhoc Fee', color: 'warning', isDebit: true },
+  'late_fee': { label: 'Late Fee', color: 'error', isDebit: true },
+  'penalty': { label: 'Penalty', color: 'error', isDebit: true },
+  'payment_online': { label: 'Online Payment', color: 'success', isDebit: false },
+  'payment_cash': { label: 'Cash Payment', color: 'success', isDebit: false },
+  'payment_cheque': { label: 'Cheque Payment', color: 'success', isDebit: false },
+  'payment_dd': { label: 'Demand Draft', color: 'success', isDebit: false },
+  'payment_bank_transfer': { label: 'Bank Transfer', color: 'success', isDebit: false },
+  'discount': { label: 'Discount', color: 'info', isDebit: false },
+  'waiver': { label: 'Waiver', color: 'info', isDebit: false },
+  'refund': { label: 'Refund', color: 'primary', isDebit: false },
+  'late_fee_reversal': { label: 'Late Fee Reversal', color: 'info', isDebit: false },
+  'write_off': { label: 'Write Off', color: 'warning', isDebit: false },
+  'reversal': { label: 'Reversal', color: 'secondary', isDebit: false },
 };
 
-/**
- * Format currency (Indian Rupees)
- */
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-};
-
-/**
- * Format date
- */
-export const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('en-IN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-};
-
-/**
- * Format date and time
- */
-export const formatDateTime = (dateString: string): string => {
-  return new Date(dateString).toLocaleString('en-IN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
+export function getEntryTypeConfig(entryType: string): EntryTypeConfig | undefined {
+  return LEDGER_ENTRY_TYPES[entryType];
+}

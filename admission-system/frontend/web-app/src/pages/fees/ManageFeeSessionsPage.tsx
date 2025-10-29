@@ -111,77 +111,78 @@ const ManageFeeSessionsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
+      <Container maxWidth={false} sx={{ width: '100vw', py: 4, display: 'flex', justifyContent: 'center' }}>
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
           <CircularProgress />
         </Box>
-      </Box>
+      </Container>
     );
   }
 
   return (
-    <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
-      {/* Back Button */}
-      <Box sx={{ px: 2, mb: 2 }}>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/admin/fees/dashboard')}
-        >
-          Back to Fee Dashboard
-        </Button>
-      </Box>
-
-      {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} px={2}>
-        <Typography variant="h4" component="h1" fontWeight="bold">
-          Manage Fee Sessions
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={handleCreateSession}
-          size="large"
-        >
-          Create New Session
-        </Button>
-      </Box>
-
-      {error && (
-        <Box sx={{ px: 2, mb: 3 }}>
-          <Alert severity="error">
-            {error}
-          </Alert>
+    <Container maxWidth={false} sx={{ width: '100vw', py: 4, display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ width: '100%', maxWidth: '1400px' }}>
+        {/* Back Button */}
+        <Box sx={{ mb: 2 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate('/admin/fees/dashboard')}
+          >
+            Back to Fee Dashboard
+          </Button>
         </Box>
-      )}
 
-      {/* Filters */}
-      <Box sx={{ px: 2, mb: 3 }}>
-        <Paper sx={{ p: 2 }}>
-          <Box display="flex" gap={2} alignItems="center">
-            <FormControl size="small" sx={{ minWidth: 200 }}>
-              <InputLabel>Filter by Status</InputLabel>
-              <Select
-                value={statusFilter}
-                label="Filter by Status"
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <MenuItem value="">All Statuses</MenuItem>
-                <MenuItem value="draft">Draft</MenuItem>
-                <MenuItem value="active">Active</MenuItem>
-                <MenuItem value="closed">Closed</MenuItem>
-                <MenuItem value="archived">Archived</MenuItem>
-              </Select>
-            </FormControl>
-            <Typography variant="body2" color="text.secondary">
-              Total Sessions: {sessions.length}
-            </Typography>
+        {/* Header */}
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h4" component="h1" fontWeight="bold">
+            Manage Fee Sessions
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={handleCreateSession}
+            size="large"
+          >
+            Create New Session
+          </Button>
+        </Box>
+
+        {error && (
+          <Box sx={{ mb: 3 }}>
+            <Alert severity="error">
+              {error}
+            </Alert>
           </Box>
-        </Paper>
-      </Box>
+        )}
 
-      {/* Sessions Table */}
-      <Box sx={{ px: 2 }}>
+        {/* Filters */}
+        <Box sx={{ mb: 3 }}>
+          <Paper sx={{ p: 2 }}>
+            <Box display="flex" gap={2} alignItems="center">
+              <FormControl size="small" sx={{ minWidth: 200 }}>
+                <InputLabel>Filter by Status</InputLabel>
+                <Select
+                  value={statusFilter}
+                  label="Filter by Status"
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <MenuItem value="">All Statuses</MenuItem>
+                  <MenuItem value="draft">Draft</MenuItem>
+                  <MenuItem value="active">Active</MenuItem>
+                  <MenuItem value="closed">Closed</MenuItem>
+                  <MenuItem value="archived">Archived</MenuItem>
+                </Select>
+              </FormControl>
+              <Typography variant="body2" color="text.secondary">
+                Total Sessions: {sessions.length}
+              </Typography>
+            </Box>
+          </Paper>
+        </Box>
+
+        {/* Sessions Table */}
+        <Box>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -309,7 +310,7 @@ const ManageFeeSessionsPage: React.FC = () => {
           </Table>
         </TableContainer>
       </Box>
-    </Box>
+    </Container>
   );
 };
 

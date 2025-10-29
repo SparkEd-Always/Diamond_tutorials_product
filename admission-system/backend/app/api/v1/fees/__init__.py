@@ -7,6 +7,7 @@ This module contains all fee management API endpoints organized by domain.
 from fastapi import APIRouter
 from .fee_types import router as fee_types_router
 from .fee_structures import router as fee_structures_router
+from .fee_structures_new import router as fee_structures_new_router
 from .fee_sessions import router as fee_sessions_router
 from .adhoc_fees import router as adhoc_fees_router
 from .assignments import router as assignments_router
@@ -25,8 +26,16 @@ router.include_router(
     tags=["Fee Types"]
 )
 
+# Legacy fee structures endpoint (old design)
 router.include_router(
     fee_structures_router,
+    prefix="/structures/legacy",
+    tags=["Fee Structures (Legacy)"]
+)
+
+# New fee structures endpoint (refactored with parent-child components)
+router.include_router(
+    fee_structures_new_router,
     prefix="/structures",
     tags=["Fee Structures"]
 )

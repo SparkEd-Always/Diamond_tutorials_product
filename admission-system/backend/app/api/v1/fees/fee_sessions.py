@@ -59,13 +59,21 @@ def create_fee_session(
     Create a new fee session and assign students
 
     Steps:
-    1. Create FeeSession record
-    2. For each student, create StudentFeeAssignment
-    3. Link students to session via FeeSessionAssignment
+    1. Validate fee structure exists and has components
+    2. Create FeeSession record
+    3. For each student:
+       - Create ONE StudentFeeAssignment (references entire fee structure)
+       - Create FeeSessionAssignment (links student to session)
+       - Create ledger entry for fee assignment
     4. Calculate session statistics
+
+    Note: Uses refactored fee structure with parent-child architecture.
+    One fee structure = multiple components = one assignment per student.
     """
-    # Validate fee structure exists
-    fee_structure = db.query(FeeStructure).filter(
+    # Validate fee structure exists (with components eagerly loaded)
+    fee_structure = db.query(FeeStructure).options(
+        joinedload(FeeStructure.components)
+    ).filter(
         FeeStructure.id == session_data.fee_structure_id,
         FeeStructure.is_active == True
     ).first()
@@ -76,15 +84,15 @@ def create_fee_session(
             detail="Fee structure not found or inactive"
         )
 
-    # Get ALL fee structures for this class and academic year
-    all_fee_structures = db.query(FeeStructure).filter(
-        FeeStructure.class_id == fee_structure.class_id,
-        FeeStructure.academic_year_id == session_data.academic_year_id,
-        FeeStructure.is_active == True
-    ).all()
+    # Validate fee structure has components
+    if not fee_structure.components:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Fee structure has no components defined"
+        )
 
-    # Calculate total fee amount for this class
-    total_fee_amount = sum(float(fs.amount) for fs in all_fee_structures)
+    # Get total amount from fee structure (calculated from components)
+    total_fee_amount = float(fee_structure.total_amount)
 
     # Validate academic year exists
     academic_year = db.query(AcademicYear).filter(
@@ -126,34 +134,26 @@ def create_fee_session(
 
     # Create assignments for each student
     for student in students:
-        # Create StudentFeeAssignment for EACH fee structure (all fee types)
-        total_expected_amount = 0.0
-        first_assignment_id = None
+        # Create ONE StudentFeeAssignment per student (references entire structure)
+        student_fee_assignment = StudentFeeAssignment(
+            student_id=student.id,
+            fee_structure_id=session_data.fee_structure_id,  # Single structure reference
+            custom_due_date=session_data.due_date,
+            assigned_by=current_user.id,
+            is_active=True
+        )
+        db.add(student_fee_assignment)
+        db.flush()  # Get assignment ID
 
-        for fee_struct in all_fee_structures:
-            student_fee_assignment = StudentFeeAssignment(
-                student_id=student.id,
-                fee_structure_id=fee_struct.id,
-                custom_due_date=session_data.due_date,
-                assigned_by=current_user.id,
-                is_active=True
-            )
-            db.add(student_fee_assignment)
-            db.flush()
+        # Calculate total expected amount (with any student-specific discounts)
+        total_expected_amount = student_fee_assignment.get_final_amount()
 
-            # Save first assignment ID for reference
-            if first_assignment_id is None:
-                first_assignment_id = student_fee_assignment.id
-
-            # Add this fee structure's amount to total
-            total_expected_amount += student_fee_assignment.get_final_amount()
-
-        # Create FeeSessionAssignment (link to session) with TOTAL amount
+        # Create FeeSessionAssignment (link student to this session)
         session_assignment = FeeSessionAssignment(
             session_id=new_session.id,
             student_id=student.id,
-            student_fee_assignment_id=first_assignment_id,  # Reference first assignment
-            expected_amount=total_expected_amount,  # Total of ALL fee structures
+            student_fee_assignment_id=student_fee_assignment.id,
+            expected_amount=total_expected_amount,
             paid_amount=0.00,
             outstanding_amount=total_expected_amount,
             payment_status="pending",
@@ -169,7 +169,6 @@ def create_fee_session(
                 academic_year_id=session_data.academic_year_id,
                 amount=total_expected_amount,
                 description=f"{session_data.session_name} - Fee Assignment",
-                entry_type=LedgerEntryType.FEE_ASSIGNMENT.value,
                 fee_session_id=new_session.id,
                 transaction_date=session_data.start_date,
                 created_by=current_user.id,
@@ -285,7 +284,8 @@ def get_fee_session_details(
     response_data = FeeSessionDetailResponse.model_validate(session)
     response_data.collection_percentage = session.calculate_collection_percentage()
     response_data.student_assignments = student_assignments
-    response_data.fee_structure_name = f"{session.fee_structure.fee_type.type_name} - {session.fee_structure.class_info.class_name}"
+    # Updated to use new fee structure with structure_name
+    response_data.fee_structure_name = f"{session.fee_structure.structure_name} - {session.fee_structure.class_info.class_name}"
     response_data.academic_year_name = session.academic_year.year_name
 
     return response_data

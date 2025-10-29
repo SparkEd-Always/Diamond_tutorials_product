@@ -9,7 +9,6 @@ import theme from './theme';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ParentDashboard from './pages/ParentDashboard';
-import AdminDashboard from './pages/AdminDashboard';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminAdmissionDashboard from './pages/AdminAdmissionDashboard';
 import AdminFeeDashboard from './pages/AdminFeeDashboard';
@@ -49,7 +48,8 @@ import AdhocFeeListPage from './pages/fees/AdhocFeeListPage';
 import CreateAdhocFeePage from './pages/fees/CreateAdhocFeePage';
 import RecordPaymentPage from './pages/fees/RecordPaymentPage';
 import StudentLedgerTimelinePage from './pages/ledger/StudentLedgerTimelinePage';
-import ManualLedgerEntryPage from './pages/ledger/ManualLedgerEntryPage';
+import ManualEntryFormPage from './pages/admin/ledger/ManualEntryFormPage';
+import PaymentAllocationPage from './pages/admin/ledger/PaymentAllocationPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) => {
@@ -333,7 +333,15 @@ function AppRoutes() {
         path="/admin/ledger/manual-entry"
         element={
           <ProtectedRoute adminOnly={true}>
-            <ManualLedgerEntryPage />
+            <ManualEntryFormPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/ledger/payment/:paymentId/allocate"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <PaymentAllocationPage />
           </ProtectedRoute>
         }
       />

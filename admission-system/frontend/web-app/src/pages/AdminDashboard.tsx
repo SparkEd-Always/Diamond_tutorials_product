@@ -35,6 +35,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import ForumIcon from "@mui/icons-material/Forum";
+import ReceiptIcon from "@mui/icons-material/Receipt";
 import config from "../config";
 
 interface DashboardStats {
@@ -168,25 +169,25 @@ const AdminDashboard = () => {
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ py: 4, width: '100%', overflow: 'hidden' }}>
-        {/* Welcome Section */}
-        <Box sx={{ mb: 4, px: 2 }}>
-          <Typography variant="h4" gutterBottom fontWeight={600}>
-            <DashboardIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-            Admission Dashboard
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Comprehensive overview of the admission system
-          </Typography>
-        </Box>
+      <Container maxWidth={false} sx={{ width: '100vw', py: 4, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ width: '100%', maxWidth: '1400px' }}>
+          {/* Welcome Section */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" gutterBottom fontWeight={600}>
+              <DashboardIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+              Admission Dashboard
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Comprehensive overview of the admission system
+            </Typography>
+          </Box>
 
-        {/* Key Metrics Cards - Simple Version */}
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          px: 2,
-          mb: 6
-        }}>
+          {/* Key Metrics Cards - Simple Version */}
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            mb: 6
+          }}>
           {/* Total Applications */}
           <Box
             onClick={() => navigate('/applications?quickFilter=all')}
@@ -260,14 +261,14 @@ const AdminDashboard = () => {
           </Box>
         </Box>
 
-        {/* Application Workflow Pipeline */}
-        <Box sx={{ mb: 4, px: 2 }}>
-          <Typography variant="h6" gutterBottom fontWeight={600}>
-            Application Workflow Pipeline
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Click on any stage to view applications
-          </Typography>
+          {/* Application Workflow Pipeline */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom fontWeight={600}>
+              Application Workflow Pipeline
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Click on any stage to view applications
+            </Typography>
 
           <Paper sx={{ p: 3 }}>
             <Stack direction="row" spacing={0} alignItems="center" sx={{ overflowX: 'auto' }}>
@@ -464,12 +465,12 @@ const AdminDashboard = () => {
           </Paper>
         </Box>
 
-        {/* Management Tools */}
-        <Box sx={{ mb: 4, px: 2 }}>
-          <Typography variant="h6" gutterBottom fontWeight={600}>
-            Management Tools
-          </Typography>
-          <Grid container spacing={2} sx={{ width: '100%', m: 0 }}>
+          {/* Management Tools */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom fontWeight={600}>
+              Management Tools
+            </Typography>
+            <Grid container spacing={2} sx={{ width: '100%', m: 0 }}>
 
             {/* Applications Management */}
             <Grid item xs={12} sm={6} md={4}>
@@ -543,6 +544,24 @@ const AdminDashboard = () => {
               </Card>
             </Grid>
 
+            {/* Student Ledgers */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ bgcolor: 'warning.lighter', borderLeft: 4, borderColor: 'warning.main' }}>
+                <CardActionArea onClick={() => navigate('/admin/ledger/manual-entry')}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <ReceiptIcon sx={{ color: 'warning.main' }} />
+                      <Typography color="warning.main" fontWeight={600}>Student Ledgers</Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={600} sx={{ mt: 1 }}>
+                      Ledger Management
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">Track student financial transactions</Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+
             {/* Parent Communication */}
             <Grid item xs={12} sm={6} md={4}>
               <Card sx={{ bgcolor: 'success.lighter', borderLeft: 4, borderColor: 'success.main' }}>
@@ -578,9 +597,10 @@ const AdminDashboard = () => {
                 </CardActionArea>
               </Card>
             </Grid>
-          </Grid>
+            </Grid>
+          </Box>
         </Box>
-      </Box>
+      </Container>
     </Box>
   );
 };

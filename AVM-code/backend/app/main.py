@@ -195,6 +195,84 @@ async def clear_activity_logs():
     finally:
         db.close()
 
+@app.post("/test-push-notification")
+async def test_push_notification(request: Request):
+    """
+    Test push notification endpoint
+    Body: { "push_token": "ExponentPushToken[xxx]", "title": "Test", "message": "Test message" }
+    """
+    from .services.push_notification_service import PushNotificationService
+
+    try:
+        body = await request.json()
+        push_token = body.get("push_token")
+        title = body.get("title", "Test Notification")
+        message = body.get("message", "This is a test notification from Sparky!")
+
+        if not push_token:
+            return {"error": "push_token is required"}
+
+        if not push_token.startswith("ExponentPushToken"):
+            return {"error": "Invalid push token format. Must start with 'ExponentPushToken'"}
+
+        # Send test notification
+        result = PushNotificationService.send_notification(
+            push_token=push_token,
+            title=title,
+            body=message,
+            data={"type": "test", "action": "none"}
+        )
+
+        return {
+            "success": True,
+            "message": "Test notification sent",
+            "result": result
+        }
+    except Exception as e:
+        return {"error": f"Failed to send test notification: {str(e)}"}
+
+@app.get("/check-push-tokens")
+async def check_push_tokens():
+    """Check which parents have push tokens registered"""
+    from sqlalchemy.orm import sessionmaker
+    from .models.parent import Parent
+
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+
+    try:
+        # Get all parents
+        parents = db.query(Parent).all()
+
+        parents_with_tokens = []
+        parents_without_tokens = []
+
+        for parent in parents:
+            parent_info = {
+                "name": parent.name,
+                "phone": parent.phone_number,
+                "has_token": parent.push_token is not None,
+                "device_type": parent.device_type if parent.push_token else None,
+                "token_preview": parent.push_token[:30] + "..." if parent.push_token else None
+            }
+
+            if parent.push_token:
+                parents_with_tokens.append(parent_info)
+            else:
+                parents_without_tokens.append(parent_info)
+
+        return {
+            "total_parents": len(parents),
+            "with_tokens": len(parents_with_tokens),
+            "without_tokens": len(parents_without_tokens),
+            "parents_with_tokens": parents_with_tokens,
+            "parents_without_tokens": parents_without_tokens
+        }
+    except Exception as e:
+        return {"error": str(e)}
+    finally:
+        db.close()
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

@@ -17,7 +17,7 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
   let token = null;
 
   if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus} = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
     if (existingStatus !== 'granted') {
@@ -26,14 +26,26 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
     }
 
     if (finalStatus !== 'granted') {
-      console.log('Failed to get push token for push notification!');
+      console.log('❌ Failed to get push notification permissions!');
+      console.log('Current status:', finalStatus);
       return null;
     }
 
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log('✅ Expo Push Token:', token);
+    try {
+      // Explicitly pass projectId for Expo SDK 50+
+      const pushToken = await Notifications.getExpoPushTokenAsync({
+        projectId: 'd9867ba4-c8ce-4ab6-9408-58606c1bfab7'
+      });
+      token = pushToken.data;
+      console.log('✅ Expo Push Token generated successfully!');
+      console.log('Token:', token);
+    } catch (error) {
+      console.log('❌ Error generating push token:', error);
+      console.log('Error details:', JSON.stringify(error, null, 2));
+      return null;
+    }
   } else {
-    console.log('Must use physical device for Push Notifications');
+    console.log('❌ Must use physical device for Push Notifications (emulators not supported)');
   }
 
   // Android-specific setup

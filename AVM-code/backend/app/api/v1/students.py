@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from typing import List, Union
 from app.core.database import get_db
 from app.core.dependencies import get_current_admin_user, get_current_teacher_user, get_current_mobile_user
@@ -157,10 +158,16 @@ async def delete_multiple_students(
         deleted_count = 0
         total_attendance = 0
         total_communications = 0
+        parent_phones_to_check = set()  # Track unique parent phones
+        parents_deleted = 0
 
         for student_id in student_ids:
             student = db.query(Student).filter(Student.id == student_id).first()
             if student:
+                # Store parent phone for later cleanup check
+                if student.parent_phone:
+                    parent_phones_to_check.add(student.parent_phone)
+
                 # Delete related records
                 att_count = db.query(Attendance).filter(Attendance.student_id == student_id).count()
                 db.query(Attendance).filter(Attendance.student_id == student_id).delete(synchronize_session=False)
@@ -173,13 +180,59 @@ async def delete_multiple_students(
                 db.delete(student)
                 deleted_count += 1
 
+        db.flush()  # Flush deletions before checking for orphaned parents
+
+        # Check and delete orphaned parents
+        for parent_phone in parent_phones_to_check:
+            phone_without_prefix = parent_phone.replace('+91', '') if parent_phone.startswith('+91') else parent_phone
+            phone_with_prefix = f"+91{phone_without_prefix}" if not parent_phone.startswith('+91') else parent_phone
+
+            # Check if any other active students share this parent's phone
+            other_students = db.query(Student).filter(
+                or_(
+                    Student.parent_phone == parent_phone,
+                    Student.parent_phone == phone_with_prefix,
+                    Student.parent_phone == phone_without_prefix
+                ),
+                Student.is_active == "Active"
+            ).count()
+
+            # If no other students, delete the parent
+            if other_students == 0:
+                parent = db.query(Parent).filter(
+                    or_(
+                        Parent.phone_number == parent_phone,
+                        Parent.phone_number == phone_with_prefix,
+                        Parent.phone_number == phone_without_prefix
+                    )
+                ).first()
+
+                if parent:
+                    # Delete parent's messages
+                    db.query(Communication).filter(
+                        Communication.recipient_type == "parent",
+                        Communication.recipient_id == parent.id
+                    ).delete(synchronize_session=False)
+
+                    db.delete(parent)
+                    parents_deleted += 1
+                    print(f"✅ Deleted orphaned parent: {parent.name} ({parent.phone_number})")
+
         db.commit()
-        return {
+
+        response = {
             "message": f"Deleted {deleted_count} students successfully",
             "deleted_count": deleted_count,
             "attendance_records_deleted": total_attendance,
-            "communications_deleted": total_communications
+            "communications_deleted": total_communications,
+            "parents_deleted": parents_deleted
         }
+
+        if parents_deleted > 0:
+            response["parent_cleanup"] = f"{parents_deleted} orphaned parent(s) removed"
+
+        return response
+
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to delete students: {str(e)}")
@@ -193,12 +246,17 @@ async def delete_student(
     """Delete student (admin only)"""
     from app.models.attendance import Attendance
     from app.models.communication import Communication
+    from app.models.parent import Parent
 
     student = db.query(Student).filter(Student.id == student_id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
 
     try:
+        # Store parent phone for cleanup check
+        parent_phone = student.parent_phone
+        parent_deleted = False
+
         # Delete all attendance records for this student
         attendance_count = db.query(Attendance).filter(Attendance.student_id == student_id).count()
         db.query(Attendance).filter(Attendance.student_id == student_id).delete(synchronize_session=False)
@@ -209,13 +267,62 @@ async def delete_student(
 
         # Delete student
         db.delete(student)
+        db.flush()  # Flush to ensure student is deleted before checking orphans
+
+        # Check if parent has any other children (normalize phone number)
+        if parent_phone:
+            phone_without_prefix = parent_phone.replace('+91', '') if parent_phone.startswith('+91') else parent_phone
+            phone_with_prefix = f"+91{phone_without_prefix}" if not parent_phone.startswith('+91') else parent_phone
+
+            # Check if any other active students share this parent's phone
+            other_students = db.query(Student).filter(
+                or_(
+                    Student.parent_phone == parent_phone,
+                    Student.parent_phone == phone_with_prefix,
+                    Student.parent_phone == phone_without_prefix
+                ),
+                Student.is_active == "Active"
+            ).count()
+
+            # If no other students, delete the parent from parent table
+            if other_students == 0:
+                parent = db.query(Parent).filter(
+                    or_(
+                        Parent.phone_number == parent_phone,
+                        Parent.phone_number == phone_with_prefix,
+                        Parent.phone_number == phone_without_prefix
+                    )
+                ).first()
+
+                if parent:
+                    # Also delete parent's messages
+                    parent_msg_count = db.query(Communication).filter(
+                        Communication.recipient_type == "parent",
+                        Communication.recipient_id == parent.id
+                    ).count()
+                    db.query(Communication).filter(
+                        Communication.recipient_type == "parent",
+                        Communication.recipient_id == parent.id
+                    ).delete(synchronize_session=False)
+
+                    db.delete(parent)
+                    parent_deleted = True
+                    print(f"✅ Deleted orphaned parent: {parent.name} ({parent.phone_number})")
+
         db.commit()
 
-        return {
+        response = {
             "message": f"Student {student.full_name} deleted successfully",
             "attendance_records_deleted": attendance_count,
-            "communications_deleted": comm_count
+            "communications_deleted": comm_count,
+            "parent_deleted": parent_deleted
         }
+
+        if parent_deleted:
+            response["parent_cleanup"] = "Parent had no other children and was removed"
+
+        return response
+
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to delete student: {str(e)}")

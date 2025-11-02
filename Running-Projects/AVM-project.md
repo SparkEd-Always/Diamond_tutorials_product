@@ -109,20 +109,218 @@ Backend:
 
 **Success Criteria:**
 - [x] Code implementation complete
-- [ ] Backend dependencies installed
-- [ ] Mobile dependencies installed
-- [ ] APK v1.0.4 built successfully
-- [ ] Backend deployed to Railway
+- [x] Backend dependencies installed
+- [x] Mobile dependencies installed
+- [x] APK v1.0.4 built successfully
+- [x] Backend deployed to Railway
 - [ ] FCM token generates on device
 - [ ] Push notifications appear in notification tray
 - [ ] Notifications work when app closed/backgrounded
 - [ ] Sound and vibration work
 - [ ] Tapping notification opens correct screen
 
+---
+
+### 🔧 **TROUBLESHOOTING: Push Notifications Not Appearing**
+
+If messages show up in app but NO notification appears, follow this diagnostic checklist:
+
+#### **1. Check Firebase Service Account on Railway** 🔥 CRITICAL
+
+Railway logs should show on startup:
+```
+✅ Firebase Admin SDK initialized successfully
+```
+
+**If you see this error instead:**
+```
+❌ Firebase service account file not found: /app/firebase-service-account.json
+```
+
+**Fix:**
+1. Go to **Railway Dashboard** → Your Backend Service
+2. Click **"Variables"** tab
+3. Create new file variable:
+   - **Path**: `/app/firebase-service-account.json`
+   - **Content**: Copy entire contents of `AVM-code/backend/firebase-service-account.json`
+4. Click **"Deploy"** to redeploy with the file
+
+**Alternative Method:**
+```bash
+# Use Railway CLI to upload
+cd ~/AVM/product/AVM-code/backend
+railway run --service backend
+railway files add firebase-service-account.json
+```
+
+---
+
+#### **2. Check Parent's Push Token Type**
+
+**SQL Query on Railway PostgreSQL:**
+```sql
+SELECT id, full_name, phone_number, push_token
+FROM parents
+WHERE phone_number = '+91XXXXXXXXXX';  -- Replace with actual parent phone
+```
+
+**Token Type Comparison:**
+
+❌ **Old Expo Token (Won't Work with FCM):**
+```
+push_token: ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
+```
+
+✅ **New FCM Token (Will Work):**
+```
+push_token: fXXXXXXXXX:APA91bHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+(Long alphanumeric string without "ExponentPushToken" prefix)
+```
+
+**Fix if Old Token:**
+- Parent must install **Sparky-v1.0.4-FCM-20251102.apk** (not older versions)
+- Open app → Login → FCM token auto-generates on first launch
+- Check Railway logs for: `✅ FCM Token generated successfully!`
+- Verify in Settings → Should show "Notifications Enabled"
+
+---
+
+#### **3. Check Railway Logs for FCM Send Status**
+
+**When admin sends a message, Railway logs should show:**
+
+✅ **Success:**
+```
+✅ FCM notification sent successfully: projects/sparky-f8a26/messages/0:xxxxx
+```
+
+❌ **Common Errors:**
+
+**Error: Firebase not initialized**
+```
+❌ Firebase not initialized
+```
+→ **Fix**: Upload firebase-service-account.json (see #1)
+
+**Error: No FCM token**
+```
+❌ No FCM token provided
+```
+→ **Fix**: Parent needs to update to v1.0.4 APK (see #2)
+
+**Error: Invalid/Unregistered token**
+```
+❌ FCM token is invalid or unregistered: fXXXX...
+```
+→ **Fix**: Parent needs to reinstall app and login again
+
+**Error: Sender ID mismatch**
+```
+❌ FCM token doesn't match sender ID
+```
+→ **Fix**: Verify google-services.json matches firebase-service-account.json project
+
+---
+
+#### **4. Verify Code is Calling FCM Service**
+
+**In `app/api/v1/messages.py` around line 202-209:**
+```python
+# Send FCM push notification if parent has push token
+if parent.push_token:
+    await FCMPushNotificationService.send_message_notification(
+        fcm_token=parent.push_token,
+        sender_name="AVM Tutorial",
+        message_preview=message[:100],
+        message_id=comm.id
+    )
+```
+
+**Check this exists** - if missing, FCM service won't be called.
+
+---
+
+#### **5. Android Device Permissions**
+
+**Check on parent's Android device:**
+1. **Settings** → **Apps** → **Sparky** → **Permissions** → **Notifications** → **Allowed** ✅
+2. **Settings** → **Battery** → **Sparky** → **Don't optimize** (prevents background kill)
+3. **Network**: Ensure device has internet connection (FCM requires internet)
+4. **Firebase**: Test with device connected to computer to see logcat output
+
+---
+
+#### **🎯 Quick Test Process**
+
+**After fixing #1 (most common issue), test this:**
+
+1. **Send Test Message:**
+   - Login as admin on web
+   - Messages → Send to Parents
+   - Subject: "Test FCM Notification"
+   - Message: "Testing Firebase Cloud Messaging v1 API"
+   - Send to specific parent
+
+2. **Check Railway Logs:**
+   ```bash
+   railway logs --service backend | grep -i "fcm\|firebase\|notification"
+   ```
+   - Should see: `✅ FCM notification sent successfully`
+
+3. **Check Parent's Device:**
+   - Lock the screen (important!)
+   - Notification should appear on lock screen within 1-2 seconds
+   - Should include: Title "New message from AVM Tutorial" + preview text
+   - Sound/vibration should trigger
+   - Tapping opens app to Messages screen
+
+4. **If Still Not Working:**
+   - Check parent has v1.0.4 APK installed (not v1.0.2 or earlier)
+   - Check parent's push_token in database (should be FCM format)
+   - Try uninstall → reinstall → login
+   - Check Android notification settings for Sparky app
+
+---
+
+#### **📱 Parent APK Download Link**
+
+**v1.0.4 with FCM:**
+```
+http://192.168.29.16:8080/Sparky-v1.0.4-FCM-20251102.apk
+```
+
+**Installation Steps:**
+1. Uninstall old Sparky app (if installed)
+2. Download APK from link above
+3. Enable "Install from Unknown Sources" if prompted
+4. Install APK
+5. Open → Login with credentials
+6. Allow notification permissions when prompted
+7. FCM token will auto-generate and save to backend
+
+---
+
+#### **🆘 Most Common Issues (90% of cases)**
+
+**Issue #1: Firebase service account not uploaded to Railway**
+- **Symptom**: Messages work in-app ✅, no device notification ❌
+- **Fix**: Upload firebase-service-account.json to Railway (see #1 above)
+
+**Issue #2: Parent using old APK (v1.0.2 or earlier)**
+- **Symptom**: Push token starts with "ExponentPushToken[...]"
+- **Fix**: Install v1.0.4 APK
+
+**Issue #3: Android notification permissions denied**
+- **Symptom**: No error in logs, but no notification
+- **Fix**: Settings → Apps → Sparky → Permissions → Notifications → Allow
+
+---
+
 **Documentation:**
 - All changes tracked in this file
 - Code comments added to new FCM services
 - Migration path documented for future reference
+- Troubleshooting guide for push notifications added
 
 ---
 

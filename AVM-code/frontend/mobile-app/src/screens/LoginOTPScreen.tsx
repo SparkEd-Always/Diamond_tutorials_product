@@ -16,7 +16,7 @@ import {
 import axios from 'axios';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { registerForPushNotificationsAsync, setupNotificationListeners } from '../services/notificationService';
+import { registerForPushNotificationsAsync, setupNotificationListeners } from '../services/firebaseNotificationService';
 import { savePhoneNumber, updateLastLogin, hasCompletedSetup } from '../utils/secureStorage';
 
 const API_BASE_URL = `${Constants.expoConfig?.extra?.apiUrl || 'http://localhost:8000'}/api/v1`;

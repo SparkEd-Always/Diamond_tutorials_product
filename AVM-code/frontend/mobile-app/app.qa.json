@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Sparky QA",
+    "slug": "sparky-qa",
+    "owner": "koustubsk",
+    "version": "1.0.2-qa",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2C4E6B"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sparked.sparky.qa",
+      "buildNumber": "3",
+      "infoPlist": {
+        "NSUserNotificationsUsageDescription": "This app uses notifications to send you important updates from your school."
+      }
+    },
+    "android": {
+      "versionCode": 3,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sparked.sparky.qa",
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS"
+      ]
+    },
+    "notification": {
+      "color": "#2C4E6B",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Sparky QA"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "apiUrl": "https://product-qa-REPLACE-WITH-RAILWAY-URL.up.railway.app",
+      "environment": "qa",
+      "eas": {
+        "projectId": "d9867ba4-c8ce-4ab6-9408-58606c1bfab7"
+      }
+    }
+  }
+}

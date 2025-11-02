@@ -95,3 +95,9 @@ AVM-code/frontend/mobile-app/qr-code.html
 # Large image files
 *.png.large
 SparkEd*.png
+
+# Firebase credentials - NEVER commit these!
+firebase-service-account.json
+*-firebase-adminsdk-*.json
+google-services.json
+

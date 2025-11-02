@@ -1,3 +1,16 @@
-let's shift the focus on mobile app does it have the color pallete up to date?
-the login page should have © 2025 Sparky from SparkEd with proper color and color backgroud.
-after the login too the desing should be consistent
+INFO:     100.64.0.4:21344 - "GET /api/v1/students/classes HTTP/1.1" 200 OK
+INFO:     100.64.0.4:21318 - "GET /api/v1/activities/recent?limit=10 HTTP/1.1" 200 OK
+INFO:     100.64.0.4:21318 - "GET /api/v1/activities/recent?unread_only=true&limit=100 HTTP/1.1" 200 OK
+INFO:     100.64.0.5:32464 - "OPTIONS /api/v1/messages/send-to-parents HTTP/1.1" 200 OK
+📨 Sending message to 1 parents...
+⚠️  Parent Sham (ID: 8, phone: +919380668711) has NO push token
+✅ Message delivery complete:
+   - Messages created: 1
+   - FCM notifications sent: 0
+   - Parents without tokens: 1
+INFO:     100.64.0.5:32464 - "POST /api/v1/messages/send-to-parents HTTP/1.1" 200 OK
+INFO:     100.64.0.5:32464 - "GET /api/v1/communications/history HTTP/1.1" 200 OK
+INFO:     100.64.0.5:32466 - "GET /api/v1/attendance/pending-approval HTTP/1.1" 200 OK
+INFO:     100.64.0.5:32476 - "GET /api/v1/communications/history HTTP/1.1" 200 OK
+INFO:     100.64.0.5:32476 - "GET /api/v1/activities/recent?limit=10 HTTP/1.1" 200 OK
+INFO:     100.64.0.5:32476 - "GET /api/v1/activities/recent?unread_only=true&limit=100 HTTP/1.1" 200 OK

@@ -24,7 +24,7 @@ import {
   STORAGE_KEYS,
   clearAuthData,
 } from '../utils/secureStorage';
-import { setupNotificationListeners, getNotificationNavigationData } from '../services/notificationService';
+import { setupNotificationListeners, getNotificationNavigationData } from '../services/firebaseNotificationService';
 
 const Stack = createStackNavigator();
 

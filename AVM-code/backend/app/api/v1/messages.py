@@ -15,7 +15,7 @@ from app.models.user import User
 from app.models.communication import Communication
 from app.models.parent import Parent
 from app.models.teacher import Teacher
-from app.services.push_notification_service import PushNotificationService
+from app.services.fcm_push_notification_service import FCMPushNotificationService
 
 router = APIRouter()
 
@@ -199,10 +199,10 @@ async def send_to_parents(
             db.add(comm)
             sent_count += 1
 
-            # Send push notification if parent has push token
+            # Send FCM push notification if parent has push token
             if parent.push_token:
-                await PushNotificationService.send_message_notification(
-                    push_token=parent.push_token,
+                await FCMPushNotificationService.send_message_notification(
+                    fcm_token=parent.push_token,
                     sender_name="AVM Tutorial",
                     message_preview=message[:100],
                     message_id=comm.id

@@ -290,8 +290,8 @@ async def approve_attendance(
             print(f"Error logging activity: {str(e)}")
             # Don't fail approval if activity logging fails
 
-        # Send Push Notifications to Parents
-        from app.services.push_notification_service import PushNotificationService
+        # Send Push Notifications to Parents (FCM v1 API)
+        from app.services.fcm_push_notification_service import FCMPushNotificationService
         from app.models.parent import Parent
 
         notification_results = []
@@ -307,7 +307,7 @@ async def approve_attendance(
                 phone_without_prefix = parent_phone.replace('+91', '') if parent_phone.startswith('+91') else parent_phone
                 phone_with_prefix = f"+91{phone_without_prefix}" if not parent_phone.startswith('+91') else parent_phone
 
-                # Get parent's push token from database
+                # Get parent's FCM token from database
                 parent = db.query(Parent).filter(
                     (Parent.phone_number == parent_phone) |
                     (Parent.phone_number == phone_with_prefix) |
@@ -315,9 +315,9 @@ async def approve_attendance(
                 ).first()
 
                 if parent and parent.push_token:
-                    # Send push notification
-                    result = await PushNotificationService.send_attendance_notification(
-                        push_token=parent.push_token,
+                    # Send FCM push notification
+                    result = await FCMPushNotificationService.send_attendance_notification(
+                        fcm_token=parent.push_token,
                         student_name=item["student_name"],
                         status=item["attendance_status"],
                         date=item["date"]

@@ -1,6 +1,318 @@
 # AVM Tutorial Management System (Sparky)
 
-## 🎯 Current Status (October 29, 2025 - Production Ready!)
+## 🎯 Current Status (November 2, 2025 - FCM Migration Complete!)
+
+### 🔥 **FIREBASE CLOUD MESSAGING MIGRATION - v1.0.4 - ✅ COMPLETE**
+
+**Migration Completed (Nov 2, 2025):**
+
+Successfully migrated from **Expo Push Notifications** to **Firebase Cloud Messaging (FCM) v1 API** - the modern, industry-standard push notification solution.
+
+**Why We Migrated:**
+- ❌ **Old Problem**: Expo Push tokens not generating reliably
+- ❌ **Old Problem**: Notifications work in-app but not showing in device notification tray
+- ❌ **Old Problem**: Depends on Expo's intermediary server (single point of failure)
+- ✅ **New Solution**: Direct from Google - more reliable, industry standard
+- ✅ **New Solution**: OAuth 2.0 authentication (more secure)
+- ✅ **New Solution**: Better offline support and unlimited free notifications
+
+**What Changed:**
+
+1. **Firebase Project Setup** ✅
+   - Project: `sparky-f8a26` (Project Number: 434895462933)
+   - Package: `com.sparked.sparky`
+   - Files obtained: `google-services.json` + `firebase-service-account.json`
+
+2. **Mobile App Changes** ✅
+   - Added: `@react-native-firebase/app@21.5.0`
+   - Added: `@react-native-firebase/messaging@21.5.0`
+   - Created: `src/services/firebaseNotificationService.ts` (FCM token generation & handling)
+   - Updated: `android/build.gradle` (Google Services plugin)
+   - Updated: `android/app/build.gradle` (Firebase dependencies)
+   - Updated: `app.json` (version 1.0.4, Android config)
+   - Added: `android/app/google-services.json`
+
+3. **Backend Changes** ✅
+   - Added: `firebase-admin==6.5.0` to requirements.txt
+   - Created: `app/services/fcm_push_notification_service.py` (FCM v1 API service)
+   - Updated: `app/api/v1/attendance.py` (use FCM service)
+   - Updated: `app/api/v1/messages.py` (use FCM service)
+   - Added: `backend/firebase-service-account.json` (OAuth credentials)
+
+4. **Version Bump** ✅
+   - Version: 1.0.2 → **1.0.4**
+   - Android versionCode: 3 → 4
+   - iOS buildNumber: 3 → 4
+
+**Files Modified:**
+```
+Mobile App:
+  ✅ package.json (Firebase dependencies)
+  ✅ android/build.gradle (Google Services classpath)
+  ✅ android/app/build.gradle (Firebase plugin)
+  ✅ android/app/google-services.json (Firebase config)
+  ✅ src/services/firebaseNotificationService.ts (new FCM service)
+  ✅ app.json (version bump, Android permissions)
+
+Backend:
+  ✅ requirements.txt (firebase-admin added)
+  ✅ app/services/fcm_push_notification_service.py (new FCM v1 API service)
+  ✅ app/api/v1/attendance.py (FCM integration)
+  ✅ app/api/v1/messages.py (FCM integration)
+  ✅ firebase-service-account.json (service account credentials)
+```
+
+**Key Technical Changes:**
+- **Token Format**: `ExponentPushToken[xxx]` → FCM long alphanumeric tokens
+- **API**: Expo Push API → Firebase Admin SDK v1 API
+- **Authentication**: Simple push tokens → OAuth 2.0 with service account
+- **Delivery**: Via Expo servers → Direct from Google FCM
+
+**Next Steps - Build & Deploy:**
+
+1. **Install Backend Dependencies** (5 min)
+   ```bash
+   cd ~/AVM/product/AVM-code/backend
+   source venv/bin/activate
+   pip install firebase-admin==6.5.0
+   ```
+
+2. **Install Mobile Dependencies** (5 min)
+   ```bash
+   cd ~/AVM/product/AVM-code/frontend/mobile-app
+   npm install
+   ```
+
+3. **Build New APK v1.0.4** (10-15 min)
+   ```bash
+   cd ~/AVM/product/AVM-code/frontend/mobile-app
+   npx expo run:android --variant release
+   # APK: android/app/build/outputs/apk/release/app-release.apk
+   # Rename to: Sparky-v1.0.4-FCM-20251102.apk
+   ```
+
+4. **Deploy Backend to Railway** (Auto-deploy)
+   ```bash
+   cd ~/AVM/product/AVM-code
+   git add .
+   git commit -m "feat: Migrate to Firebase Cloud Messaging v1 API - v1.0.4"
+   git push origin master
+   # Upload firebase-service-account.json to Railway separately
+   ```
+
+5. **Test on Physical Device** ✅
+   - Install v1.0.4 APK on Android device
+   - Login as parent
+   - Verify FCM token generation (check console)
+   - Mark attendance as teacher → Approve as admin
+   - **Parent receives push notification on lock screen!** 🎉
+
+**Success Criteria:**
+- [x] Code implementation complete
+- [ ] Backend dependencies installed
+- [ ] Mobile dependencies installed
+- [ ] APK v1.0.4 built successfully
+- [ ] Backend deployed to Railway
+- [ ] FCM token generates on device
+- [ ] Push notifications appear in notification tray
+- [ ] Notifications work when app closed/backgrounded
+- [ ] Sound and vibration work
+- [ ] Tapping notification opens correct screen
+
+**Documentation:**
+- All changes tracked in this file
+- Code comments added to new FCM services
+- Migration path documented for future reference
+
+---
+
+## 🎯 Previous Status (October 30, 2025 - Mobile UI Review)
+
+### 🎨 **MOBILE APP UI IMPROVEMENTS PLANNED - v1.0.4**
+
+**Mobile UI Analysis Completed (Oct 30):**
+
+**Color Palette Consistency Check:**
+- ✅ **LoginScreen**: Uses `#2C4E8A` (blue) - consistent
+- ✅ **TeacherHomeScreen**: Uses `#2C4E8A` (blue) throughout - consistent
+- ❌ **ParentHomeScreen**: Uses `#3EE06D` (GREEN) for header/accents - **INCONSISTENT**
+
+**Copyright Footer Status:**
+- ✅ **LoginScreen**: Has "© 2025 Sparky from SparkEd" (line 185) - needs better styling
+- ✅ **TeacherHomeScreen**: Styled footer with blue background box (lines 324-335) - good
+- ✅ **ParentHomeScreen**: Styled footer with blue background box (lines 359-370) - good
+
+**Student Feature Status:**
+- ❌ **Navigation**: Student screen currently enabled at line 131 in `UnifiedAppNavigator.tsx`
+- 📋 **Action Needed**: Disable/comment out student feature
+
+---
+
+### 🎯 **TOMORROW'S PLAN (October 31, 2025)**
+
+#### Priority 1: Mobile App UI Consistency (30-45 min)
+
+**Task 1: Standardize Color Palette**
+- Change ParentHomeScreen from green to blue:
+  - Header background: `#3EE06D` → `#2C4E8A`
+  - Child avatar background: `#3EE06D` → `#2C4E8A`
+  - Contact card background: `#3EE06D` → `#2C4E8A`
+  - View button background: `#3EE06D` → `#2C4E8A`
+- **File**: `frontend/mobile-app/src/screens/ParentHomeScreen.tsx`
+
+**Task 2: Improve Login Footer Styling**
+- Add styled footer box matching other screens:
+  - Blue background (`#2C4E8A`)
+  - White text with proper padding
+  - Border radius for modern look
+- **File**: `frontend/mobile-app/src/screens/LoginScreen.tsx`
+
+**Task 3: Disable Student Feature**
+- Comment out Students screen in navigation
+- Remove "My Students" menu card from TeacherHomeScreen
+- **Files**:
+  - `frontend/mobile-app/src/navigation/UnifiedAppNavigator.tsx` (line 131)
+  - `frontend/mobile-app/src/screens/TeacherHomeScreen.tsx` (lines 118-123)
+
+**Task 4: Build & Test**
+- Build new APK (v1.0.4)
+- Test color consistency across all screens
+- Verify copyright footer styling
+- Confirm student feature is hidden
+
+#### Priority 2: Firebase Cloud Messaging (FCM) Setup (2-3 hours)
+- Switch from Expo Push to Firebase FCM
+- Follow plan from October 29 (see below)
+
+#### Priority 3: Clean Up Orphaned Parents (15 min)
+- Run cleanup script on production database
+
+---
+
+## 🎯 Previous Status (October 29, 2025 - Evening Update)
+
+### 🔧 **FIXES DEPLOYED - v1.0.3**
+
+**Critical Bugs Fixed (Oct 29, Evening):**
+
+1. ✅ **Orphaned Parent Deletion Bug - FIXED**
+   - **Issue**: Parents remained in database after students were deleted
+   - **Impact**: Messages sent to 6 parents when only 1 student existed
+   - **Fix Applied**:
+     - Updated `delete_student()` to check for orphaned parents
+     - Updated `delete_multiple_students()` with same logic
+     - Created `cleanup_orphaned_parents.py` script
+   - **Status**: Deployed to Railway, ready to clean up existing orphans
+   - **Commit**: `36280f749`
+
+2. ⏳ **Push Notifications Not Appearing - DIAGNOSED**
+   - **Issue**: Messages delivered in-app, but no device notification banner
+   - **Testing**: Confirmed messages reach backend and inbox successfully
+   - **Root Cause**: Expo Push Notifications may have reliability issues
+   - **Next Steps**: Switch to Firebase Cloud Messaging (FCM) tomorrow
+   - **Impact**: Communication feature works, but notifications not visible on lock screen
+
+**New Files Created:**
+- `backend/app/api/v1/students.py` - Updated with parent cleanup
+- `backend/cleanup_orphaned_parents.py` - Orphan cleanup script
+- `FIXES_v1.0.3.md` - Comprehensive fix documentation
+- `PUSH_NOTIFICATION_FIX_GUIDE.md` - Push notification fix guide
+- `TESTING_INSTRUCTIONS_v1.0.2.md` - Testing guide for v1.0.2
+- `QA_UAT_SETUP_GUIDE.md` - QA environment setup guide
+
+**Latest APK Built (Oct 29):**
+- ✅ **File**: `Sparky-v1.0.2-push-fix-20251029.apk`
+- ✅ **Size**: 68 MB
+- ✅ **Version**: 1.0.2
+- ✅ **Includes**: Push notification token generation fix
+- ✅ **Location**: `~/AVM/product/AVM-code/Sparky-v1.0.2-push-fix-20251029.apk`
+- ✅ **Download**: `http://192.168.29.100:8083/Sparky-v1.0.2-push-fix-20251029.apk`
+
+**Backend Deployment:**
+- ✅ GitHub auto-deploy working correctly
+- ✅ Push to master → Railway deploys automatically
+- ✅ Latest fixes deployed at 23:05 UTC
+
+---
+
+### 🎯 **TOMORROW'S PLAN (October 30, 2025)**
+
+#### Priority 1: Fix Push Notifications (2-3 hours)
+**Switch from Expo Push to Firebase Cloud Messaging (FCM)**
+
+**Why Firebase:**
+- ✅ More reliable delivery (direct from Google)
+- ✅ Industry standard (used by millions)
+- ✅ Better offline support
+- ✅ Free unlimited notifications
+- ✅ Better analytics and delivery reports
+
+**Implementation Steps:**
+1. **Firebase Setup** (30 min):
+   - Create Firebase project
+   - Add Android app
+   - Download `google-services.json`
+   - Get FCM Server Key
+
+2. **Mobile App Update** (45 min):
+   - Add Firebase SDK dependencies
+   - Configure `google-services.json`
+   - Update push token registration
+   - Test token generation
+
+3. **Backend Update** (45 min):
+   - Replace Expo API with FCM API
+   - Update `push_notification_service.py`
+   - Add FCM_SERVER_KEY to Railway env vars
+   - Update message/attendance notification calls
+
+4. **Build & Test** (30 min):
+   - Build new APK (v1.0.4)
+   - Test with app closed/backgrounded/locked
+   - Verify notifications appear on lock screen
+   - Test sound/vibration
+
+#### Priority 2: Clean Up Orphaned Parents (15 min)
+```bash
+# Run cleanup script on production
+cd ~/AVM/product/AVM-code/backend
+python cleanup_orphaned_parents.py
+
+# Expected: Remove 5 orphaned parents
+# Verify: curl /check-push-tokens shows 1 parent
+```
+
+#### Priority 3: Test Complete Flow (30 min)
+1. Teacher marks attendance
+2. Admin approves
+3. Parent receives push notification (via FCM)
+4. Verify message appears in inbox
+5. Test notification tap opens Messages screen
+
+#### Optional: QA/UAT Environment Setup
+- If time permits, set up separate QA environment
+- See `QA_UAT_SETUP_GUIDE.md` for steps
+
+---
+
+### 📊 Production Status
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Custom Domain | ✅ Live | sparky-avm.com |
+| Backend API | ✅ Ready to Deploy | Railway PostgreSQL, v1.0.4 with FCM v1 API |
+| Web App | ✅ Deployed | Vercel with custom domain |
+| Mobile APK | 🔨 Building | v1.0.4 with Firebase FCM (code complete, ready to build) |
+| Admin Accounts | ✅ Created | 2 admins (Umesh, Mahantesh) |
+| Database | ⚠️ Needs Cleanup | 5 orphaned parents to remove |
+| SMS OTP | ⏳ Configured | Waiting for Twilio funding |
+| Push Notifications | ✅ **MIGRATED TO FCM** | Firebase Cloud Messaging v1 API integrated (ready for testing) |
+| Parent Deletion | ✅ Fixed | Orphaned parents now auto-deleted |
+| FCM Integration | ✅ Complete | Backend + Mobile code ready, needs build & deploy |
+
+---
+
+## 🎯 Previous Status (October 29, 2025 - Production Ready!)
 
 ### ✅ **FULL PRODUCTION DEPLOYMENT - LIVE ON CUSTOM DOMAIN**
 

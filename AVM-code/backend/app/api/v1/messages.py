@@ -182,6 +182,10 @@ async def send_to_parents(
             raise HTTPException(status_code=404, detail="No parents found")
 
         sent_count = 0
+        notification_sent_count = 0
+        no_token_count = 0
+
+        print(f"📨 Sending message to {len(parents)} parents...")
 
         # Create individual message for each parent
         for parent in parents:
@@ -201,19 +205,34 @@ async def send_to_parents(
 
             # Send FCM push notification if parent has push token
             if parent.push_token:
-                await FCMPushNotificationService.send_message_notification(
+                print(f"📲 Sending FCM notification to {parent.full_name} (phone: {parent.phone_number})")
+                print(f"   Token: {parent.push_token[:50]}...")
+                result = await FCMPushNotificationService.send_message_notification(
                     fcm_token=parent.push_token,
                     sender_name="AVM Tutorial",
                     message_preview=message[:100],
                     message_id=comm.id
                 )
+                if result.get("status") == "success":
+                    notification_sent_count += 1
+                print(f"   Result: {result}")
+            else:
+                no_token_count += 1
+                print(f"⚠️  Parent {parent.full_name} (ID: {parent.id}, phone: {parent.phone_number}) has NO push token")
 
         db.commit()
+
+        print(f"✅ Message delivery complete:")
+        print(f"   - Messages created: {sent_count}")
+        print(f"   - FCM notifications sent: {notification_sent_count}")
+        print(f"   - Parents without tokens: {no_token_count}")
 
         return {
             "success": True,
             "sent": sent_count,
-            "message": f"Message sent to {sent_count} parents"
+            "notifications_sent": notification_sent_count,
+            "no_token": no_token_count,
+            "message": f"Message sent to {sent_count} parents ({notification_sent_count} push notifications sent)"
         }
 
     except Exception as e:

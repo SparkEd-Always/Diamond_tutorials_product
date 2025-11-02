@@ -17,6 +17,22 @@ app = FastAPI(
     description=settings.DESCRIPTION
 )
 
+# Startup event to initialize Firebase
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on application startup"""
+    print("=" * 60)
+    print("🚀 Starting AVM Tutorial Management System")
+    print("=" * 60)
+
+    # Initialize Firebase Cloud Messaging
+    from .services.fcm_push_notification_service import FCMPushNotificationService
+    FCMPushNotificationService.initialize()
+
+    print("=" * 60)
+    print("✅ Application startup complete")
+    print("=" * 60)
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,

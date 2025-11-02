@@ -21,23 +21,41 @@ class FCMPushNotificationService:
             return
 
         try:
-            # Path to service account JSON
+            # Try to load from environment variable first (for Railway deployment)
+            firebase_json = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON')
+
+            if firebase_json:
+                # Load credentials from environment variable JSON string
+                print("🔑 Loading Firebase credentials from environment variable...")
+                cred_dict = json.loads(firebase_json)
+                cred = credentials.Certificate(cred_dict)
+                firebase_admin.initialize_app(cred)
+                cls._initialized = True
+                print("✅ Firebase Admin SDK initialized successfully (from env var)")
+                return
+
+            # Fall back to file-based credentials (for local development)
             cred_path = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                 'firebase-service-account.json'
             )
 
-            if not os.path.exists(cred_path):
-                print(f"❌ Firebase service account file not found: {cred_path}")
+            if os.path.exists(cred_path):
+                print(f"🔑 Loading Firebase credentials from file: {cred_path}")
+                cred = credentials.Certificate(cred_path)
+                firebase_admin.initialize_app(cred)
+                cls._initialized = True
+                print("✅ Firebase Admin SDK initialized successfully (from file)")
                 return
 
-            # Initialize Firebase Admin SDK
-            cred = credentials.Certificate(cred_path)
-            firebase_admin.initialize_app(cred)
+            # No credentials found
+            print("❌ Firebase service account not found!")
+            print("   - Not found in environment variable: FIREBASE_SERVICE_ACCOUNT_JSON")
+            print(f"   - Not found in file: {cred_path}")
+            print("   - Push notifications will NOT work until credentials are provided")
 
-            cls._initialized = True
-            print("✅ Firebase Admin SDK initialized successfully")
-
+        except json.JSONDecodeError as e:
+            print(f"❌ Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON: {str(e)}")
         except Exception as e:
             print(f"❌ Failed to initialize Firebase Admin SDK: {str(e)}")
 

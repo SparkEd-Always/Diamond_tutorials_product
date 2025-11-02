@@ -205,7 +205,8 @@ async def send_to_parents(
 
             # Send FCM push notification if parent has push token
             if parent.push_token:
-                print(f"📲 Sending FCM notification to {parent.full_name} (phone: {parent.phone_number})")
+                parent_name = parent.name or "Unknown"
+                print(f"📲 Sending FCM notification to {parent_name} (phone: {parent.phone_number})")
                 print(f"   Token: {parent.push_token[:50]}...")
                 result = await FCMPushNotificationService.send_message_notification(
                     fcm_token=parent.push_token,
@@ -217,8 +218,9 @@ async def send_to_parents(
                     notification_sent_count += 1
                 print(f"   Result: {result}")
             else:
+                parent_name = parent.name or "Unknown"
                 no_token_count += 1
-                print(f"⚠️  Parent {parent.full_name} (ID: {parent.id}, phone: {parent.phone_number}) has NO push token")
+                print(f"⚠️  Parent {parent_name} (ID: {parent.id}, phone: {parent.phone_number}) has NO push token")
 
         db.commit()
 

@@ -472,12 +472,18 @@ async def get_attendance_summary(
 
     # Get status breakdown
     status_breakdown = {}
-    for status in ["present", "absent", "late", "leave"]:
-        count = attendance_query.filter(
-            Attendance.status == status,
-            Attendance.admin_approved == True
-        ).count()
-        status_breakdown[status] = count
+    for status_str in ["present", "absent", "late", "leave"]:
+        try:
+            # Convert string to enum for PostgreSQL compatibility
+            status_enum = AttendanceStatus(status_str)
+            count = attendance_query.filter(
+                Attendance.status == status_enum,
+                Attendance.admin_approved == True
+            ).count()
+            status_breakdown[status_str] = count
+        except ValueError:
+            # If status string is not valid, skip it
+            status_breakdown[status_str] = 0
 
     # Calculate working days (excluding weekends)
     working_days = 0
@@ -566,7 +572,13 @@ async def get_attendance_history(
     if class_name:
         query = query.filter(Student.class_name == class_name)
     if status:
-        query = query.filter(Attendance.status == status)
+        # Convert string status to enum for PostgreSQL compatibility
+        try:
+            status_enum = AttendanceStatus(status)
+            query = query.filter(Attendance.status == status_enum)
+        except ValueError:
+            # Invalid status value, skip filter
+            pass
 
     attendance_records = query.all()
 

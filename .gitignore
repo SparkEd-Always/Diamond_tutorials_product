@@ -100,4 +100,6 @@ SparkEd*.png
 firebase-service-account.json
 *-firebase-adminsdk-*.json
 google-services.json
+sparky-*.json
+AVM-code/sparky-*.json
 

@@ -3,7 +3,7 @@
     "name": "Sparky",
     "slug": "sparky",
     "owner": "koustubsk",
-    "version": "1.0.6",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,13 +16,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.sparked.sparky",
-      "buildNumber": "6",
+      "buildNumber": "1",
       "infoPlist": {
         "NSUserNotificationsUsageDescription": "This app uses notifications to send you important updates from your school."
       }
     },
     "android": {
-      "versionCode": 6,
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

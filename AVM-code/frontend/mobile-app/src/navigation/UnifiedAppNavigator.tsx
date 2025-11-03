@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { ActivityIndicator, View } from 'react-native';
@@ -31,6 +31,7 @@ const Stack = createStackNavigator();
 const UnifiedAppNavigator = () => {
   const [loading, setLoading] = useState(true);
   const [initialRoute, setInitialRoute] = useState<string>('Login');
+  const navigationRef = useRef<any>(null);
 
   useEffect(() => {
     determineInitialRoute();
@@ -45,9 +46,17 @@ const UnifiedAppNavigator = () => {
         const navData = getNotificationNavigationData(response);
 
         if (navData.targetScreen) {
-          // Store the target screen in AsyncStorage
-          await AsyncStorage.setItem('pendingNavigationTarget', navData.targetScreen);
-          console.log('✅ Stored pending navigation target:', navData.targetScreen);
+          console.log('📍 Navigating to:', navData.targetScreen);
+
+          // If navigation is ready, navigate immediately
+          if (navigationRef.current?.isReady()) {
+            navigationRef.current.navigate(navData.targetScreen);
+            console.log('✅ Navigated to:', navData.targetScreen);
+          } else {
+            // Store for later navigation if app is not ready
+            await AsyncStorage.setItem('pendingNavigationTarget', navData.targetScreen);
+            console.log('✅ Stored pending navigation target:', navData.targetScreen);
+          }
         }
       }
     );
@@ -105,8 +114,19 @@ const UnifiedAppNavigator = () => {
     );
   }
 
+  // Handle pending navigation when app becomes ready
+  const handleNavigationReady = async () => {
+    const pendingTarget = await AsyncStorage.getItem('pendingNavigationTarget');
+    if (pendingTarget && navigationRef.current?.isReady()) {
+      console.log('📍 Navigating to pending target:', pendingTarget);
+      navigationRef.current.navigate(pendingTarget);
+      await AsyncStorage.removeItem('pendingNavigationTarget');
+      console.log('✅ Navigated and cleared pending target');
+    }
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef} onReady={handleNavigationReady}>
       <Stack.Navigator
         initialRouteName={initialRoute}
         screenOptions={{ headerShown: false }}

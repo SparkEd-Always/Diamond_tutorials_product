@@ -322,15 +322,15 @@ const styles = StyleSheet.create({
     color: '#ccc',
   },
   footer: {
-    padding: 16,
-    margin: 16,
+    marginTop: 32,
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
     alignItems: 'center',
-    backgroundColor: '#2C4E8A',
-    borderRadius: 12,
   },
   footerText: {
-    fontSize: 12,
-    color: '#FFFFFF',
+    fontSize: 14,
+    color: '#6B7280',
     fontWeight: '600',
   },
   modalOverlay: {

@@ -158,17 +158,7 @@ export default function ParentHomeScreen({ navigation, route }: any) {
           />
         </View>
 
-        {/* Contact */}
-        <View style={styles.contactCard}>
-          <Text style={styles.contactIcon}>📞</Text>
-          <View style={styles.contactInfo}>
-            <Text style={styles.contactTitle}>Need Help?</Text>
-            <Text style={styles.contactText}>
-              Contact school administration
-            </Text>
-          </View>
-        </View>
-
+        {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>© 2025 Sparky from SparkEd</Text>
         </View>
@@ -183,7 +173,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
-    backgroundColor: '#3EE06D',
+    backgroundColor: '#2C4E8A',
     padding: 24,
     paddingTop: 48,
     flexDirection: 'row',
@@ -240,7 +230,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#3EE06D',
+    backgroundColor: '#2C4E8A',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -269,7 +259,7 @@ const styles = StyleSheet.create({
     color: '#999',
   },
   viewButton: {
-    backgroundColor: '#3EE06D',
+    backgroundColor: '#2C4E8A',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -331,7 +321,7 @@ const styles = StyleSheet.create({
     color: '#ccc',
   },
   contactCard: {
-    backgroundColor: '#3EE06D',
+    backgroundColor: '#2C4E8A',
     borderRadius: 12,
     padding: 20,
     margin: 16,
@@ -357,15 +347,15 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   footer: {
-    padding: 16,
-    margin: 16,
+    marginTop: 32,
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
     alignItems: 'center',
-    backgroundColor: '#2C4E8A',
-    borderRadius: 12,
   },
   footerText: {
-    fontSize: 12,
-    color: '#FFFFFF',
+    fontSize: 14,
+    color: '#6B7280',
     fontWeight: '600',
   },
 });

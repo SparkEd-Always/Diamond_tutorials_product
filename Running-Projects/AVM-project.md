@@ -1,6 +1,174 @@
 # AVM Tutorial Management System (Sparky)
 
-## 🎯 Current Status (November 2, 2025 - FCM Migration Complete!)
+## 🎯 Current Status (November 3, 2025 - v1.0.6 PRODUCTION READY!)
+
+### 🎉 **v1.0.6 RELEASE - PUSH NOTIFICATIONS FULLY WORKING! ✅**
+
+**Release Date**: November 3, 2025
+**Status**: ✅ **PRODUCTION READY** - All critical issues resolved!
+
+---
+
+### 🔥 Critical Bug Fixes (Nov 3, 2025)
+
+**1. Firebase FCM Permissions Issue - RESOLVED ✅**
+
+**Problem Identified:**
+- Push notifications were failing with error: `Permission 'cloudmessaging.messages.create' denied`
+- Service account lacked necessary FCM permissions
+- Private key generated before IAM roles were assigned (missing OAuth scopes)
+
+**Solution Implemented:**
+1. ✅ Granted service account **Firebase Cloud Messaging Admin** role in Google Cloud IAM
+2. ✅ Granted service account **Editor** role for project-level permissions
+3. ✅ Enabled **Cloud Resource Manager API** in Google Cloud Console
+4. ✅ Generated **new private key** (after roles assigned) with proper OAuth scopes
+5. ✅ Updated Railway `FIREBASE_SERVICE_ACCOUNT_JSON` environment variable
+6. ✅ Redeployed backend service on Railway
+
+**Result:** Push notifications now deliver 100% successfully! 🎉
+
+---
+
+**2. Notification Tap Navigation - FIXED ✅**
+
+**Problem:** Tapping notifications opened app to home screen, not target screen
+
+**Solution:**
+- Updated `UnifiedAppNavigator.tsx` with navigation ref
+- Implemented immediate navigation when app is ready
+- Added pending navigation storage for when app is launching
+- Backend already sends correct `data` payload with `action` and `type`
+
+**Result:**
+- Attendance notification → Opens **Attendance History** screen ✅
+- Message notification → Opens **Messages** screen ✅
+
+---
+
+**3. Notification Icon - FIXED ✅**
+
+**Problem:** Dark blue placeholder icon showing in notifications
+
+**Solution:**
+- Created `drawable/ic_notification.xml` with white bell icon
+- Added `com.google.firebase.messaging.default_notification_icon` to AndroidManifest.xml
+- Added `expo.modules.notifications.default_notification_icon` for consistency
+
+**Result:** Clean white bell icon displays properly on notification tray ✅
+
+---
+
+### 🎨 UI/UX Improvements (Nov 3, 2025)
+
+**4. Removed "Need Help?" Section ✅**
+- Deleted cluttered contact card from `ParentHomeScreen.tsx`
+- Cleaner, more focused home screen experience
+
+**5. Footer Styling Consistency ✅**
+- Changed from dark blue background box to transparent footer
+- Now matches login screen styling perfectly
+- Gray text (#6B7280) with proper spacing
+- "© 2025 Sparky from SparkEd" consistently displayed
+
+**6. Color Palette Unification ✅**
+- Replaced all green (#3EE06D) with blue (#2C4E8A)
+- Consistent branding across ParentHomeScreen, TeacherHomeScreen
+- Professional, cohesive look throughout app
+
+---
+
+### 📦 Release v1.0.6 Details
+
+**APK Information:**
+- **File**: `Sparky-v1.0.6-FINAL-20251103.apk`
+- **Size**: 68 MB
+- **Version**: 1.0.6 (versionCode: 6, buildNumber: 6)
+- **Build Date**: November 3, 2025 - 19:03 IST
+- **Download**: `http://192.168.29.16:8888/Sparky-v1.0.6-FINAL-20251103.apk`
+
+**Files Modified in v1.0.6:**
+```
+Mobile App:
+  ✅ src/navigation/UnifiedAppNavigator.tsx (navigation ref + pending navigation)
+  ✅ src/screens/ParentHomeScreen.tsx (removed Need Help, footer styling, blue colors)
+  ✅ src/screens/TeacherHomeScreen.tsx (footer styling consistency)
+  ✅ android/app/src/main/AndroidManifest.xml (notification icon config)
+  ✅ android/app/src/main/res/drawable/ic_notification.xml (NEW - bell icon)
+  ✅ app.json (version 1.0.4 → 1.0.6)
+
+Backend:
+  ✅ firebase-service-account.json (NEW key with proper OAuth scopes)
+  ✅ Railway environment variables updated
+  ✅ Service deployed successfully
+```
+
+**Testing Status:**
+- ✅ Push notifications deliver to device notification tray
+- ✅ Notification tap navigates to correct screen
+- ✅ Notification icon displays properly (white bell)
+- ✅ UI consistency verified across all screens
+- ✅ Color palette unified (blue theme)
+- ✅ Footer styling matches design
+- ✅ End-to-end testing complete
+
+---
+
+### 📊 Production Readiness (v1.0.6)
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Custom Domain | ✅ Live | sparky-avm.com |
+| Backend API | ✅ Deployed | Railway PostgreSQL |
+| Web App | ✅ Deployed | Vercel with custom domain |
+| Mobile APK | ✅ **v1.0.6 READY** | All fixes applied, tested |
+| Admin Accounts | ✅ Created | 2 admins (Umesh, Mahantesh) |
+| Database | ✅ Operational | PostgreSQL on Railway |
+| SMS OTP | ⏳ Configured | Waiting for Twilio funding |
+| Push Notifications | ✅ **100% WORKING** | FCM fully operational |
+| Notification Navigation | ✅ **WORKING** | Opens correct screens |
+| Notification Icon | ✅ Bell Icon | (Sparky icon planned for next iteration) |
+
+---
+
+### 🎯 Next Iteration (Planned)
+
+**High Priority:**
+1. **Replace notification bell icon with Sparky logo**
+   - Create branded notification icon
+   - Update `drawable/ic_notification.xml` or add PNG icons
+
+**Medium Priority:**
+2. **Google Play Store Preparation**
+   - App signing configuration
+   - Screenshots and feature graphics
+   - Store listing metadata
+   - Privacy policy document
+   - Content rating
+
+3. **iOS Build** (if needed)
+   - Configure Firebase for iOS
+   - Build IPA with Xcode
+   - Test on iOS devices
+   - Prepare for App Store
+
+---
+
+### 📝 Troubleshooting Notes (Resolved)
+
+**Firebase Permission Error (Nov 3):**
+```
+❌ Permission 'cloudmessaging.messages.create' denied on resource
+   '//cloudresourcemanager.googleapis.com/projects/sparky-f8a26'
+```
+
+**Root Cause:** Service account key created before IAM roles assigned
+
+**Fix:** Generate new key after granting roles → Success! ✅
+
+---
+
+## 🎯 Previous Status (November 2, 2025 - FCM Migration Complete!)
 
 ### 🔥 **FIREBASE CLOUD MESSAGING MIGRATION - v1.0.4 - ✅ COMPLETE**
 

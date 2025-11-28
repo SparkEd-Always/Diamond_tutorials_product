@@ -1,20 +1,5 @@
-notification is working!!!!!!!!
-I checked for both communication as well as attendance.
-
-1. but when click on the notifiction I expect it to take me to that page in the approval
-example if as a parent I click attendance notification, it should take me to attedance page in the mobile app and same with messages
-
-but it is taking me to main/ home page 
-
-2. the sparky icon is not showing up on the notification rather a dark blue icon shows
+Get the Exact Error
+  - Currently app shows "Network Error" - this is too generic
+  - Need to capture the actual error (timeout? DNS? SSL? connection refused?)
 
 
-
-
-
-
-
-remove need help? section form 
-the main/home page
-make the Sparky from SparkEd match the background as opposed writing it on dark blue background in home/main page, in the login screen it is nice match that with the home or main page
-carry the main color pallete throughout the mobile app code

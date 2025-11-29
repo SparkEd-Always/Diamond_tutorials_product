@@ -1,6 +1,94 @@
 # AVM Tutorial Management System (Sparky)
 
-## 🎯 Current Status (November 3, 2025 - v1.0.6 PRODUCTION READY!)
+## 🎯 Current Status (November 29, 2025 - v1.0.1 Play Store Release)
+
+### 🎉 **v1.0.1 RELEASE - ENHANCED ERROR LOGGING FOR NETWORK DEBUGGING**
+
+**Release Date**: November 29, 2025
+**Status**: ✅ **AAB BUILT** - Ready for Play Store upload!
+
+---
+
+### 🔧 New Features (Nov 29, 2025)
+
+**1. Detailed Network Error Logging - NEW ✅**
+
+**Problem Identified:**
+- During field testing, 2 teachers with Jio SIM couldn't send OTP (got "Network Error")
+- 1 teacher with Airtel SIM worked fine
+- When Jio users connected to Airtel hotspot, OTP worked
+- Generic "Network Error" message made debugging difficult
+
+**Solution Implemented:**
+- Enhanced error handling in `LoginOTPScreen.tsx` with specific error types:
+  - Server errors (4xx, 5xx) with status codes
+  - Network errors with possible causes
+  - Timeout errors
+  - DNS lookup failures
+  - SSL/certificate issues
+- Added "Copy Error" button for easy sharing with support
+- Shows API URL in debug info for troubleshooting
+
+**Result:** Next time OTP fails, users will see exactly what's failing (timeout, DNS, SSL, etc.) 🎉
+
+---
+
+### 📦 Release v1.0.1 Details
+
+**AAB Information:**
+- **File**: `app-release.aab`
+- **Size**: 47.5 MB
+- **Version**: 1.0.1 (versionCode: 2)
+- **Build Date**: November 29, 2025
+- **Location**: `frontend/mobile-app/android/app/build/outputs/bundle/release/`
+
+**Files Modified in v1.0.1:**
+```
+Mobile App:
+  ✅ src/screens/LoginOTPScreen.tsx (detailed error logging - 66 lines added)
+  ✅ app.json (version 1.0.0 → 1.0.1, versionCode 1 → 2)
+  ✅ android/app/build.gradle (version sync)
+```
+
+**Commits:**
+- `f6ac2441e` - feat: Add detailed error logging for OTP network issues
+- `f0bb820d3` - chore: Bump version to 1.0.1 for Play Store release
+
+**Error Types Now Detected:**
+| Error Type | When It Shows |
+|------------|---------------|
+| `Server Error (4xx/5xx)` | Server responds with error |
+| `Network Error` | No response from server |
+| `Request timed out` | Server too slow |
+| `Connection refused` | Server down |
+| `DNS lookup failed` | Can't resolve domain |
+| `SSL/Security error` | Certificate issues |
+
+---
+
+### 📊 Production Status (v1.0.1)
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Custom Domain | ✅ Live | sparky-avm.com |
+| Backend API | ✅ Deployed | Railway PostgreSQL |
+| Web App | ✅ Deployed | Vercel with custom domain |
+| Mobile App | ✅ **Play Store (Early Access)** | v1.0.1 AAB ready to upload |
+| Push Notifications | ✅ Working | FCM fully operational |
+| OTP Error Logging | ✅ **NEW** | Detailed network error messages |
+
+---
+
+### 🎯 Next Steps
+
+1. **Upload v1.0.1 AAB to Play Store**
+2. **Test with teachers** - Get detailed error message when OTP fails on Jio
+3. **Analyze error** - Determine if it's timeout, DNS, or something else
+4. **Apply fix** based on actual error type
+
+---
+
+## 📜 Previous Status (November 3, 2025 - v1.0.6)
 
 ### 🎉 **v1.0.6 RELEASE - PUSH NOTIFICATIONS FULLY WORKING! ✅**
 

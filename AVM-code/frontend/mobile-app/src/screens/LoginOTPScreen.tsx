@@ -74,80 +74,38 @@ export default function LoginOTPScreen({ navigation, route }: any) {
         );
       }
     } catch (error: any) {
-      console.log('[LoginOTPScreen] ===== DETAILED ERROR DEBUG =====');
-      console.log('[LoginOTPScreen] Error object:', JSON.stringify(error, null, 2));
-      console.log('[LoginOTPScreen] Error message:', error.message);
-      console.log('[LoginOTPScreen] Error code:', error.code);
-      console.log('[LoginOTPScreen] Error name:', error.name);
-      console.log('[LoginOTPScreen] Error response:', error.response);
-      console.log('[LoginOTPScreen] Error request:', error.request ? 'Request was made' : 'No request');
-      console.log('[LoginOTPScreen] Error config:', error.config);
-      console.log('[LoginOTPScreen] ================================');
+      // Build exact error info
+      const errorCode = error.code || 'UNKNOWN';
+      const errorMsg = error.message || 'Unknown error';
+      const statusCode = error.response?.status || 'N/A';
+      const serverMessage = error.response?.data?.detail || '';
 
-      // Determine the specific error type for better debugging
       let errorTitle = 'Error';
-      let errorMessage = 'Failed to send OTP';
-      let errorDetails = '';
+      let errorBody = '';
 
       if (error.response) {
-        // Server responded with error status (4xx, 5xx)
-        errorTitle = `Server Error (${error.response.status})`;
-        errorMessage = error.response.data?.detail || error.response.statusText || 'Server error';
-        errorDetails = `\n\nStatus: ${error.response.status}\nURL: ${API_BASE_URL}/mobile/auth/send-otp`;
+        // Server responded with error
+        errorTitle = `Server Error ${statusCode}`;
+        errorBody = serverMessage || error.response.statusText || 'Server returned an error';
       } else if (error.request) {
-        // Request was made but no response received (network issue)
+        // No response received
         errorTitle = 'Network Error';
-
-        if (error.message?.includes('Network Error')) {
-          errorMessage = 'Could not connect to server';
-          errorDetails = '\n\n📱 Possible causes:\n• No internet connection\n• Server is down\n• Network blocking the request\n• DNS resolution failed';
-        } else if (error.message?.includes('timeout')) {
-          errorMessage = 'Request timed out';
-          errorDetails = '\n\n⏱️ The server took too long to respond.\nPlease check your internet speed.';
-        } else if (error.code === 'ECONNREFUSED') {
-          errorMessage = 'Connection refused';
-          errorDetails = '\n\n🚫 Server refused the connection.\nServer might be down.';
-        } else if (error.code === 'ENOTFOUND') {
-          errorMessage = 'DNS lookup failed';
-          errorDetails = '\n\n🔍 Could not resolve server address.\nCheck your internet connection.';
-        } else if (error.message?.includes('SSL') || error.message?.includes('certificate')) {
-          errorMessage = 'SSL/Security error';
-          errorDetails = '\n\n🔒 SSL certificate issue.\nThis might be a network security issue.';
-        } else {
-          errorMessage = error.message || 'Network request failed';
-          errorDetails = `\n\n❓ Error code: ${error.code || 'Unknown'}\nMessage: ${error.message}`;
-        }
-
-        errorDetails += `\n\n🔧 Debug info:\nAPI URL: ${API_BASE_URL}`;
+        errorBody = `${errorMsg}\n\nCode: ${errorCode}`;
       } else {
-        // Error setting up the request
-        errorTitle = 'Request Error';
-        errorMessage = error.message || 'Failed to create request';
-        errorDetails = '\n\nError occurred before sending request.';
+        // Request setup failed
+        errorTitle = 'Request Failed';
+        errorBody = errorMsg;
       }
 
-      // Check if user is not registered
-      const isNotRegistered = errorMessage.includes('not registered');
-      if (isNotRegistered) {
+      // Add debug info
+      errorBody += `\n\n--- Debug Info ---\nAPI: ${API_BASE_URL}\nTime: ${new Date().toLocaleTimeString()}`;
+
+      // Check if not registered
+      if (errorBody.includes('not registered')) {
         errorTitle = 'Not Registered';
       }
 
-      Alert.alert(
-        errorTitle,
-        errorMessage + errorDetails,
-        [
-          { text: 'OK' },
-          {
-            text: 'Copy Error',
-            onPress: () => {
-              // Copy full error to clipboard for sharing
-              const fullError = `Error: ${errorTitle}\nMessage: ${errorMessage}\nCode: ${error.code || 'N/A'}\nAPI: ${API_BASE_URL}\nTime: ${new Date().toISOString()}`;
-              console.log('[LoginOTPScreen] Full error for support:', fullError);
-              Alert.alert('Error Copied', 'Error details logged to console. Share with support if needed.');
-            }
-          }
-        ]
-      );
+      Alert.alert(errorTitle, errorBody);
     } finally {
       setLoading(false);
     }

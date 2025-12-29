@@ -4,8 +4,11 @@
 .env
 .env.local
 .env.production
+# Exception: Allow .env.production for web-app (contains only public API URL)
+!frontend/web-app/.env.production
 .env.development
 .env.test
+
 
 # Database files
 *.db

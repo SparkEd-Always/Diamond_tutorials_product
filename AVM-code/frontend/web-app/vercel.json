@@ -20,8 +20,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "REACT_APP_API_URL": "https://product-production-afd1.up.railway.app"
-  }
+  ]
 }

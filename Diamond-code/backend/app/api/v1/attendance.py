@@ -12,6 +12,7 @@ from app.models.user import User
 from app.models.teacher import Teacher
 from app.models.parent import Parent
 from app.services.activity_service import ActivityService
+from app.services.whatsapp_service import WhatsAppService
 
 router = APIRouter()
 
@@ -345,12 +346,72 @@ async def approve_attendance(
             print(f"❌ Error sending push notifications: {str(e)}")
             # Don't fail the attendance approval if notifications fail
 
+        # Send WhatsApp Notifications to Parents
+        whatsapp_results = []
+        whatsapp_sent = 0
+        whatsapp_failed = 0
+
+        try:
+            whatsapp_service = WhatsAppService()
+            
+            for item in whatsapp_queue:
+                parent_phone = item.get("parent_phone")
+                if not parent_phone:
+                    continue
+                
+                # Get the student and attendance record for WhatsApp message
+                student = db.query(Student).filter(Student.unique_id == item["student_unique_id"]).first()
+                attendance_record = db.query(Attendance).filter(
+                    Attendance.student_id == student.id if student else 0,
+                    Attendance.date == datetime.strptime(item["date"], "%Y-%m-%d").date()
+                ).first()
+                
+                if student and attendance_record:
+                    try:
+                        result = await whatsapp_service.send_individual_attendance_message(
+                            attendance_record=attendance_record,
+                            student=student,
+                            db=db
+                        )
+                        
+                        if result:
+                            whatsapp_sent += 1
+                            whatsapp_results.append({
+                                "parent_phone": parent_phone,
+                                "student": item["student_name"],
+                                "result": "sent"
+                            })
+                        else:
+                            whatsapp_failed += 1
+                            whatsapp_results.append({
+                                "parent_phone": parent_phone,
+                                "student": item["student_name"],
+                                "result": "failed"
+                            })
+                    except Exception as e:
+                        print(f"❌ WhatsApp error for {item['student_name']}: {str(e)}")
+                        whatsapp_failed += 1
+                        whatsapp_results.append({
+                            "parent_phone": parent_phone,
+                            "student": item["student_name"],
+                            "result": f"error: {str(e)}"
+                        })
+
+            print(f"✅ Sent {whatsapp_sent} WhatsApp messages, {whatsapp_failed} failed")
+
+        except Exception as e:
+            print(f"❌ Error initializing WhatsApp service: {str(e)}")
+            # Don't fail the attendance approval if WhatsApp fails
+
         return {
             "message": f"Successfully approved {approved_count} attendance records",
             "approved_count": approved_count,
             "push_notifications_sent": notifications_sent,
             "push_notifications_total": len(whatsapp_queue),
+            "whatsapp_sent": whatsapp_sent,
+            "whatsapp_failed": whatsapp_failed,
             "notification_results": notification_results[:5],  # Show first 5 for preview
+            "whatsapp_results": whatsapp_results[:5],  # Show first 5 for preview
             "status": "approved_and_notifications_sent"
         }
 

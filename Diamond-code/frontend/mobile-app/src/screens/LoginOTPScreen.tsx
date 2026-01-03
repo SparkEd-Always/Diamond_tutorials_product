@@ -193,7 +193,8 @@ export default function LoginOTPScreen({ navigation, route }: any) {
           if (response.data.user_type === 'teacher') {
             navigation.replace('TeacherHome');
           } else {
-            navigation.replace('ParentHome');
+            // Parents are redirected to NavigateHome which shows WhatsApp message
+            navigation.replace('NavigateHome');
           }
         }
       }
@@ -214,92 +215,92 @@ export default function LoginOTPScreen({ navigation, route }: any) {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.content}>
-        {/* Logo/Header */}
-        <View style={styles.header}>
-          <Image
-            source={require('../../assets/icon.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.title}>Sparky</Text>
-        </View>
+          {/* Logo/Header */}
+          <View style={styles.header}>
+            <Image
+              source={require('../../assets/icon.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.title}>Sparky</Text>
+          </View>
 
-        {/* Card Container */}
-        <View style={styles.card}>
-          {/* Instruction Text */}
-          <Text style={styles.instructionTitle}>
-            {otpSent ? 'Enter Verification Code' : 'Sign In to Your Account'}
-          </Text>
-          <Text style={styles.instructionText}>
-            {otpSent
-              ? `Enter the 6-digit code sent to ${phone}`
-              : 'Enter the phone number registered'}
-          </Text>
+          {/* Card Container */}
+          <View style={styles.card}>
+            {/* Instruction Text */}
+            <Text style={styles.instructionTitle}>
+              {otpSent ? 'Enter Verification Code' : 'Sign In to Your Account'}
+            </Text>
+            <Text style={styles.instructionText}>
+              {otpSent
+                ? `Enter the 6-digit code sent to ${phone}`
+                : 'Enter the phone number registered'}
+            </Text>
 
-          {/* Phone Input */}
-          {!otpSent ? (
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.phoneInput}
-                placeholder="Phone number"
-                placeholderTextColor="#D1D5DB"
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-                maxLength={10}
-                editable={!loading}
-              />
-            </View>
-          ) : (
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.otpInput}
-                placeholder="Enter 6-digit OTP"
-                placeholderTextColor="#D1D5DB"
-                value={otp}
-                onChangeText={setOTP}
-                keyboardType="number-pad"
-                maxLength={6}
-                editable={!loading}
-              />
-            </View>
-          )}
-
-          {/* Action Button */}
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={otpSent ? verifyOTP : sendOTP}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
+            {/* Phone Input */}
+            {!otpSent ? (
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.phoneInput}
+                  placeholder="Phone number"
+                  placeholderTextColor="#D1D5DB"
+                  value={phone}
+                  onChangeText={setPhone}
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                  editable={!loading}
+                />
+              </View>
             ) : (
-              <Text style={styles.buttonText}>
-                {otpSent ? 'Verify OTP' : 'Send OTP'}
-              </Text>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.otpInput}
+                  placeholder="Enter 6-digit OTP"
+                  placeholderTextColor="#D1D5DB"
+                  value={otp}
+                  onChangeText={setOTP}
+                  keyboardType="number-pad"
+                  maxLength={6}
+                  editable={!loading}
+                />
+              </View>
             )}
-          </TouchableOpacity>
 
-          {/* Resend/Change Number */}
-          {otpSent && (
+            {/* Action Button */}
             <TouchableOpacity
-              style={styles.linkButton}
-              onPress={() => {
-                setOtpSent(false);
-                setOTP('');
-              }}
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={otpSent ? verifyOTP : sendOTP}
               disabled={loading}
             >
-              <Text style={styles.linkText}>Change Phone Number</Text>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>
+                  {otpSent ? 'Verify OTP' : 'Send OTP'}
+                </Text>
+              )}
             </TouchableOpacity>
-          )}
-        </View>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerBrand}>© 2025 Sparky from SparkEd</Text>
+            {/* Resend/Change Number */}
+            {otpSent && (
+              <TouchableOpacity
+                style={styles.linkButton}
+                onPress={() => {
+                  setOtpSent(false);
+                  setOTP('');
+                }}
+                disabled={loading}
+              >
+                <Text style={styles.linkText}>Change Phone Number</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerBrand}>© 2025 Sparky from SparkEd</Text>
+          </View>
         </View>
-      </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );

@@ -86,7 +86,8 @@ export default function PINLoginScreen({ navigation }: any) {
           if (userType === 'teacher') {
             navigation.replace('TeacherHome', { navigateTo: pendingTarget });
           } else {
-            navigation.replace('ParentHome', { navigateTo: pendingTarget });
+            // Parents are redirected to NavigateHome which shows WhatsApp message
+            navigation.replace('NavigateHome');
           }
         } else {
           navigateToHome();
@@ -133,7 +134,8 @@ export default function PINLoginScreen({ navigation }: any) {
         if (userType === 'teacher') {
           navigation.replace('TeacherHome', { navigateTo: pendingTarget });
         } else {
-          navigation.replace('ParentHome', { navigateTo: pendingTarget });
+          // Parents are redirected to NavigateHome which shows WhatsApp message
+          navigation.replace('NavigateHome');
         }
       } else {
         navigateToHome();
@@ -166,7 +168,8 @@ export default function PINLoginScreen({ navigation }: any) {
     if (userType === 'teacher') {
       navigation.replace('TeacherHome');
     } else {
-      navigation.replace('ParentHome');
+      // Parents are redirected to NavigateHome which shows WhatsApp message
+      navigation.replace('NavigateHome');
     }
   };
 

@@ -11,7 +11,6 @@ import CreatePINScreen from '../screens/CreatePINScreen';
 import PINLoginScreen from '../screens/PINLoginScreen';
 import NavigateHomeScreen from '../screens/NavigateHomeScreen';
 import TeacherHomeScreen from '../screens/TeacherHomeScreen';
-import ParentHomeScreen from '../screens/ParentHomeScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import AttendanceHistoryScreen from '../screens/AttendanceHistoryScreen';
 import AttendanceScreen from '../screens/AttendanceScreen';
@@ -140,9 +139,6 @@ const UnifiedAppNavigator = () => {
 
         {/* Teacher Screens */}
         <Stack.Screen name="TeacherHome" component={TeacherHomeScreen} />
-
-        {/* Parent Screens */}
-        <Stack.Screen name="ParentHome" component={ParentHomeScreen} />
 
         {/* Shared Screens */}
         <Stack.Screen name="Messages" component={MessagesScreen} />

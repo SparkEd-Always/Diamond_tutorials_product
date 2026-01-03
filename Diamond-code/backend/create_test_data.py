@@ -32,7 +32,7 @@ print("Creating test data...")
 try:
     # 1. Create Admin User
     admin_user = User(
-        unique_id="AVM-ADM-001",
+        unique_id="Diamond-ADM-001",
         full_name="Admin User",
         email="admin@avm.com",
         username="admin",
@@ -46,7 +46,7 @@ try:
 
     # 2. Create Teacher
     teacher = Teacher(
-        unique_id="AVM-TCH-001",
+        unique_id="Diamond-TCH-001",
         first_name="Rajesh",
         last_name="Kumar",
         full_name="Rajesh Kumar",
@@ -63,7 +63,7 @@ try:
 
     # 3. Create Student with Parent
     student = Student(
-        unique_id="AVM-STU-001",
+        unique_id="Diamond-STU-001",
         first_name="Priya",
         last_name="Sharma",
         full_name="Priya Sharma",
@@ -81,7 +81,7 @@ try:
         created_at=datetime.now()
     )
     db.add(student)
-    print("✅ Student created: Priya Sharma (AVM-STU-001)")
+    print("✅ Student created: Priya Sharma (Diamond-STU-001)")
 
     # 4. Create Parent record
     parent = Parent(
@@ -103,9 +103,9 @@ try:
     print("   Teacher Mobile: +919380668711 (OTP from backend console)")
     print("   Parent Mobile: +919986660025 (OTP from backend console)")
     print("\n👤 Test Users:")
-    print("   Admin: Admin User (AVM-ADM-001)")
-    print("   Teacher: Rajesh Kumar (AVM-TCH-001)")
-    print("   Student: Priya Sharma (AVM-STU-001)")
+    print("   Admin: Admin User (Diamond-ADM-001)")
+    print("   Teacher: Rajesh Kumar (Diamond-TCH-001)")
+    print("   Student: Priya Sharma (Diamond-STU-001)")
     print("   Parent: Suresh Sharma")
     print("\n" + "="*50)
 

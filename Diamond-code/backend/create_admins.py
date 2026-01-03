@@ -23,7 +23,7 @@ def create_admin_users():
 
         # Admin 1
         admin1 = User(
-            unique_id="AVM-ADM-001",
+            unique_id="Diamond-ADM-001",
             username="admin1",
             email="admin1@avmtutorials.com",
             phone_number="+919380668711",
@@ -36,7 +36,7 @@ def create_admin_users():
 
         # Admin 2
         admin2 = User(
-            unique_id="AVM-ADM-002",
+            unique_id="Diamond-ADM-002",
             username="admin2",
             email="admin2@avmtutorials.com",
             phone_number="+919380668712",

@@ -17,7 +17,7 @@ def create_students():
 
     students_data = [
         {
-            "unique_id": "AVM-STU-001",
+            "unique_id": "Diamond-STU-001",
             "first_name": "Rahul",
             "last_name": "Sharma",
             "full_name": "Rahul Sharma",
@@ -29,7 +29,7 @@ def create_students():
             "parent_email": "sharma@example.com"
         },
         {
-            "unique_id": "AVM-STU-002",
+            "unique_id": "Diamond-STU-002",
             "first_name": "Priya",
             "last_name": "Patel",
             "full_name": "Priya Patel",
@@ -41,7 +41,7 @@ def create_students():
             "parent_email": "patel@example.com"
         },
         {
-            "unique_id": "AVM-STU-003",
+            "unique_id": "Diamond-STU-003",
             "first_name": "Arjun",
             "last_name": "Kumar",
             "full_name": "Arjun Kumar",

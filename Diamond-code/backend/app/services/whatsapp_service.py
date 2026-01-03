@@ -26,7 +26,7 @@ class WhatsAppService:
             settings.TWILIO_AUTH_TOKEN
         )
         self.from_number = settings.TWILIO_WHATSAPP_NUMBER or "whatsapp:+14155238886"
-        self.school_name = settings.SCHOOL_NAME or "AVM Tutorials"
+        self.school_name = settings.SCHOOL_NAME or "Diamond Tutorials"
         self.school_contact = settings.SCHOOL_WHATSAPP_NUMBER or "+919380668711"
 
     def _format_phone_number(self, phone: str) -> str:

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# AVM Tutorial Management System - Docker Deployment Script
+# Diamond Tutorial Management System - Docker Deployment Script
 
 set -e  # Exit on any error
 
-echo "🚀 AVM Tutorial Management System - Docker Deployment"
+echo "🚀 Diamond Tutorial Management System - Docker Deployment"
 echo "=================================================="
 
 # Colors for output

@@ -66,7 +66,7 @@ export default function PINLoginScreen({ navigation }: any) {
   const handleBiometricAuth = async () => {
     try {
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Verify to access AVM Tutorial',
+        promptMessage: 'Verify to access Diamond Tutorial',
         cancelLabel: 'Use PIN',
         disableDeviceFallback: true,
       });

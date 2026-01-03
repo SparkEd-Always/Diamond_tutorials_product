@@ -252,8 +252,8 @@ const DataUploadPage: React.FC = () => {
 
     if (type === 'students') {
       csvContent = `full_name,unique_id,class_name,date_of_birth,gender,parent_name,parent_phone,address,emergency_contact
-Rahul Sharma,AVM-STU-001,Class 7,2010-05-15,Male,Rajesh Sharma,+919876543210,"123 Main St, Mumbai",+919876543211
-Priya Patel,AVM-STU-002,Class 8,2009-08-22,Female,Amit Patel,+919876543212,"456 Park Ave, Delhi",+919876543213`;
+Rahul Sharma,Diamond-STU-001,Class 7,2010-05-15,Male,Rajesh Sharma,+919876543210,"123 Main St, Mumbai",+919876543211
+Priya Patel,Diamond-STU-002,Class 8,2009-08-22,Female,Amit Patel,+919876543212,"456 Park Ave, Delhi",+919876543213`;
     } else {
       csvContent = `full_name,email,phone,date_of_birth,gender,subject_specialization,qualification,experience_years,address
 Dr. Rajesh Kumar,rajesh.kumar@email.com,+919876543214,1985-03-10,Male,Mathematics,"M.Sc Mathematics, B.Ed",8,"789 Teacher Colony, Pune"

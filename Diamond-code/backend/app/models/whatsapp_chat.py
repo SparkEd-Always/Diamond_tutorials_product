@@ -17,7 +17,7 @@ class WhatsAppChat(Base):
 
     # Parent/Student association
     parent_name = Column(String(100))
-    student_unique_id = Column(String(20))  # AVM-STU-001
+    student_unique_id = Column(String(20))  # Diamond-STU-001
     student_name = Column(String(100))
 
     # Chat status

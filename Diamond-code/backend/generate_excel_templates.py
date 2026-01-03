@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate Excel templates with sample student and teacher data
-for AVM Tutorial Management System
+for Diamond Tutorial Management System
 """
 
 import pandas as pd
@@ -66,7 +66,7 @@ def generate_student_template():
 
         student_count += 1
         students_data.append({
-            "unique_id": f"AVM-STU-{student_count:03d}",
+            "unique_id": f"Diamond-STU-{student_count:03d}",
             "first_name": first_name,
             "last_name": last_name,
             "full_name": full_name,
@@ -96,7 +96,7 @@ def generate_teacher_template():
 
     teachers_data = [
         {
-            "unique_id": "AVM-TCH-001",
+            "unique_id": "Diamond-TCH-001",
             "first_name": "Priya",
             "last_name": "Patel",
             "full_name": "Mrs. Priya Patel",
@@ -114,7 +114,7 @@ def generate_teacher_template():
             "is_active": "Active"
         },
         {
-            "unique_id": "AVM-TCH-002",
+            "unique_id": "Diamond-TCH-002",
             "first_name": "Amit",
             "last_name": "Singh",
             "full_name": "Mr. Amit Singh",
@@ -132,7 +132,7 @@ def generate_teacher_template():
             "is_active": "Active"
         },
         {
-            "unique_id": "AVM-TCH-003",
+            "unique_id": "Diamond-TCH-003",
             "first_name": "Kavita",
             "last_name": "Sharma",
             "full_name": "Mrs. Kavita Sharma",
@@ -150,7 +150,7 @@ def generate_teacher_template():
             "is_active": "Active"
         },
         {
-            "unique_id": "AVM-TCH-004",
+            "unique_id": "Diamond-TCH-004",
             "first_name": "Ravi",
             "last_name": "Kumar",
             "full_name": "Mr. Ravi Kumar",
@@ -168,7 +168,7 @@ def generate_teacher_template():
             "is_active": "Active"
         },
         {
-            "unique_id": "AVM-TCH-005",
+            "unique_id": "Diamond-TCH-005",
             "first_name": "Neha",
             "last_name": "Gupta",
             "full_name": "Ms. Neha Gupta",
@@ -196,7 +196,7 @@ def generate_teacher_template():
 def main():
     """Generate both student and teacher Excel templates"""
 
-    print("🚀 Generating Excel templates for AVM Tutorial Management System...")
+    print("🚀 Generating Excel templates for Diamond Tutorial Management System...")
     print("=" * 70)
 
     # Create output directory
@@ -264,8 +264,8 @@ def main():
     print("   1. Use these templates as-is for testing")
     print("   2. Modify the data as needed")
     print("   3. Upload via Admin Panel → Import Students/Teachers")
-    print("   4. All students have unique IDs (AVM-STU-XXX)")
-    print("   5. All teachers have unique IDs (AVM-TCH-XXX)")
+    print("   4. All students have unique IDs (Diamond-STU-XXX)")
+    print("   5. All teachers have unique IDs (Diamond-TCH-XXX)")
 
     return True
 

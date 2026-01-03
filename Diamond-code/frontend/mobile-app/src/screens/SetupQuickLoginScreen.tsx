@@ -49,7 +49,7 @@ export default function SetupQuickLoginScreen({ navigation }: any) {
   const handleSetupBiometric = async () => {
     try {
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: `Enable ${biometricType} for AVM Tutorial`,
+        promptMessage: `Enable ${biometricType} for Diamond Tutorial`,
         cancelLabel: 'Cancel',
         disableDeviceFallback: false,
       });

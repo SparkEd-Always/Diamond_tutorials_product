@@ -1,1 +1,1 @@
-# AVM Tutorial Management System Backend
+# Diamond Tutorial Management System Backend

@@ -155,7 +155,7 @@ export default function ProfileScreen({ navigation }: any) {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>AVM Tutorial Management System</Text>
+          <Text style={styles.footerText}>Diamond Tutorial Management System</Text>
           <Text style={styles.footerVersion}>Version 1.0.0</Text>
         </View>
       </ScrollView>

@@ -1,10 +1,10 @@
-# AVM Tutorial Management System
+# Diamond Tutorial Management System
 
-A complete tutorial management system with WhatsApp integration for AVM Tutorial. Built with FastAPI backend and React frontend, featuring attendance management, parent communication, and admin dashboard.
+A complete tutorial management system with WhatsApp integration for Diamond Tutorial. Built with FastAPI backend and React frontend, featuring attendance management, parent communication, and admin dashboard.
 
 ## 🎯 Project Overview
 
-**Client**: AVM Tutorial (77 students, 5 teachers)
+**Client**: Diamond Tutorial (77 students, 5 teachers)
 **Pricing**: ₹29 per student per month
 **Goal**: Self-service app with zero maintenance calls
 
@@ -175,14 +175,14 @@ SMTP_PASSWORD=your-app-password
 
 ## 📱 User Roles & Access
 
-### Admin (AVM-ADM-001, AVM-ADM-002)
+### Admin (Diamond-ADM-001, Diamond-ADM-002)
 - Complete system access
 - Attendance approval workflow
 - WhatsApp message management
 - User management
 - Analytics dashboard
 
-### Teachers (AVM-TCH-001 to AVM-TCH-005)
+### Teachers (Diamond-TCH-001 to Diamond-TCH-005)
 - Student attendance marking
 - View student records
 - Limited communication access
@@ -192,7 +192,7 @@ SMTP_PASSWORD=your-app-password
 - Receive WhatsApp notifications
 - Read-only access to notices
 
-### Students (AVM-STU-001 to AVM-STU-077)
+### Students (Diamond-STU-001 to Diamond-STU-077)
 - Limited access to own records
 - View notices and announcements
 
@@ -208,9 +208,9 @@ SMTP_PASSWORD=your-app-password
 
 ### Individual Chat (Daily Attendance)
 ```
-📚 AVM Tutorial - Daily Update
+📚 Diamond Tutorial - Daily Update
 
-🎓 Student: Rahul Sharma (AVM-STU-025)
+🎓 Student: Rahul Sharma (Diamond-STU-025)
 📅 Date: 28 Sep 2025
 ✅ Attendance: Present
 📊 Marks: Math Test - 85/100
@@ -220,7 +220,7 @@ SMTP_PASSWORD=your-app-password
 
 ### Announcement Chat (Mass Communication)
 ```
-📢 AVM Tutorial - Announcements
+📢 Diamond Tutorial - Announcements
 
 🏫 Important Notice
 📅 Parent-Teacher Meeting scheduled for 5th Oct 2025
@@ -301,13 +301,13 @@ npm test
 
 For development questions or issues:
 1. Check the API documentation at `/docs`
-2. Review the project specifications in `Running-Projects/AVM-project.md`
+2. Review the project specifications in this README
 3. Ensure all environment variables are properly configured
 4. Verify database and Redis connections
 
 ## 📄 License
 
-This project is proprietary software developed for AVM Tutorial. All rights reserved.
+This project is proprietary software developed for Diamond Tutorial. All rights reserved.
 
 ---
 

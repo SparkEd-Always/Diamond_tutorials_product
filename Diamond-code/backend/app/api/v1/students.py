@@ -74,7 +74,7 @@ async def create_student(
         # Generate unique_id
         last_student = db.query(Student).order_by(Student.id.desc()).first()
         next_id = (last_student.id + 1) if last_student else 1
-        unique_id = f"AVM-STU-{next_id:03d}"
+        unique_id = f"Diamond-STU-{next_id:03d}"
 
         # Split full_name into first_name and last_name
         full_name = student_data['full_name']

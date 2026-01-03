@@ -1,5 +1,5 @@
 """
-AVM Tutorial Management System - Main Entry Point
+Diamond Tutorial Management System - Main Entry Point
 Run with: python main.py
 """
 

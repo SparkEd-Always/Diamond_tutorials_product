@@ -210,7 +210,7 @@ async def send_to_parents(
                 print(f"   Token: {parent.push_token[:50]}...")
                 result = await FCMPushNotificationService.send_message_notification(
                     fcm_token=parent.push_token,
-                    sender_name="AVM Tutorial",
+                    sender_name="Diamond Tutorial",
                     message_preview=message[:100],
                     message_id=comm.id
                 )

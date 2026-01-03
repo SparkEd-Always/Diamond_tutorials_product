@@ -39,7 +39,7 @@ def add_admin_users():
         # Admin users to create
         admins = [
             {
-                "unique_id": "AVM-ADM-002",
+                "unique_id": "Diamond-ADM-002",
                 "username": "ADMumesh",
                 "full_name": "Umesh",
                 "email": "umesh@avm.com",
@@ -47,7 +47,7 @@ def add_admin_users():
                 "password": "admin1"
             },
             {
-                "unique_id": "AVM-ADM-003",
+                "unique_id": "Diamond-ADM-003",
                 "username": "ADMmahantesh",
                 "full_name": "Mahantesh",
                 "email": "mahantesh@avm.com",

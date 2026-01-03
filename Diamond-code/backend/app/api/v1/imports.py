@@ -138,7 +138,7 @@ async def import_students(
                 unique_id = UniqueIdGenerator.generate_student_id(db)
 
                 # Create student record
-                # Note: section is optional and left empty as AVM Tutorial has only one section per class (7, 8, 9, 10)
+                # Note: section is optional and left empty as Diamond Tutorial has only one section per class (7, 8, 9, 10)
                 student = Student(
                     unique_id=unique_id,
                     first_name=str(row['first_name']).strip(),

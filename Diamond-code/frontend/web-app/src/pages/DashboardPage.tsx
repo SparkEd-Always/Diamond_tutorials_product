@@ -195,7 +195,7 @@ const DashboardPage: React.FC = () => {
             Dashboard
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Welcome to AVM Tutorial Management System
+            Welcome to Diamond Tutorial Management System
           </Typography>
         </Box>
         {user?.role === 'teacher' && (

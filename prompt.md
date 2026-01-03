@@ -1,0 +1,1 @@
+Now, I would like to discuss few things on implementation of requirements for 

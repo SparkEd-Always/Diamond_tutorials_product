@@ -22,7 +22,7 @@ app = FastAPI(
 async def startup_event():
     """Initialize services on application startup"""
     print("=" * 60)
-    print("🚀 Starting AVM Tutorial Management System")
+    print("🚀 Starting Diamond Tutorial Management System")
     print("=" * 60)
 
     # Initialize Firebase Cloud Messaging
@@ -48,14 +48,14 @@ app.include_router(api_router, prefix="/api/v1")
 @app.get("/")
 async def root():
     return {
-        "message": "AVM Tutorial Management System API",
+        "message": "Diamond Tutorial Management System API",
         "version": settings.VERSION,
         "docs": "/docs"
     }
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "AVM Tutorial API"}
+    return {"status": "healthy", "service": "Diamond Tutorial API"}
 
 @app.post("/init-admin")
 async def init_admin():
@@ -75,7 +75,7 @@ async def init_admin():
 
         # Create admin user
         admin = User(
-            unique_id="AVM-ADM-001",
+            unique_id="Diamond-ADM-001",
             email="admin@avm.com",
             phone_number="+91-9999900001",
             username="admin",
@@ -114,7 +114,7 @@ async def create_admins():
 
     admins_data = [
         {
-            "unique_id": "AVM-ADM-002",
+            "unique_id": "Diamond-ADM-002",
             "username": "ADMumesh",
             "full_name": "Umesh",
             "email": "umesh@avm.com",
@@ -122,7 +122,7 @@ async def create_admins():
             "password": "admin1"
         },
         {
-            "unique_id": "AVM-ADM-003",
+            "unique_id": "Diamond-ADM-003",
             "username": "ADMmahantesh",
             "full_name": "Mahantesh",
             "email": "mahantesh@avm.com",

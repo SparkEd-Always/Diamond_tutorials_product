@@ -11,7 +11,7 @@ from app.core.security import get_password_hash
 
 def create_admin():
     print("=" * 60)
-    print("AVM Tutorial - Admin Account Setup")
+    print("Diamond Tutorial - Admin Account Setup")
     print("=" * 60)
     print()
     
@@ -62,7 +62,7 @@ def create_admin():
         # Generate unique ID
         last_admin = db.query(User).filter(User.role == UserRole.ADMIN).order_by(User.id.desc()).first()
         admin_number = (last_admin.id + 1) if last_admin else 1
-        unique_id = f"AVM-ADM-{admin_number:03d}"
+        unique_id = f"Diamond-ADM-{admin_number:03d}"
         
         # Create admin
         admin = User(

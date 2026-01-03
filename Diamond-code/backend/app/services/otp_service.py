@@ -43,7 +43,7 @@ class OTPService:
             client = Client(account_sid, auth_token)
 
             # SMS message
-            message_body = f"Your OTP for Sparky login is {otp_code}. Valid for 10 minutes. - AVM Tutorials"
+            message_body = f"Your OTP for Sparky login is {otp_code}. Valid for 10 minutes. - Diamond Tutorials"
 
             # Send SMS
             message = client.messages.create(

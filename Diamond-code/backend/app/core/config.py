@@ -30,12 +30,12 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: Optional[str] = os.getenv("SMTP_PASSWORD")
 
     # Application
-    PROJECT_NAME: str = "AVM Tutorial Management System"
+    PROJECT_NAME: str = "Diamond Tutorial Management System"
     VERSION: str = "1.0.0"
     DESCRIPTION: str = "Tutorial Management System with WhatsApp Integration"
 
     # School/Organization Settings (default values, can be overridden per school)
-    SCHOOL_NAME: str = os.getenv("SCHOOL_NAME", "AVM Tutorials")
+    SCHOOL_NAME: str = os.getenv("SCHOOL_NAME", "Diamond Tutorials")
     SCHOOL_WHATSAPP_NUMBER: Optional[str] = os.getenv("SCHOOL_WHATSAPP_NUMBER")  # e.g., "+919380668711"
 
     class Config:

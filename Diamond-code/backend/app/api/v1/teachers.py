@@ -57,7 +57,7 @@ async def create_teacher(
         # Generate unique_id
         last_teacher = db.query(Teacher).order_by(Teacher.id.desc()).first()
         next_id = (last_teacher.id + 1) if last_teacher else 1
-        unique_id = f"AVM-TCH-{next_id:03d}"
+        unique_id = f"Diamond-TCH-{next_id:03d}"
 
         teacher = Teacher(
             unique_id=unique_id,

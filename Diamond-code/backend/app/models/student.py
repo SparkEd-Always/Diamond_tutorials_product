@@ -7,7 +7,7 @@ class Student(Base):
     __tablename__ = "students"
 
     id = Column(Integer, primary_key=True, index=True)
-    unique_id = Column(String(20), unique=True, index=True)  # AVM-STU-001, AVM-STU-002, etc.
+    unique_id = Column(String(20), unique=True, index=True)  # Diamond-STU-001, Diamond-STU-002, etc.
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     full_name = Column(String(100), nullable=False)

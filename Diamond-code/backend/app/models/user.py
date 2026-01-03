@@ -14,7 +14,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    unique_id = Column(String(20), unique=True, index=True)  # AVM-ADM-001, AVM-TCH-001, etc.
+    unique_id = Column(String(20), unique=True, index=True)  # Diamond-ADM-001, Diamond-TCH-001, etc.
     email = Column(String(100), unique=True, index=True)
     phone_number = Column(String(15), unique=True, index=True)
     username = Column(String(50), unique=True, index=True)

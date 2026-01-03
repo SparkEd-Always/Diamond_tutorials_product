@@ -120,7 +120,7 @@ async def send_attendance_notification(
         }.get(attendance_status, "❓")
 
         message = f"""
-🏫 *AVM Tutorial Management*
+🏫 *Diamond Tutorial Management*
 
 📅 *Date:* {date}
 👤 *Student:* {student_name}
@@ -133,7 +133,7 @@ async def send_attendance_notification(
         message += f"""
 ⏰ *Time:* {datetime.now().strftime('%I:%M %p')}
 
-_This is an automated message from AVM Tutorial Management System._
+_This is an automated message from Diamond Tutorial Management System._
 """
 
         # WhatsApp Business API endpoint

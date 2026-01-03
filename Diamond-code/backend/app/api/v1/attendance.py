@@ -600,12 +600,11 @@ async def get_attendance_history(
     )
 
     # Filter based on user type:
-    # - Teachers: Can see all records (approved + pending) for their workflow
-    # - Parents: Can ONLY see admin-approved records
+    # - GLOBAL: History only shows admin-approved records (User Requirement)
+    query = query.filter(Attendance.admin_approved == True)
+
     if isinstance(current_user, Parent):
-        # Parents can only see approved attendance
-        query = query.filter(Attendance.admin_approved == True)
-        # Also filter to only their children's attendance
+        # Parents: Can ONLY see their own children
         # Normalize phone number for comparison (handle +91 prefix variations)
         parent_phone = current_user.phone_number
         phone_without_prefix = parent_phone.replace('+91', '') if parent_phone.startswith('+91') else parent_phone
@@ -622,12 +621,6 @@ async def get_attendance_history(
         else:
             # No children found, return empty list
             return []
-    elif isinstance(current_user, Teacher):
-        # Teachers can see all records (approved and pending)
-        pass
-    else:
-        # Admin/Web users can see all records
-        pass
 
     # Add optional filters
     if class_name:

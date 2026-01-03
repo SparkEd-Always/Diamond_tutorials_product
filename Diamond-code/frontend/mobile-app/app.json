@@ -35,7 +35,7 @@
         "android.permission.INTERNET",
         "android.permission.VIBRATE"
       ],
-      "googleServicesFile": "./android/app/google-services.json"
+      "googleServicesFile": "./google-services.json"
     },
     "notification": {
       "color": "#2C4E6B",
@@ -46,7 +46,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "https://product-production-afd1.up.railway.app",
+      "apiUrl": "http://192.168.1.4:8000",
       "eas": {
         "projectId": "d9867ba4-c8ce-4ab6-9408-58606c1bfab7"
       }
